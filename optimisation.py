@@ -1329,7 +1329,7 @@ if __name__ == '__main__':
 
     # config pso params
     n = 3 
-    iter_max = 20 
+    iter_max = 150
     rep_max = 1
     max_v_f = 0.05
     init_v_f = max_v_f
