@@ -12,16 +12,6 @@ This project formed part of the journal paper 'An Artificial Intelligence Approa
 
 ## Getting Started
 
-### Prerequisites
-It is recommended to use the Anaconda environment manager to install package dependencies for this project. The following tools are prerequisites:
-```
-Python 3.6.0
-numpy 1.15.4
-pyvisa 1.10.1
-matplotlib 3.1.2
-pandas 0.25.3
-scipy 1.1.0
-```
 
 ### Installing
 Open Git Bash. Change the current working directory to the location where you want to clone this project, and run:
