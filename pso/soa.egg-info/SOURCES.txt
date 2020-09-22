@@ -1,0 +1,6 @@
+README.md
+setup.py
+soa.egg-info/PKG-INFO
+soa.egg-info/SOURCES.txt
+soa.egg-info/dependency_links.txt
+soa.egg-info/top_level.txt

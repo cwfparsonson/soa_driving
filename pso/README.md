@@ -28,23 +28,31 @@ Open Git Bash. Change the current working directory to the location where you wa
 ```
 git clone https://github.com/cwfparsonson/soa_driving.git
 ```
-Use anaconda to install the required packages:
+In `soa_driving/pso`, use either conda or pip to install the required packages
 ```
-conda install <package>
+conda install --file requirements.txt
+```
+```
+pip install -r requirements.txt
+```
+In `soa_driving/pso`, make the soa module importable from anywhere on your machine:
+```
+python setup.py soa
 ```
 
+
 ### Running the Project
-To get started, change the directory variables in optimisation.py to match your own directory for where you want PSO data to be saved, and run:
+To get started, change the `directory` variable in optimisation.py to match your own directory for where you want PSO data to be saved, and run:
 ```
 python optimisation.py
 ```
-This should perform a quick PSO optimisation on different SOA transfer functions in parallel. The results will be tracked and printed in your console, and saved in your specified directory. To change the PSO hyperparameters and/or the default transfer function(s), open optimisation.py, scroll down to the bottom, and edit the code.
+This should perform a quick PSO optimisation on different SOA transfer functions in parallel. The results will be tracked and printed in your console, and saved in your specified directory. To change the PSO hyperparameters and/or the default transfer function(s), open optimisation.py, scroll down to the bottom, and edit the code. Note that by default this will run your experiments in paralellel with multiprocessing rather than sequentially to save time. Edit the script to change this.
 
 The below is an example of how to simulate 10 different SOAs and optimise each of them individually to demonstrate the generalisability of PSO to any SOA. 
 
 ```python
-from soa_driving import devices, signalprocessing, analyse, distort_tf
-from soa_driving.optimisation import PSO, run_test
+from soa import devices, signalprocessing, analyse, distort_tf
+from soa.optimisation import PSO, run_test
 
 directory = r"C:\Users\Christopher\OneDrive - University College London\ipes_cdt\phd_project\projects\soa_driving\files\data\neat_test"
 
