@@ -162,19 +162,7 @@ with open(PIK, 'wb') as f:
 
 
 ### Citing This Project
-If you use this project or implement derivatives of it, please cite it:
-```
-@misc{christopher_parsonson_2020,
-    author       = {Christopher Parsonson},
-    title        = {{SOA Drive Signal Optimisaiton with PSO}},
-    month        = May,
-    year         = 2020,
-    doi          = {10.5281/zenodo.3865905},
-    version      = {1.0.0},
-    publisher    = {UCL},
-    url          = {https://doi.org/10.5281/zenodo.3865905}
-    }
-```
+If you use this project or implement derivatives of it, please cite the paper at the top.
 
 
 
