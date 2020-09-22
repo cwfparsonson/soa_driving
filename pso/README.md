@@ -54,7 +54,7 @@ The below is an example of how to simulate 10 different SOAs and optimise each o
 from soa import devices, signalprocessing, analyse, distort_tf
 from soa.optimisation import PSO, run_test
 
-directory = r"C:\Users\Christopher\OneDrive - University College London\ipes_cdt\phd_project\projects\soa_driving\files\data\neat_test"
+directory = '../data/
 
 num_points = 240
 time_start = 0.0
