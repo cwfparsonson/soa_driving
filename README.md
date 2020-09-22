@@ -10,7 +10,6 @@ paper was generated with this code.
 
 ## Getting Started
 
-### Prerequisites
 Each of the PSO, ACO and GA packages have different setup requirements
 and work in different ways. Please see individual folders for separate
 instructions for use of each package.
