@@ -37,7 +37,7 @@ pip install -r requirements.txt
 ```
 In `soa_driving/pso`, make the soa module importable from anywhere on your machine:
 ```
-python setup.py soa
+python setup.py develop
 ```
 
 
