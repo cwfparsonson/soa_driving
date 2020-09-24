@@ -1262,33 +1262,6 @@ def run_test(directory_for_run,
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == '__main__':
     '''
     Below is an example implementation of the above PSO code. Note that there 
@@ -1323,13 +1296,12 @@ if __name__ == '__main__':
     As a general rule-of-thumb, increasing n (the number of particles) is a 
     reliable way to improve PSO performance and find more optimal solutions.
     '''
-
     import soa
 
 
 
     # set dir to save data
-    directory = os.path.dirname(soa.__file__)+'/../data/'
+    directory = '/Users/hadi/Desktop/SOA_Complexity/PSO_Data'
 
     # specify whether running simulation or experiment
     sim = True
