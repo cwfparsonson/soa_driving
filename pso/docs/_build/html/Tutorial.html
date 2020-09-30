@@ -84,7 +84,19 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Install.html">Install</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#soa-switch-optimisation">SOA Switch Optimisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pso-applied-to-soa-drive-signal-optimisation">PSO Applied to SOA Drive Signal Optimisation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#running-basic-simulations">Running Basic Simulations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-simulation-scripts">Example Simulation Scripts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#overview-of-backend-pso-and-soa-code">Overview of Backend PSO and SOA Code</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -152,7 +164,218 @@
             
   <div class="section" id="tutorial">
 <h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
-<p>&lt; Tutorial &gt;</p>
+<p>This code can help you get started with using this Python package to
+optimise semiconductor optical amplifiers (SOAs) with particle swarm optimisation (PSO).</p>
+<p>Pre-requisites:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://ieeexplore.ieee.org/document/9124678?arnumber=9124678">An Artificial Intelligence Approach to Optimal Control of Sub-Nanosecond SOA-Based Optical Switches</a> (and any references in the paper not recognised by the reader)</p></li>
+<li><p>Chapter 16 of S.Kiranyaz’s 2014 book ‘Particle Swarm Optimisation’</p></li>
+<li><p>Basic Python</p></li>
+</ul>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="soa-switch-optimisation">
+<h3>SOA Switch Optimisation<a class="headerlink" href="#soa-switch-optimisation" title="Permalink to this headline">¶</a></h3>
+<p>Particle Swarm Optimisation (PSO) is a metaheuristics used to solve a range of
+optimisation problems, and falls under the broad category of ‘artificial intelligence’
+techniques. For an excellent in-depth summary, see chapter 16 of S. Kiranyaz’s
+2014 book ‘Particle Swarm Optimisation’.</p>
+<p>Semiconductor optical amplifiers (SOAs) are devices which, given (1) an electronic
+driving signal and (2) an optical input signal, will amplify the light signal by
+a combination of spontaneous and stimulated emission. This allows SOAs to act as
+a <cite>switch</cite> capable of switching light on and off. Light is a popular medium in which
+to communication information owing to its associated high bandwidth, energy efficiency, speed
+and equipment costs. However, to communicate with light, you must be able to switch
+and change the properties of your light signal. For certain applications, such as
+next-generation optical circuit switched data centre networks, the <cite>speed</cite> with which
+you can switch light signals is extremely important. It turns out that SOAs are
+excellent for switching light quickly, with theoretical switching speeds limited
+only by their ~100 picosecond (10^-12) second excitation times. However, due to
+instability issues, this switching speed is in practice much slower (on the nanosecond
+(10^-9) scale), which is too slow for many desirable applications.</p>
+<p>To help fix instability issues and improve SOA switching times, researchers need
+to <cite>optimise</cite> their SOA. Optimisation can come in two forms; optimising the physical
+properties of the SOA and its surrounding setup, <cite>or</cite> optimising the electronic
+drive signal passed into the SOA in order to turn the SOA ‘on’. The most basic
+electronic drive signal to apply is the <cite>step</cite> drive signal:</p>
+<p>&lt;STEP_DRIVE_FIGURE&gt;</p>
+<p>However, this simple signal results in the following unstable optical output, resulting
+in nanosecond-scale switching times:</p>
+<p>&lt;STEP_DRIVE_OUTPUT_FIGURE&gt;</p>
+<p>To remedy this, researchers previously attempted to apply a range of different electronic
+drive signals, from standard PID solutions from control theory to carefuly tuned
+PISIC and MISIC formats. However, none of these solutions proved to work sufficiently
+well to achieve sub-nanosecond (hundred-picosecond scale) switching, and none
+were scalable to the thousands/millions of SOAs each with different properties that you would
+find in a real optical communication network such as a data centre.</p>
+</div>
+<div class="section" id="pso-applied-to-soa-drive-signal-optimisation">
+<h3>PSO Applied to SOA Drive Signal Optimisation<a class="headerlink" href="#pso-applied-to-soa-drive-signal-optimisation" title="Permalink to this headline">¶</a></h3>
+<p>To help solve this short-coming in SOA drive signal optimisation, this package uses
+a particle swarm optimisation approach to optimising the electronic drive signal
+put into the SOA. The below figure is a step-by-step visualisation of how PSO was applied to the problem of SOA
+drive signal optimisation at the most basic level.</p>
+<p>&lt;COMPOSITE_FIGURE&gt;</p>
+<p>The paper implements a couple of other key ideas such as the concept of a PISIC
+shell to reduce the PSO algorithm’s search space and dynamic PSO, however the above
+is a succinct visualisation of the core idea.</p>
+</div>
+</div>
+<div class="section" id="running-basic-simulations">
+<h2>Running Basic Simulations<a class="headerlink" href="#running-basic-simulations" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As mentioned, this PSO code has not been cleanly implemented for the most part and is not actively maintained.
+There are definitely better ways of constructing it. This tutorial is intended
+to help you get started with the code and understand how PSO can be used to
+optimise SOAs. You are encouraged to fork the project and re-write parts/add
+functionality as you see fit. Contact <a class="reference external" href="mailto:cwfparsonson&#37;&#52;&#48;gmail&#46;com">cwfparsonson<span>&#64;</span>gmail<span>&#46;</span>com</a> if you are interested
+in merging your code.</p>
+</div>
+<p>In your Python script, start by importing the following core functionalities from the soa module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">soa</span> <span class="kn">import</span> <span class="n">devices</span><span class="p">,</span> <span class="n">signalprocessing</span><span class="p">,</span> <span class="n">analyse</span><span class="p">,</span> <span class="n">distort_tf</span>
+<span class="kn">from</span> <span class="nn">soa.optimisation</span> <span class="kn">import</span> <span class="n">PSO</span><span class="p">,</span> <span class="n">run_test</span>
+</pre></div>
+</div>
+<p>The purpose of each of the above is the following:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">devices.py</span></code>: Module for interfacing with the SOA experimental setup (<strong>not needed if only using transfer function simulations</strong>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">signalprocessing.py</span></code>: Module for generating standard literature SOA driving signals (e.g. PISIC, MISIC, etc.) and for evaluating optical response cost in terms of e.g. mean squared error</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">analyse.py</span></code>: Module for analysing signal performance and retrieving optical output signal metrics (e.g. rise time, settling time, overshoot etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">distort_tf.py</span></code>: Module for distorting the original SOA transfer function to generate new transfer functions and therefore simulate different SOAs (useful for testing the generalisability of your optimisation method(s))</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">optimisation.py</span></code>: The main module that holds the <code class="docutils literal notranslate"><span class="pre">PSO</span></code> class (the key class with the PSO algorithm, send &amp; receive functionality for drive &amp; optical signal(s) respectively, plotting, etc.) and the <code class="docutils literal notranslate"><span class="pre">run_test</span></code> function, which is a function used for multiprocessing (running multiple PSO experiments in parallel - not required but recommended to speed up your tests).</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use the above as a guide for when you want to add more functionality/find
+a specific function being used by this <code class="docutils literal notranslate"><span class="pre">soa</span></code> package/see how things work etc.
+Feel free to add to, rewrite or replace any of the above modules/functions/methods/classes.`</p>
+</div>
+<p>Import any other useful packages you’d like to use</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+</pre></div>
+</div>
+<p>Create a folder on your local machine in which to store your PSO/SOA data and
+create a <code class="docutils literal notranslate"><span class="pre">directory</span></code> variable with the path to this folder:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">directory</span> <span class="o">=</span> <span class="s1">&#39;../data/&#39;</span>
+</pre></div>
+</div>
+<p>Initialise the basic parameters of the input and output signal you want to optimise:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">num_points</span> <span class="o">=</span> <span class="mi">240</span> <span class="c1"># number of points in the signal (corresponds to number of dimensions *m* for each particle)</span>
+<span class="n">time_start</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># time at which signal period should begin</span>
+<span class="n">time_stop</span> <span class="o">=</span> <span class="mf">20e-9</span> <span class="c1"># time at which signal period should end</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">time_start</span><span class="p">,</span> <span class="n">time_stop</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span> <span class="c1"># time axis of all signals</span>
+</pre></div>
+</div>
+<p>Configure the basic PSO hyperparameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1"># number of particles (i.e. number of signals)</span>
+<span class="n">iter_max</span> <span class="o">=</span> <span class="mi">150</span> <span class="c1"># maximum number of iterations to perform before stopping the PSO algorithm</span>
+<span class="n">rep_max</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># number of times to repeat PSO optimisation</span>
+<span class="n">max_v_f</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1"># maximum velocity factory by which to multiply the maximum parameter values by to get the maximum particle velocity for each iteration</span>
+<span class="n">init_v_f</span> <span class="o">=</span> <span class="n">max_v_f</span> <span class="c1"># factor by which to multiply initial positions by to get initial velocity for first iteration</span>
+<span class="n">cost_f</span> <span class="o">=</span> <span class="s1">&#39;mSE&#39;</span> <span class="c1"># cost function to use to evaluate performance. Must be 1 of: &#39;mSe&#39;, &#39;st&#39;, &#39;mSE+st&#39;, &#39;s_mse+st&#39;, &#39;mse+st+os&#39;, &#39;zlpc&#39;</span>
+<span class="n">w_init</span> <span class="o">=</span> <span class="mf">0.9</span> <span class="c1"># initial intertia weight value (0 &lt;= w &lt;= 1)</span>
+<span class="n">w_final</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="c1"># final inertia weigth value (0 &lt;= w &lt;= 1)</span>
+<span class="n">on_suppress_f</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="c1"># factor by which to multiply initial guess by when in &#39;off&#39; state and add to this to get space constraint</span>
+</pre></div>
+</div>
+<p>Define the initial drive signal (e.g. a step):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">init_OP</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span> <span class="c1"># initial drive signal (e.g. a step)</span>
+<span class="n">init_OP</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.25</span><span class="o">*</span><span class="n">num_points</span><span class="p">)],</span><span class="n">init_OP</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.25</span><span class="o">*</span><span class="n">num_points</span><span class="p">):]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span>
+</pre></div>
+</div>
+<p>Define the SOA(s) transfer function(s) you want to optimise for (N.B. init_OP
+must have a low point of -1 for the transfer function):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># initial transfer function numerator and denominator coefficients</span>
+<span class="n">num</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.01199757841099e85</span><span class="p">]</span>
+<span class="n">den</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="mf">1.64898505756825e0</span><span class="p">,</span>
+    <span class="mf">4.56217233166632e10</span><span class="p">,</span>
+    <span class="mf">3.04864287973918e21</span><span class="p">,</span>
+    <span class="mf">4.76302109455371e31</span><span class="p">,</span>
+    <span class="mf">1.70110870487715e42</span><span class="p">,</span>
+    <span class="mf">1.36694076792557e52</span><span class="p">,</span>
+    <span class="mf">2.81558045148153e62</span><span class="p">,</span>
+    <span class="mf">9.16930673102975e71</span><span class="p">,</span>
+    <span class="mf">1.68628748250276e81</span><span class="p">,</span>
+    <span class="mf">2.40236028415562e90</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">tf</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">TransferFunction</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">den</span><span class="p">)</span>
+<span class="n">tfs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">distort_tf</span><span class="o">.</span><span class="n">gen_tfs</span><span class="p">(</span><span class="n">num_facs</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.2</span><span class="p">,</span><span class="mf">1.4</span><span class="p">],</span>
+                        <span class="n">a0_facs</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8</span><span class="p">],</span>
+                        <span class="n">a1_facs</span><span class="o">=</span><span class="p">[</span><span class="mf">0.7</span><span class="p">,</span><span class="mf">0.8</span><span class="p">,</span><span class="mf">1.2</span><span class="p">],</span>
+                        <span class="n">a2_facs</span><span class="o">=</span><span class="p">[</span><span class="mf">1.05</span><span class="p">,</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">1.2</span><span class="p">],</span>
+                        <span class="n">all_combos</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Get the initial output of the initial transfer function and derive the target set point
+that you want to optimise towards as your target:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">init_PV</span> <span class="o">=</span> <span class="n">distort_tf</span><span class="o">.</span><span class="n">getTransferFunctionOutput</span><span class="p">(</span><span class="n">tf</span><span class="p">,</span><span class="n">init_OP</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>
+<span class="n">sp</span> <span class="o">=</span> <span class="n">analyse</span><span class="o">.</span><span class="n">ResponseMeasurements</span><span class="p">(</span><span class="n">init_PV</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">sp</span>
+</pre></div>
+</div>
+<p>Run your experiments in parallel using the multiprocessing functionality provided by <code class="docutils literal notranslate"><span class="pre">run_test</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pso_objs</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Manager</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">test_nums</span> <span class="o">=</span> <span class="p">[</span><span class="n">test</span><span class="o">+</span><span class="mi">1</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tfs</span><span class="p">))]</span>
+<span class="n">direcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">directory</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">test_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_num</span><span class="p">)</span> <span class="k">for</span> <span class="n">test_num</span> <span class="ow">in</span> <span class="n">test_nums</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">tf</span><span class="p">,</span> <span class="n">direc</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tfs</span><span class="p">,</span> <span class="n">direcs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">direc</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">direc</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">run_test</span><span class="p">,</span>
+                                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">direc</span><span class="p">,</span>
+                                      <span class="n">tf</span><span class="p">,</span>
+                                      <span class="n">t</span><span class="p">,</span>
+                                      <span class="n">init_OP</span><span class="p">,</span>
+                                      <span class="n">n</span><span class="p">,</span>
+                                      <span class="n">iter_max</span><span class="p">,</span>
+                                      <span class="n">rep_max</span><span class="p">,</span>
+                                      <span class="n">init_v_f</span><span class="p">,</span>
+                                      <span class="n">max_v_f</span><span class="p">,</span>
+                                      <span class="n">w_init</span><span class="p">,</span>
+                                      <span class="n">w_final</span><span class="p">,</span>
+                                      <span class="kc">True</span><span class="p">,</span>
+                                      <span class="s1">&#39;pisic_shape&#39;</span><span class="p">,</span>
+                                      <span class="n">on_suppress_f</span><span class="p">,</span>
+                                      <span class="kc">True</span><span class="p">,</span>
+                                      <span class="kc">None</span><span class="p">,</span>
+                                      <span class="n">cost_f</span><span class="p">,</span>
+                                      <span class="n">st_importance_factor</span><span class="p">,</span>
+                                      <span class="kc">True</span><span class="p">,</span>
+                                      <span class="n">sp</span><span class="p">,</span>
+                                      <span class="n">pso_objs</span><span class="p">,))</span>
+
+    <span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">jobs</span><span class="p">:</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Optionally plot the final optical outputs of each of your tests:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pso_objs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pso_objs</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">sp</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">pso_obj</span> <span class="ow">in</span> <span class="n">pso_objs</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">pso_obj</span><span class="o">.</span><span class="n">gbest_PV</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Pickle your PSO objects so you can re-import and analyse them later:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PIK</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">+</span> <span class="s1">&#39;\pickle.dat&#39;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pso_objs</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">PIK</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="example-simulation-scripts">
+<h3>Example Simulation Scripts<a class="headerlink" href="#example-simulation-scripts" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="overview-of-backend-pso-and-soa-code">
+<h2>Overview of Backend PSO and SOA Code<a class="headerlink" href="#overview-of-backend-pso-and-soa-code" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 

@@ -6,7 +6,7 @@ All data (`<https://doi.org/10.5522/04/12356696.v1>`_)
 used in the paper for PSO were generated with this code. The PSO algorithm is used 
 to optimise the driving signal for SOA switches both in simulation and experiment. 
 
-This ``soa_driving`` package can be used to quickly and easily play around with different SOA simulations
+This ``soa`` package can be used to quickly and easily play around with different SOA simulations
 and PSO hyperparameters.
 
 
