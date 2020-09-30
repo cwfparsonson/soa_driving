@@ -1,0 +1,1168 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>soa.devices &mdash; soa 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> soa
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Tutorial.html">Tutorial</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">soa</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>soa.devices</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for soa.devices</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="kn">import</span> <span class="nn">pyvisa</span> <span class="k">as</span> <span class="nn">visa</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="Lightwave7900B"><a class="viewcode-back" href="../../soa.html#soa.devices.Lightwave7900B">[docs]</a><span class="k">class</span> <span class="nc">Lightwave7900B</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes object to communicate with Lightwave7900B.</span>
+
+<span class="sd">        If no address is specified, __init__ will look through all the</span>
+<span class="sd">        avaliable addresses to find the device, otherwise, it will check</span>
+<span class="sd">        only the supplied address.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            address (str): GPIB address of the device, e.g.</span>
+<span class="sd">                &quot;GPIB1::1::INSTR&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># open resource manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">address</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="n">address</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">list_resources</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Looking for ILX Lightwave 7900&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">inst_str</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking resource at </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inst_str</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">inst_str</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;*IDN?&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;ILX Lightwave,7900 System&quot;</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="n">inst</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find ILX Lightwave 7900B&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Lightwave7900B.start_channels"><a class="viewcode-back" href="../../soa.html#soa.devices.Lightwave7900B.start_channels">[docs]</a>    <span class="k">def</span> <span class="nf">start_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,)):</span>
+        <span class="sd">&quot;&quot;&quot;Selects and starts specified channels.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            channels: Tuple of integers between 1 and 8.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">),</span> <span class="s2">&quot;Argument must be a tuple&quot;</span>
+
+        <span class="c1"># iterate through all the channels</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">):</span>
+            <span class="c1"># select channel</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;CH </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="c1"># turn on/off selected channel</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;OUT </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="Lightwave7900B.set_channel_power"><a class="viewcode-back" href="../../soa.html#soa.devices.Lightwave7900B.set_channel_power">[docs]</a>    <span class="k">def</span> <span class="nf">set_channel_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">power</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets power on a specified channel.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            channel (int)</span>
+<span class="sd">            power (float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="s2">&quot;Channel must be an int&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="s2">&quot;Power must be a float&quot;</span>
+
+        <span class="k">if</span> <span class="n">power</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">2.0</span> <span class="ow">or</span> <span class="n">power</span> <span class="o">&gt;</span> <span class="mf">13.0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: you might be using power outside supported range&quot;</span><span class="p">)</span>
+
+        <span class="c1"># select channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;CH </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
+        <span class="c1"># turn on/off selected channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;LEVEL </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">power</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Lightwave7900B.sweep_channel_power"><a class="viewcode-back" href="../../soa.html#soa.devices.Lightwave7900B.sweep_channel_power">[docs]</a>    <span class="k">def</span> <span class="nf">sweep_channel_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Turns on a channel and sweeps the power output.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            channel (int)</span>
+<span class="sd">            start (number): Starting point of sweep.</span>
+<span class="sd">            stop (number): Sweep does not include this value.</span>
+<span class="sd">            step (number): Size of step.</span>
+<span class="sd">            seconds (number): Time between steps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="s2">&quot;Channel must be an int&quot;</span>
+
+        <span class="k">if</span> <span class="n">seconds</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: the chosen delay between steps might be too low&quot;</span><span class="p">)</span>
+
+        <span class="c1"># select channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;CH </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
+        <span class="c1"># turn on/off selected channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;OUT 1&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">power</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_channel_power</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">power</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Lightwave7900B.set_channel_wavelength"><a class="viewcode-back" href="../../soa.html#soa.devices.Lightwave7900B.set_channel_wavelength">[docs]</a>    <span class="k">def</span> <span class="nf">set_channel_wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets wavelength on a specified channel.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            channel (int)</span>
+<span class="sd">            wavelength (float)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="s2">&quot;Channel must be an int&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wavelength</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="s2">&quot;Wavelength must be a float&quot;</span>
+
+        <span class="n">default_wavelengths</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mf">1544.53</span><span class="p">,</span>
+            <span class="mf">1545.32</span><span class="p">,</span>
+            <span class="mf">1546.92</span><span class="p">,</span>
+            <span class="mf">1547.72</span><span class="p">,</span>
+            <span class="mf">1555.72</span><span class="p">,</span>
+            <span class="mf">1558.98</span><span class="p">,</span>
+            <span class="mf">1561.42</span><span class="p">,</span>
+            <span class="mf">1562.23</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">wavelength</span> <span class="o">-</span> <span class="n">default_wavelengths</span><span class="p">[</span><span class="n">channel</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">&gt;</span> <span class="mi">9</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Warning: you might be using a wavelength outside supported range, &quot;</span>
+                <span class="s2">&quot;default is </span><span class="si">{}</span><span class="s2"> and you&#39;re using </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">default_wavelengths</span><span class="p">[</span><span class="n">channel</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">wavelength</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># select channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;CH </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
+        <span class="c1"># turn on/off selected channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;WAVE </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wavelength</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Lightwave7900B.close"><a class="viewcode-back" href="../../soa.html#soa.devices.Lightwave7900B.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Closes instrument and resource manager</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Lightwave3220"><a class="viewcode-back" href="../../soa.html#soa.devices.Lightwave3220">[docs]</a><span class="k">class</span> <span class="nc">Lightwave3220</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">current_limit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes object to communicate with Lightwave3220.</span>
+
+<span class="sd">        If no address is specified, __init__ will look through all the</span>
+<span class="sd">        avaliable addresses to find the device, otherwise, it will check</span>
+<span class="sd">        only the supplied address.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            address (str): GPIB address of the device, e.g.</span>
+<span class="sd">                &quot;GPIB1::1::INSTR&quot;.</span>
+<span class="sd">            current_limit (number): urrent limit in mA.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># open resource manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_limit</span> <span class="o">=</span> <span class="n">current_limit</span>
+
+        <span class="k">if</span> <span class="n">address</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="n">address</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">list_resources</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Looking for ILX Lightwave LDX-3220&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">inst_str</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking resource at </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inst_str</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">inst_str</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;*IDN?&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;ILX Lightwave,3220&quot;</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="n">inst</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find ILX Lightwave LDX-3220&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Lightwave3220.set_output"><a class="viewcode-back" href="../../soa.html#soa.devices.Lightwave3220.set_output">[docs]</a>    <span class="k">def</span> <span class="nf">set_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current</span><span class="p">,</span> <span class="n">switch_output_on</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the current output to specified value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            current (number)</span>
+<span class="sd">            switch_output_on (bool): If True, it will turn on the</span>
+<span class="sd">                output after specifying the current, otherwise it will</span>
+<span class="sd">                stay in the initial state, whether on or off.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">current</span><span class="p">,</span> <span class="nb">float</span>
+        <span class="p">),</span> <span class="s2">&quot;Current must be a number&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">switch_output_on</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="s2">&quot;switch_output_on must be a bool&quot;</span>
+        <span class="k">assert</span> <span class="n">current</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Current must be non-negative&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_limit</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">current</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_limit</span>
+            <span class="p">),</span> <span class="s2">&quot;Selected current exceeds current_limit, use can adjust it&quot;</span>
+
+        <span class="c1"># set output in mA</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;LAS:LDI </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">current</span><span class="p">))</span>
+        <span class="c1"># switch current source on (stays on if already on)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;LAS:OUT 1&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Lightwave3220.sweep_current"><a class="viewcode-back" href="../../soa.html#soa.devices.Lightwave3220.sweep_current">[docs]</a>    <span class="k">def</span> <span class="nf">sweep_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Turns on the current source and sweeps the output current.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            start (number): Starting point of sweep in mA.</span>
+<span class="sd">            stop (number): Sweep does not include this value in mA.</span>
+<span class="sd">            step (number): Size of step in mA.</span>
+<span class="sd">            seconds (number): Time between steps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seconds</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">seconds</span><span class="p">,</span> <span class="nb">float</span>
+        <span class="p">),</span> <span class="s2">&quot;Seconds must be a number&quot;</span>
+
+        <span class="k">if</span> <span class="n">seconds</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: the chosen delay between steps might be too low&quot;</span><span class="p">)</span>
+
+        <span class="c1"># switch current source on (stays on if already on)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;LAS:OUT 1&quot;</span><span class="p">)</span>
+
+        <span class="c1"># sweep the output</span>
+        <span class="k">for</span> <span class="n">current</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_output</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">current</span><span class="p">),</span> <span class="n">switch_output_on</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Lightwave3220.switch_off"><a class="viewcode-back" href="../../soa.html#soa.devices.Lightwave3220.switch_off">[docs]</a>    <span class="k">def</span> <span class="nf">switch_off</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Switches the current source off.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;LAS:OUT 0&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Lightwave3220.close"><a class="viewcode-back" href="../../soa.html#soa.devices.Lightwave3220.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Closes instrument and resource manager.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="AnritsuMS9740A"><a class="viewcode-back" href="../../soa.html#soa.devices.AnritsuMS9740A">[docs]</a><span class="k">class</span> <span class="nc">AnritsuMS9740A</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes object to communicate with Anritsu MS9740A.</span>
+
+<span class="sd">        If no address is specified, __init__ will look through all the</span>
+<span class="sd">        avaliable addresses to find the device, otherwise, it will check</span>
+<span class="sd">        only the supplied address.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            address (str): GPIB address of the device, e.g.</span>
+<span class="sd">                &quot;GPIB1::1::INSTR&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># open resource manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">address</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="n">address</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">list_resources</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Looking for Anritsu MS9740A&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">inst_str</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking resource at </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inst_str</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">inst_str</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;*IDN?&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;ANRITSU,MS9740A&quot;</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="n">inst</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find Anritsu MS9740A&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="AnritsuMS9740A.set_x"><a class="viewcode-back" href="../../soa.html#soa.devices.AnritsuMS9740A.set_x">[docs]</a>    <span class="k">def</span> <span class="nf">set_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">span</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets parameters (in nm) related to x axis.</span>
+
+<span class="sd">        Any one of these can be used, and the later parameters will</span>
+<span class="sd">        overwrite the previous parameters.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            center (number)</span>
+<span class="sd">            span (number)</span>
+<span class="sd">            start (number)</span>
+<span class="sd">            stop (number)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">center</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="mi">600</span> <span class="o">&lt;=</span> <span class="n">center</span> <span class="o">&lt;=</span> <span class="mi">1750</span><span class="p">,</span> <span class="s2">&quot;Parameter outside supported range&quot;</span>
+        <span class="k">if</span> <span class="n">span</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">span</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Parameter outside supported range&quot;</span>
+        <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="mi">600</span> <span class="o">&lt;=</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="mi">1750</span><span class="p">,</span> <span class="s2">&quot;Parameter outside supported range&quot;</span>
+        <span class="k">if</span> <span class="n">stop</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="mi">600</span> <span class="o">&lt;=</span> <span class="n">stop</span> <span class="o">&lt;=</span> <span class="mi">1750</span><span class="p">,</span> <span class="s2">&quot;Parameter outside supported range&quot;</span>
+
+        <span class="k">if</span> <span class="n">center</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;CNT </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">center</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">span</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;SPN </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">span</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;STA </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">stop</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;STO </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AnritsuMS9740A.set_y"><a class="viewcode-back" href="../../soa.html#soa.devices.AnritsuMS9740A.set_y">[docs]</a>    <span class="k">def</span> <span class="nf">set_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_per_div</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets parameter related to y axis.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            db_per_div (number): Distance between divs, in dB. Must be</span>
+<span class="sd">                between 0.1 and 10.</span>
+<span class="sd">            ref (number): At the time of setting the Log scale, this</span>
+<span class="sd">                command sets the reference level. Must be between -100</span>
+<span class="sd">                and 100.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">db_per_div</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="mf">0.1</span> <span class="o">&lt;=</span> <span class="n">db_per_div</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;Parameter outside supported range&quot;</span>
+        <span class="k">if</span> <span class="n">ref</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="o">-</span><span class="mi">100</span> <span class="o">&lt;=</span> <span class="n">ref</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;Parameter outside supported range&quot;</span>
+
+        <span class="k">if</span> <span class="n">db_per_div</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;LOG </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">db_per_div</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">ref</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;RLV </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ref</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AnritsuMS9740A.set_resolution"><a class="viewcode-back" href="../../soa.html#soa.devices.AnritsuMS9740A.set_resolution">[docs]</a>    <span class="k">def</span> <span class="nf">set_resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolution</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets resolution.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            resolution (float): Resolution in nm must be only one of the</span>
+<span class="sd">                following: 0.03|0.05|0.07|0.1|0.2|0.5|1.0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">allowed_resolutions</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">resolution</span> <span class="ow">in</span> <span class="n">allowed_resolutions</span>
+        <span class="p">),</span> <span class="s2">&quot;Resolution must be one of the following: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">allowed_resolutions</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;RES </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resolution</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AnritsuMS9740A.set_VBW"><a class="viewcode-back" href="../../soa.html#soa.devices.AnritsuMS9740A.set_VBW">[docs]</a>    <span class="k">def</span> <span class="nf">set_VBW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">VBW</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets VBW (video band width).</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            VBW (int or str): VBW in Hz, must be one of the following:</span>
+<span class="sd">                10|100|200|1000|2000|10000|100000|1000000, or</span>
+<span class="sd">                10HZ|100HZ|200HZ|1KHZ|2KHZ|10KHZ|100KHZ|1MHZ.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">allowed_VBW</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">10</span><span class="p">,</span>
+            <span class="mi">100</span><span class="p">,</span>
+            <span class="mi">200</span><span class="p">,</span>
+            <span class="mi">1000</span><span class="p">,</span>
+            <span class="mi">2000</span><span class="p">,</span>
+            <span class="mi">10000</span><span class="p">,</span>
+            <span class="mi">100000</span><span class="p">,</span>
+            <span class="mi">1000000</span><span class="p">,</span>
+            <span class="s2">&quot;10HZ&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;100HZ&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;200HZ&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1KHZ&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;2KHZ&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;10KHZ&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;100KHZ&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1MHZ&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">VBW</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)),</span> <span class="s2">&quot;VBW must be int or str&quot;</span>
+        <span class="k">assert</span> <span class="n">VBW</span> <span class="ow">in</span> <span class="n">allowed_VBW</span><span class="p">,</span> <span class="s2">&quot;VBW must be one of the following: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">allowed_VBW</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;VBW </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">VBW</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AnritsuMS9740A.set_sampling_points"><a class="viewcode-back" href="../../soa.html#soa.devices.AnritsuMS9740A.set_sampling_points">[docs]</a>    <span class="k">def</span> <span class="nf">set_sampling_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the number of sampling points.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            n (int): number of sampling points, must be one of the</span>
+<span class="sd">                numbers: 51|101|251|501|1001|2001|5001|10001|20001|50001</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">allowed_n</span> <span class="o">=</span> <span class="p">(</span><span class="mi">51</span><span class="p">,</span> <span class="mi">101</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">501</span><span class="p">,</span> <span class="mi">1001</span><span class="p">,</span> <span class="mi">2001</span><span class="p">,</span> <span class="mi">5001</span><span class="p">,</span> <span class="mi">10001</span><span class="p">,</span> <span class="mi">20001</span><span class="p">,</span> <span class="mi">50001</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="s2">&quot;Number of sampling points must be int&quot;</span>
+        <span class="k">assert</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">allowed_n</span><span class="p">,</span> <span class="s2">&quot;VBW must be one of the following: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">allowed_n</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;MPT </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="AnritsuMS9740A.ana_rms"><a class="viewcode-back" href="../../soa.html#soa.devices.AnritsuMS9740A.ana_rms">[docs]</a>    <span class="k">def</span> <span class="nf">ana_rms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectrum_level</span><span class="p">,</span> <span class="n">spectrum_deviation_factor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Executes the RMS spectrum analysis method.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            spectrum_level (number): In dB, between 0.1 and 50.0.</span>
+<span class="sd">            spectrum_deviation_factor (number): K: Standard deviation</span>
+<span class="sd">                factor, between 1.0 and 10.0.</span>
+
+<span class="sd">        returns:</span>
+<span class="sd">            List[float, float, float]:</span>
+<span class="sd">                center wavelength (nm)</span>
+<span class="sd">                spectrum width (nm)</span>
+<span class="sd">                standard deviation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">spectrum_level</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="p">),</span> <span class="s2">&quot;spectrum_level must be a nuber&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">spectrum_deviation_factor</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+        <span class="p">),</span> <span class="s2">&quot;spectrum_deviation_factor must be a nuber&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="mf">0.1</span> <span class="o">&lt;=</span> <span class="n">spectrum_level</span> <span class="o">&lt;=</span> <span class="mf">50.0</span>
+        <span class="p">),</span> <span class="s2">&quot;spectrum_level must be between 0.1 and 50.0&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="mf">1.0</span> <span class="o">&lt;=</span> <span class="n">spectrum_deviation_factor</span> <span class="o">&lt;=</span> <span class="mf">10.0</span>
+        <span class="p">),</span> <span class="s2">&quot;spectrum_deviation_factor must be between 1.0 and 10.0&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="s2">&quot;ANA RMS,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spectrum_level</span><span class="p">,</span> <span class="n">spectrum_deviation_factor</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;ANAR?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="o">==</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: RMS Analysis failed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="AnritsuMS9740A.screen_capture"><a class="viewcode-back" href="../../soa.html#soa.devices.AnritsuMS9740A.screen_capture">[docs]</a>    <span class="k">def</span> <span class="nf">screen_capture</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Takes a single sweep of the screen content and returns.</span>
+
+<span class="sd">        returns:</span>
+<span class="sd">            List[float]: Each number is a sample at a wavelength,</span>
+<span class="sd">                depending on set_x, and length depends on</span>
+<span class="sd">                set_sampling_points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;SSI; *WAI&quot;</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;DMA?&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="AnritsuMS9740A.close"><a class="viewcode-back" href="../../soa.html#soa.devices.AnritsuMS9740A.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Closes instrument and resource manager</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="TektronixAWG7122B"><a class="viewcode-back" href="../../soa.html#soa.devices.TektronixAWG7122B">[docs]</a><span class="k">class</span> <span class="nc">TektronixAWG7122B</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes object to communicate with Tektronix AWG7122B.</span>
+
+<span class="sd">        If no address is specified, __init__ will look through all the</span>
+<span class="sd">        avaliable addresses to find the device, otherwise, it will check</span>
+<span class="sd">        only the supplied address.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            address (str): GPIB address of the device, e.g.</span>
+<span class="sd">                &quot;GPIB1::1::INSTR&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># open resource manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">address</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="n">address</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">list_resources</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Looking for Tektronix AWG7122B&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">inst_str</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking resource at </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inst_str</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">inst_str</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;*IDN?&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;TEKTRONIX,AWG7122B&quot;</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="n">inst</span>
+                    <span class="c1"># set parameters necessary for binary data sending</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">read_termination</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write_termination</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="mi">10000</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find Tektronix AWG7122B&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TektronixAWG7122B.send_waveform"><a class="viewcode-back" href="../../soa.html#soa.devices.TektronixAWG7122B.send_waveform">[docs]</a>    <span class="k">def</span> <span class="nf">send_waveform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">signal</span><span class="p">,</span>
+        <span class="n">markers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">sampling_freq</span><span class="o">=</span><span class="mf">12e9</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">channel</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;konrad&quot;</span><span class="p">,</span>
+        <span class="n">suppress_messages</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sends waveform to the device and turns on specified channel.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            signal (Any[float]): List of at least 1 float values, each</span>
+<span class="sd">                value must be between -1 and 1, where the max values are</span>
+<span class="sd">                equivalent to max set amplitude.</span>
+<span class="sd">            markers (Any[int]): List of integers, either 0 or 1, which</span>
+<span class="sd">                will determine if the markers are high or low. For now,</span>
+<span class="sd">                this code supports setting both markers to the same</span>
+<span class="sd">                value only. Must be the same length as signal.</span>
+<span class="sd">            sampling_freq (int): Sampling frequency for the AWG.</span>
+<span class="sd">                Combined with the length of signal, it determines the</span>
+<span class="sd">                output signal frequency, i.e.</span>
+<span class="sd">                output_frequency = sampling_frequency/len(signal)</span>
+<span class="sd">                Must be between 10 MHz and 12 GHz.</span>
+<span class="sd">            name (str): Name of the waveform.</span>
+<span class="sd">            amplitude (number): Sets Vpp range of the signal. E.g. if</span>
+<span class="sd">                signal is [0.0, 1.0] and amplitude is 0.5, the output</span>
+<span class="sd">                signal will be [0.0 V, 0.25 V].</span>
+<span class="sd">            suppress_messages (bool): If True, info and warning messages</span>
+<span class="sd">                will not be shown.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">signal</span>
+        <span class="p">),</span> <span class="s2">&quot;Signal must be a list of floats&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">signal</span><span class="p">),</span> <span class="s2">&quot;Signal must be between -1 and 1&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">100000</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Warning: signal length is very large, &quot;</span>
+                <span class="s2">&quot;consider using a lower sampling_freq instead of long signal&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># create marker if isn&#39;t supplied</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">markers</span><span class="p">:</span>
+            <span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">markers</span>
+        <span class="p">),</span> <span class="s2">&quot;Signal and markers must have the same length&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">markers</span><span class="p">),</span> <span class="s2">&quot;Markers must be ints&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">markers</span><span class="p">),</span> <span class="s2">&quot;Marker can be 1 or 0 only&quot;</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sampling_freq</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="s2">&quot;sampling_freq must be a number&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="mf">10e6</span> <span class="o">&lt;=</span> <span class="n">sampling_freq</span> <span class="o">&lt;=</span> <span class="mf">12e9</span>
+        <span class="p">),</span> <span class="s2">&quot;sampling_freq must be between 10 MHz and 12 GHz&quot;</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="s2">&quot;amplitude must be a number&quot;</span>
+        <span class="k">assert</span> <span class="mf">0.5</span> <span class="o">&lt;=</span> <span class="n">amplitude</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;amplitude must be between 0.5 and 1.0&quot;</span>
+
+        <span class="k">assert</span> <span class="n">channel</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="s2">&quot;channel must be 1 or 2&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="s2">&quot;channel must be an in&quot;</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s2">&quot;name must be a string&quot;</span>
+
+        <span class="c1"># substitute 1 with 192 to set both markers on (see AWG7220B docs)</span>
+        <span class="n">markers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">192</span> <span class="o">*</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">markers</span><span class="p">]</span>
+
+        <span class="n">n_points</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+
+        <span class="c1"># each point is 4 bytes for the float signal and 1 byte for the markers</span>
+        <span class="n">n_bytes</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">n_points</span>
+
+        <span class="c1"># header as defined by the IEEE 488.2 standard</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">)))</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_bytes</span><span class="p">)</span>
+
+        <span class="c1"># combine signal and marker as follows:</span>
+        <span class="c1"># [signal[0], marker[0], signal[1], marker[1], ...]</span>
+        <span class="n">combined_array</span> <span class="o">=</span> <span class="p">[</span><span class="n">el</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">markers</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">pair</span><span class="p">]</span>
+
+        <span class="c1"># create format to parse combined_array into little-endian</span>
+        <span class="c1"># byte format (&quot;&lt;fBfBfB...&quot;)</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;&lt;&quot;</span> <span class="o">+</span> <span class="s2">&quot;fB&quot;</span> <span class="o">*</span> <span class="n">n_points</span>
+        <span class="n">byte_data_block</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="o">*</span><span class="n">combined_array</span><span class="p">)</span>
+
+        <span class="c1"># waveform needs to be deleted first due to a bug on AWG</span>
+        <span class="c1"># (occurs when new waveform is shorter)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">suppress_messages</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Warning: If waveform </span><span class="si">{}</span><span class="s2"> already exists, it wil be&quot;</span>
+                <span class="s2">&quot;deleted now. If you want the same waveform on both&quot;</span>
+                <span class="s2">&quot;channels, you have to create it with different names.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;WLISt:WAVeform:DELete &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="c1"># if waveform doesn&#39;t exist, above would produce an error</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_for_errors</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;WLISt:WAVeform:NEW &quot;</span><span class="si">{}</span><span class="s1">&quot;, </span><span class="si">{}</span><span class="s1">, REAL&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">n_points</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write_raw</span><span class="p">(</span>
+            <span class="s1">&#39;WLISt:WAVeform:DATA &quot;</span><span class="si">{}</span><span class="s1">&quot;, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">byte_data_block</span>
+        <span class="p">)</span>
+        <span class="c1"># frequency is common for both channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;SOURce1:FREQuency </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sampling_freq</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;SOURce</span><span class="si">{}</span><span class="s2">:VOLTage </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;SOURce</span><span class="si">{}</span><span class="s1">:WAVeform &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;OUTPut</span><span class="si">{}</span><span class="s2"> ON&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;AWGControl:RUN&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">suppress_messages</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Sampling frequency (common for both channels) is &quot;</span>
+                <span class="s2">&quot;</span><span class="si">{:.3e}</span><span class="s2"> and length of the signal is </span><span class="si">{:.3e}</span><span class="s2">, &quot;</span>
+                <span class="s2">&quot;so the output frequency is </span><span class="si">{:.3e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">sampling_freq</span><span class="p">,</span> <span class="n">n_points</span><span class="p">,</span> <span class="n">sampling_freq</span> <span class="o">/</span> <span class="n">n_points</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TektronixAWG7122B.restore_defaults"><a class="viewcode-back" href="../../soa.html#soa.devices.TektronixAWG7122B.restore_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">restore_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sends *CLS and *RST to the device, restoring most defaults.</span>
+
+<span class="sd">        The *CLS command clears the following:</span>
+<span class="sd">        - error queue,</span>
+<span class="sd">        - standard event status register (ESR),</span>
+<span class="sd">        - status byte register (STB).</span>
+<span class="sd">        *RST clears most parameters apart from the GPIB settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;WLISt:WAVeform:DELete ALL&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;*CLS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;*RST&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TektronixAWG7122B.check_for_errors"><a class="viewcode-back" href="../../soa.html#soa.devices.TektronixAWG7122B.check_for_errors">[docs]</a>    <span class="k">def</span> <span class="nf">check_for_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SYSTem:ERRor?&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TektronixAWG7122B.close"><a class="viewcode-back" href="../../soa.html#soa.devices.TektronixAWG7122B.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Closes instrument and resource manager.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Agilent8156A"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent8156A">[docs]</a><span class="k">class</span> <span class="nc">Agilent8156A</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes object to communicate with Agilent 8156A.</span>
+
+<span class="sd">        If no address is specified, __init__ will look through all the</span>
+<span class="sd">        avaliable addresses to find the device, otherwise, it will check</span>
+<span class="sd">        only the supplied address.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            address (str): GPIB address of the device, e.g.</span>
+<span class="sd">                &quot;GPIB1::1::INSTR&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># open resource manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">address</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="n">address</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">list_resources</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Looking for Agilent 8156A&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">inst_str</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking resource at </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inst_str</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">inst_str</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;*IDN?&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;HEWLETT-PACKARD,HP8156A&quot;</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="n">inst</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find Agilent 8156A&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Agilent8156A.restore_defaults"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent8156A.restore_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">restore_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sends *CLS and *RST to the device, restoring most defaults.</span>
+
+<span class="sd">        The *CLS command clears the following:</span>
+<span class="sd">        - error queue,</span>
+<span class="sd">        - standard event status register (ESR),</span>
+<span class="sd">        - status byte register (STB).</span>
+<span class="sd">        *RST clears most parameters apart from the GPIB settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;*CLS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;*RST&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Agilent8156A.set_wavelength"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent8156A.set_wavelength">[docs]</a>    <span class="k">def</span> <span class="nf">set_wavelength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the wavelength for the instrument.</span>
+
+<span class="sd">        The value is used to make the compensation for the wavelength</span>
+<span class="sd">        dependence of the filter, using the wavelength calibration data.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            wavelength (number): Wavelength in nm (from 1200 to 1650).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wavelength</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="s2">&quot;wavelength must be a number&quot;</span>
+        <span class="k">assert</span> <span class="mi">1200</span> <span class="o">&lt;=</span> <span class="n">wavelength</span> <span class="o">&lt;=</span> <span class="mi">1650</span><span class="p">,</span> <span class="s2">&quot;wavelength must be between 1200 and 1650&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;INPut:WAVelength </span><span class="si">{}</span><span class="s2">nm&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wavelength</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Agilent8156A.set_calibration_factor"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent8156A.set_calibration_factor">[docs]</a>    <span class="k">def</span> <span class="nf">set_calibration_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calib</span><span class="o">=</span><span class="mf">2.9</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the calibration factor for the instrument.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            calib (number): Calibration factor in dB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">calib</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="s2">&quot;calib must be a number&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;INPut:OFFSet </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">calib</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Agilent8156A.get_calibration_factor"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent8156A.get_calibration_factor">[docs]</a>    <span class="k">def</span> <span class="nf">get_calibration_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the calibration factor.</span>
+
+<span class="sd">        returns:</span>
+<span class="sd">            float: Calibration factor in dB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;INPut:OFFSet?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Agilent8156A.switch_output"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent8156A.switch_output">[docs]</a>    <span class="k">def</span> <span class="nf">switch_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Opens or closes shutter.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            state (bool): True opens the shutter (laser goes through),</span>
+<span class="sd">                while False closes it (no light passes through).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="s2">&quot;state must be a bool&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;OUTPut:STATe </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">state</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="Agilent8156A.set_output"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent8156A.set_output">[docs]</a>    <span class="k">def</span> <span class="nf">set_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attenuation</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the output attenuation (without changing shutter).</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            attenuation (number): Attenuation in dB, cannot be lower</span>
+<span class="sd">                than calibration_factor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attenuation</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="s2">&quot;attenuation must be a number&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">attenuation</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_calibration_factor</span><span class="p">()</span>
+        <span class="p">),</span> <span class="s2">&quot;attenuation cannot be lower than calibration_factor&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;INPut:ATTenuation </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attenuation</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Agilent8156A.sweep"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent8156A.sweep">[docs]</a>    <span class="k">def</span> <span class="nf">sweep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sweeps the attenuation.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            start (number)</span>
+<span class="sd">            stop (number)</span>
+<span class="sd">            step (number): Change between steps.</span>
+<span class="sd">            seconds (number): Delay between steps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_output</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">switch_output</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">level</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_output</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">level</span><span class="p">))</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Agilent8156A.close"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent8156A.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Closes instrument and resource manager.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Agilent86100C"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent86100C">[docs]</a><span class="k">class</span> <span class="nc">Agilent86100C</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes object to communicate with Agilent 86100C.</span>
+
+<span class="sd">        If no address is specified, __init__ will look through all the</span>
+<span class="sd">        avaliable addresses to find the device, otherwise, it will check</span>
+<span class="sd">        only the supplied address.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            address (str): GPIB address of the device, e.g.</span>
+<span class="sd">                &quot;GPIB1::1::INSTR&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># open resource manager</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span> <span class="o">=</span> <span class="n">visa</span><span class="o">.</span><span class="n">ResourceManager</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">address</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="n">address</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">addresses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">list_resources</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Looking for Agilent 86100C&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">inst_str</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Checking resource at </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inst_str</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">inst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">open_resource</span><span class="p">(</span><span class="n">inst_str</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;*IDN?&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s2">&quot;Agilent Technologies,86100C&quot;</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="n">inst</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="mi">10000</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;WAVeform:FORMat ASCii&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find Agilent 86100C&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Agilent86100C.restore_defaults"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent86100C.restore_defaults">[docs]</a>    <span class="k">def</span> <span class="nf">restore_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sends *CLS and *RST to the device, restoring most defaults.</span>
+
+<span class="sd">        The *CLS clears all status and error registers</span>
+<span class="sd">        *RST clears most parameters apart from the GPIB settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;*CLS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;*RST&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Agilent86100C.autoscale"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent86100C.autoscale">[docs]</a>    <span class="k">def</span> <span class="nf">autoscale</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluates current input signal, autoscales, prints result.</span>
+
+<span class="sd">        Autoscale sets the following:</span>
+<span class="sd">        • Channel Display, Scale, and Offset</span>
+<span class="sd">        • Trigger and Level</span>
+<span class="sd">        • Time Base Scale and Position</span>
+<span class="sd">        Autoscale turns off the following:</span>
+<span class="sd">        • Measurements on sources that are turned off</span>
+<span class="sd">        • Functions</span>
+<span class="sd">        • Windows</span>
+<span class="sd">        • Memories</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;AUToscale&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;AUToscale?&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Agilent86100C.set_trigger"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent86100C.set_trigger">[docs]</a>    <span class="k">def</span> <span class="nf">set_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s2">&quot;RMODule&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mf">10e-3</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets parameters related to trigger.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            source (str): One of FPANel, FRUN, LMODule, RMODule.</span>
+<span class="sd">            level (number)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">source</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="s2">&quot;FPANel&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;FRUN&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;LMODule&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;RMODule&quot;</span><span class="p">,</span>
+        <span class="p">),</span> <span class="s2">&quot;Source must be one of FPANel, FRUN, LMODule, RMODule&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="s2">&quot;Level must be a number&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;TRIGger:SOURce </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;TRIGger:LEVel </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">level</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Agilent86100C.set_timebase"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent86100C.set_timebase">[docs]</a>    <span class="k">def</span> <span class="nf">set_timebase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">range_</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets parameters related to timebase.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            position (number): in seconds - Sets the time interval</span>
+<span class="sd">                between the trigger event and the delay reference point.</span>
+<span class="sd">                The delay reference point is set with the</span>
+<span class="sd">                TIMebase:REFerence command. The &lt;position_value&gt;</span>
+<span class="sd">                argument’s maximum value depends on the</span>
+<span class="sd">                time-per-division setting. Must be greater or equal</span>
+<span class="sd">                2.4e-8.</span>
+<span class="sd">            range_ (number): Sets the full-scale horizontal time in</span>
+<span class="sd">                seconds. The range value is ten times the</span>
+<span class="sd">                time-per-division value. Range is always set in units of</span>
+<span class="sd">                time (seconds), not in bits. &lt;full_scale_range&gt; is the</span>
+<span class="sd">                full-scale horizontal time in seconds.</span>
+<span class="sd">            reference (str): Sets the delay reference to the left or</span>
+<span class="sd">                center side of the display. Must be &quot;left&quot; or &quot;center&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="s2">&quot;position must be a number&quot;</span>
+            <span class="k">assert</span> <span class="n">position</span> <span class="o">&gt;=</span> <span class="mf">2.4e-8</span><span class="p">,</span> <span class="s2">&quot;position must be greater or equal 2.4e-8 s&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;TIMebase:POSition </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">position</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">range_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">range_</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="s2">&quot;range_ must be a number&quot;</span>
+            <span class="k">assert</span> <span class="n">range_</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;range_ must be non-negative&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;TIMebase:RANGe </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">range_</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">reference</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">reference</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="s2">&quot;left&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;center&quot;</span><span class="p">,</span>
+            <span class="p">),</span> <span class="s2">&quot;reference must be left or center (capitalization optional)&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;TIMebase:REFerence </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">reference</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Agilent86100C.set_acquire"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent86100C.set_acquire">[docs]</a>    <span class="k">def</span> <span class="nf">set_acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets parameters related to acquiring data.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            average (bool): Enables or disables averaging. When ON, the</span>
+<span class="sd">                analyzer acquires multiple data values for each time</span>
+<span class="sd">                bucket, and averages them. When OFF, averaging is</span>
+<span class="sd">                disabled. To set number of averages, use param count.</span>
+<span class="sd">            count (int): Sets the number of averages for the waveforms.</span>
+<span class="sd">                Specifies the number of data values to be averaged for</span>
+<span class="sd">                each time bucket before the acquisition is considered</span>
+<span class="sd">                complete for that time bucket. count must be from 1 to</span>
+<span class="sd">                4096.</span>
+<span class="sd">            points (int or str): Sets the requested memory depth for an</span>
+<span class="sd">                acquisition. You can set the points value to AUTO, which</span>
+<span class="sd">                allows the analyzer to select the number of points based</span>
+<span class="sd">                upon the sample rate and time base scale. points range</span>
+<span class="sd">                is 16 to 16,384 points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">average</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">average</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="s2">&quot;average must be a bool&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ACQuire:AVERage </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">average</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="s2">&quot;count must be an int&quot;</span>
+            <span class="k">assert</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">4096</span><span class="p">,</span> <span class="s2">&quot;count must be between 1 and 4096&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ACQuire:COUNt </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">count</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)),</span> <span class="s2">&quot;points must be int or str&quot;</span>
+            <span class="k">assert</span> <span class="n">points</span> <span class="o">==</span> <span class="s2">&quot;AUTO&quot;</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="mi">16</span> <span class="o">&lt;=</span> <span class="n">points</span> <span class="o">&lt;=</span> <span class="mi">16384</span>
+            <span class="p">),</span> <span class="s2">&quot;points must be AUTO or int between 16 and 16384&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ACQuire:POINts </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">points</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Agilent86100C.set_channel"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent86100C.set_channel">[docs]</a>    <span class="k">def</span> <span class="nf">set_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">display</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">range_</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets parameters related to channels (and y-axis).</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            channel (int): Channel to configure.</span>
+<span class="sd">            display (bool): Turns the display of the specified channel</span>
+<span class="sd">                on or off.</span>
+<span class="sd">            offset (number): Sets the voltage that is represented at the</span>
+<span class="sd">                center of the display for the selected channel.</span>
+<span class="sd">            range_ (number): Defines the full-scale vertical axis of the</span>
+<span class="sd">                selected channel in volts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="s2">&quot;Channel must be an int&quot;</span>
+        <span class="k">assert</span> <span class="n">channel</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;Channel must be 1, 2, 3, or 4&quot;</span>
+
+        <span class="k">if</span> <span class="n">display</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">display</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="s2">&quot;display must be bool&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;CHANnel</span><span class="si">{}</span><span class="s2">:DISPlay </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">display</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">offset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="s2">&quot;offset must be a number&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;CHANnel</span><span class="si">{}</span><span class="s2">:OFFSet </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">offset</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">range_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">range_</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="s2">&quot;range_ must be a number&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;CHANnel</span><span class="si">{}</span><span class="s2">:RANGe </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">range_</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Agilent86100C.measurement"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent86100C.measurement">[docs]</a>    <span class="k">def</span> <span class="nf">measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Makes a measurement on a selected channel.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            channel (int): Channel to make measurement on.</span>
+
+<span class="sd">        returns:</span>
+<span class="sd">            List[float]: list of values in volts, where:</span>
+<span class="sd">                “99.999E+36” represents a hole in the acquisition data,</span>
+<span class="sd">                “99.999E+33” represents a clipped-high level,</span>
+<span class="sd">                “99.999E+30” represents a clipped-low level.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="s2">&quot;channel must be int&quot;</span>
+        <span class="k">assert</span> <span class="n">channel</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;channel must be 1, 2, 3, or 4&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;WAVeform:SOURce CHANnel</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;WAVeform:DATA?&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="Agilent86100C.check_for_errors"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent86100C.check_for_errors">[docs]</a>    <span class="k">def</span> <span class="nf">check_for_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;SYSTem:ERRor?&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Agilent86100C.close"><a class="viewcode-back" href="../../soa.html#soa.devices.Agilent86100C.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Closes instrument and resource manager.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">laser</span> <span class="o">=</span> <span class="n">Lightwave7900B</span><span class="p">(</span><span class="s2">&quot;GPIB1::2::INSTR&quot;</span><span class="p">)</span>
+    <span class="n">current_source</span> <span class="o">=</span> <span class="n">Lightwave3220</span><span class="p">(</span><span class="s2">&quot;GPIB1::12::INSTR&quot;</span><span class="p">)</span>
+    <span class="n">osa</span> <span class="o">=</span> <span class="n">AnritsuMS9740A</span><span class="p">(</span><span class="s2">&quot;GPIB1::3::INSTR&quot;</span><span class="p">)</span>
+    <span class="n">awg</span> <span class="o">=</span> <span class="n">TektronixAWG7122B</span><span class="p">(</span><span class="s2">&quot;GPIB1::1::INSTR&quot;</span><span class="p">)</span>
+    <span class="n">att</span> <span class="o">=</span> <span class="n">Agilent8156A</span><span class="p">(</span><span class="s2">&quot;GPIB1::8::INSTR&quot;</span><span class="p">)</span>
+    <span class="n">osc</span> <span class="o">=</span> <span class="n">Agilent86100C</span><span class="p">(</span><span class="s2">&quot;GPIB1::7::INSTR&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Christopher W. F. Parsonson
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

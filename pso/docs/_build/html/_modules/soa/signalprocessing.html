@@ -1,0 +1,866 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>soa.signalprocessing &mdash; soa 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> soa
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Tutorial.html">Tutorial</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">soa</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>soa.signalprocessing</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for soa.signalprocessing</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">soa</span> <span class="kn">import</span> <span class="n">devices</span><span class="p">,</span> <span class="n">get_fopdt_params</span>
+
+<span class="kn">import</span> <span class="nn">pyvisa</span> <span class="k">as</span> <span class="nn">visa</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">soa.analyse</span>
+
+<div class="viewcode-block" id="generateSignal"><a class="viewcode-back" href="../../soa.html#soa.signalprocessing.generateSignal">[docs]</a><span class="k">class</span> <span class="nc">generateSignal</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">    - num_points = number of points you want in signal </span>
+<span class="sd">    - t_start = time to start signal period</span>
+<span class="sd">    - t_stop = time to stop signal period</span>
+<span class="sd">    - save_signal = True or False for saving generated signal</span>
+<span class="sd">    - directory = where to save generated signal</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                 <span class="n">num_points</span><span class="o">=</span><span class="mi">240</span><span class="p">,</span> 
+                 <span class="n">t_start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> 
+                 <span class="n">t_stop</span><span class="o">=</span><span class="mf">20e-9</span><span class="p">,</span> 
+                 <span class="n">save_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                 <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_points</span> <span class="o">=</span> <span class="n">num_points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">t_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_stop</span> <span class="o">=</span> <span class="n">t_stop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_signal</span> <span class="o">=</span> <span class="n">save_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_stop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_points</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">save_signal</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">t_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">t_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">+</span> <span class="s2">&quot;time.csv&quot;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="generateSignal.square"><a class="viewcode-back" href="../../soa.html#soa.signalprocessing.generateSignal.square">[docs]</a>    <span class="k">def</span> <span class="nf">square</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">off_v</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">on_v</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">duty_cycle</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">signal_name</span><span class="o">=</span><span class="s1">&#39;square&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates square driving signal</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - off_v = voltage in off state</span>
+<span class="sd">        - on_v = voltage in on state </span>
+<span class="sd">        - duty_cycle = fraction of time signal should be on for</span>
+<span class="sd">        - signal_name = name you want to save signal data under</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">))</span> 
+
+        <span class="n">num_points_on</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duty_cycle</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">))</span> 
+        <span class="n">num_points_off</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">duty_cycle</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">))</span> 
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">off_v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">num_points_on</span><span class="p">]</span> <span class="o">=</span> <span class="n">on_v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">num_points_on</span><span class="p">:]</span> <span class="o">=</span> <span class="n">off_v</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__checkSignal</span><span class="p">()</span> <span class="c1"># check signal within acceptable range</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_signal</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__saveSignal</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span></div>
+
+<div class="viewcode-block" id="generateSignal.pisic"><a class="viewcode-back" href="../../soa.html#soa.signalprocessing.generateSignal.pisic">[docs]</a>    <span class="k">def</span> <span class="nf">pisic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+              <span class="n">off_v</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> 
+              <span class="n">on_v</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> 
+              <span class="n">impulse_v</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> 
+              <span class="n">duty_impulse</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> 
+              <span class="n">duty_cycle</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> 
+              <span class="n">signal_name</span><span class="o">=</span><span class="s1">&#39;pisic&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates pisic driving signal</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - off_v = voltage in off state</span>
+<span class="sd">        - on_v = voltage in on state </span>
+<span class="sd">        - impulse_v = pre-impulse voltage (added to on_v at signal leading edge)</span>
+<span class="sd">        - duty_impulse = fraction of time period pre impulse be should on for</span>
+<span class="sd">        - duty_cycle = fraction of time period signal should be on for</span>
+<span class="sd">        - signal_name = name you want to save signal data under</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">))</span> 
+
+        <span class="c1"># gen square</span>
+        <span class="n">num_points_on</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duty_cycle</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">))</span> 
+        <span class="n">num_points_off</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">duty_cycle</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">))</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">off_v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">num_points_on</span><span class="p">]</span> <span class="o">=</span> <span class="n">on_v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">num_points_on</span><span class="p">:]</span> <span class="o">=</span> <span class="n">off_v</span>
+
+        <span class="c1"># add pre-impulse to leading edge</span>
+        <span class="n">num_points_pisic</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duty_impulse</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">num_points_pisic</span><span class="p">]</span> <span class="o">=</span> <span class="n">on_v</span> <span class="o">+</span> <span class="n">impulse_v</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__checkSignal</span><span class="p">()</span> <span class="c1"># check signal within acceptable range</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_signal</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__saveSignal</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span></div>
+
+<div class="viewcode-block" id="generateSignal.misic"><a class="viewcode-back" href="../../soa.html#soa.signalprocessing.generateSignal.misic">[docs]</a>    <span class="k">def</span> <span class="nf">misic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+              <span class="n">off_v</span><span class="o">=-</span><span class="mf">0.5</span><span class="p">,</span> 
+              <span class="n">on_v</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> 
+              <span class="n">impulse_v</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> 
+              <span class="n">duty_cycle</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> 
+              <span class="n">num_misic_bits</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
+              <span class="n">bit_rate</span><span class="o">=</span><span class="mf">240e-12</span><span class="p">,</span> 
+              <span class="n">signal_name</span><span class="o">=</span><span class="s1">&#39;misic1&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates misic driving signal</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - off_v = voltage in off state</span>
+<span class="sd">        - on_v = voltage in on state </span>
+<span class="sd">        - impulse_v = voltage of misic impulses</span>
+<span class="sd">        - duty_cycle = fraction of time period signal is on</span>
+<span class="sd">        - num_misic_bits = total number of bits in misic signal (paper used 100)</span>
+<span class="sd">        - bit_rate = (enter in ps i.e. units of e-12) rate at which misic </span>
+<span class="sd">        impulses/bits are repeated (in paper, misic pulses repeated every </span>
+<span class="sd">        240 ps == 4.16 Gb/s)</span>
+<span class="sd">        - signal_name = name you want to save signal data under. Can be misic1, </span>
+<span class="sd">        misic2, misic3, misic4, misic5 or misic6</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">))</span> 
+
+        <span class="c1"># gen square</span>
+        <span class="n">num_points_on</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duty_cycle</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">))</span> 
+        <span class="n">num_points_off</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">duty_cycle</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">))</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">off_v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">num_points_on</span><span class="p">]</span> <span class="o">=</span> <span class="n">on_v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">num_points_on</span><span class="p">:]</span> <span class="o">=</span> <span class="n">off_v</span>
+
+        <span class="c1"># define misic params     </span>
+        <span class="k">while</span> <span class="n">num_misic_bits</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: Please enter number of misic bits as a multiple of </span><span class="se">\</span>
+<span class="s1">                100 (e.g. 200).&#39;</span><span class="p">)</span>
+            <span class="n">num_misic_bits</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s1">&#39;Num misic bits: &#39;</span><span class="p">)</span>
+
+        <span class="c1"># from paper, 6% of bits were for pre impulse (section A)</span>
+        <span class="n">num_bits_sectA</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.06</span><span class="o">*</span><span class="n">num_misic_bits</span><span class="p">)</span>
+        <span class="c1"># from paper, 8% of bits were for middle section (section B)</span>
+        <span class="n">num_bits_sectB</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.08</span><span class="o">*</span><span class="n">num_misic_bits</span><span class="p">)</span>
+        <span class="c1"># from paper, 86% of bits were from end section (section C)</span>
+        <span class="n">num_bits_sectC</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.86</span><span class="o">*</span><span class="n">num_misic_bits</span><span class="p">)</span>
+
+        <span class="n">time_period</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_stop</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> 
+        <span class="n">time_per_index</span> <span class="o">=</span> <span class="n">time_period</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_points</span> 
+        <span class="c1"># calc number of indices (to nearest integer) in signal that make up one </span>
+        <span class="c1"># misic bit N.B. Dividing bit rate by 3 since that is what seems to have </span>
+        <span class="c1"># been done in misic paper....</span>
+        <span class="n">indices_per_bit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">bit_rate</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="n">time_per_index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">indices_per_bit</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">indices_per_bit</span> <span class="o">=</span> <span class="mi">1</span> 
+
+        <span class="c1"># gen misic bit sequence</span>
+        <span class="k">while</span> <span class="n">signal_name</span> <span class="o">!=</span> <span class="s1">&#39;misic1&#39;</span> <span class="ow">and</span> \
+            <span class="n">signal_name</span> <span class="o">!=</span> <span class="s1">&#39;misic2&#39;</span> <span class="ow">and</span> \
+            <span class="n">signal_name</span> <span class="o">!=</span> <span class="s1">&#39;misic3&#39;</span> <span class="ow">and</span> \
+            <span class="n">signal_name</span> <span class="o">!=</span> <span class="s1">&#39;misic4&#39;</span> <span class="ow">and</span> \
+            <span class="n">signal_name</span> <span class="o">!=</span> <span class="s1">&#39;misic5&#39;</span> <span class="ow">and</span> \
+            <span class="n">signal_name</span> <span class="o">!=</span> <span class="s1">&#39;misic6&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: Must enter a valid misic format. Please enter </span><span class="se">\</span>
+<span class="s1">                misic1, misic2, misic3, misic4, misic5 or misic6.&#39;</span><span class="p">)</span>
+            <span class="n">signal_name</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s1">&#39;Misic format: &#39;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">signal_name</span> <span class="o">==</span> <span class="s1">&#39;misic1&#39;</span><span class="p">:</span>
+            <span class="n">sectA_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectB_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectC_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">misic_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generateMisicBitSequence</span><span class="p">(</span><span class="n">sectA_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectB_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectC_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectA</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectB</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectC</span><span class="p">,</span> 
+                                                         <span class="n">signal_name</span><span class="p">)</span>
+        
+        <span class="k">elif</span> <span class="n">signal_name</span> <span class="o">==</span> <span class="s1">&#39;misic2&#39;</span><span class="p">:</span>
+            <span class="n">sectA_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectB_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectC_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">misic_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generateMisicBitSequence</span><span class="p">(</span><span class="n">sectA_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectB_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectC_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectA</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectB</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectC</span><span class="p">,</span> 
+                                                         <span class="n">signal_name</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">signal_name</span> <span class="o">==</span> <span class="s1">&#39;misic3&#39;</span><span class="p">:</span>
+            <span class="n">sectA_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectB_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectC_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">misic_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generateMisicBitSequence</span><span class="p">(</span><span class="n">sectA_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectB_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectC_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectA</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectB</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectC</span><span class="p">,</span> 
+                                                         <span class="n">signal_name</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">signal_name</span> <span class="o">==</span> <span class="s1">&#39;misic4&#39;</span><span class="p">:</span>
+            <span class="n">sectA_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectB_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectC_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">misic_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generateMisicBitSequence</span><span class="p">(</span><span class="n">sectA_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectB_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectC_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectA</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectB</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectC</span><span class="p">,</span> 
+                                                         <span class="n">signal_name</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">signal_name</span> <span class="o">==</span> <span class="s1">&#39;misic5&#39;</span><span class="p">:</span>
+            <span class="n">sectA_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectB_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectC_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">misic_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generateMisicBitSequence</span><span class="p">(</span><span class="n">sectA_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectB_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectC_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectA</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectB</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectC</span><span class="p">,</span> 
+                                                         <span class="n">signal_name</span><span class="p">)</span>
+
+
+        <span class="k">elif</span> <span class="n">signal_name</span> <span class="o">==</span> <span class="s1">&#39;misic6&#39;</span><span class="p">:</span>
+            <span class="n">sectA_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectB_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sectC_bit_pattern</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">misic_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generateMisicBitSequence</span><span class="p">(</span><span class="n">sectA_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectB_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">sectC_bit_pattern</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectA</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectB</span><span class="p">,</span> 
+                                                         <span class="n">num_bits_sectC</span><span class="p">,</span> 
+                                                         <span class="n">signal_name</span><span class="p">)</span>
+
+        <span class="c1"># convert misic bits into specified bit rate</span>
+        <span class="n">misic_impulses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">indices_per_bit</span> <span class="o">*</span> <span class="n">num_misic_bits</span><span class="p">)</span> 
+        <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">misic_bits</span><span class="p">))):</span>
+            <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span> 
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">indices_per_bit</span><span class="p">):</span>
+                <span class="n">misic_impulses</span><span class="p">[</span><span class="n">bit</span><span class="o">+</span><span class="n">counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">on_v</span> <span class="o">+</span> <span class="p">(</span><span class="n">misic_bits</span><span class="p">[</span><span class="n">bit</span><span class="p">]</span> <span class="o">*</span> <span class="n">impulse_v</span><span class="p">)</span>
+                <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span> 
+
+        <span class="c1"># add misic impulses to square</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span><span class="nb">int</span><span class="p">(</span><span class="n">num_points_off</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">misic_impulses</span><span class="p">))]</span> <span class="o">=</span> <span class="n">misic_impulses</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__checkSignal</span><span class="p">()</span> <span class="c1"># check signal within acceptable range</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_signal</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__saveSignal</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span></div>
+
+    <span class="k">def</span> <span class="nf">__plotSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots and displays drive signal</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - signal_name = name you want to save signal data under</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Generated signal&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Voltage&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__saveSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves signal as csv and as image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># SAVE IMAGE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plotSignal</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">+</span> <span class="n">signal_name</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1"># SAVE CSV</span>
+        <span class="n">signal_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">)</span>
+        <span class="n">signal_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">+</span> <span class="n">signal_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">,</span> 
+                         <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+                         <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__checkSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if signal is within acceptable range for awg</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">max_v</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c1"># max allowed drive voltage</span>
+        <span class="n">min_v</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="c1"># min allowed drive voltage</span>
+
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_points</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_v</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_v</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_points</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">&lt;</span><span class="n">min_v</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">min_v</span>
+
+    <span class="k">def</span> <span class="nf">__generateMisicBitSequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                                   <span class="n">sectA_bit_pattern</span><span class="p">,</span> 
+                                   <span class="n">sectB_bit_pattern</span><span class="p">,</span> 
+                                   <span class="n">sectC_bit_pattern</span><span class="p">,</span> 
+                                   <span class="n">num_bits_sectA</span><span class="p">,</span> 
+                                   <span class="n">num_bits_sectB</span><span class="p">,</span> 
+                                   <span class="n">num_bits_sectC</span><span class="p">,</span> 
+                                   <span class="n">signal_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function generates misic bit sequence</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - sectA_bit_pattern = bit pattern for section A (e.g. [1,1,1,1,1,1])</span>
+<span class="sd">        - sectB_bit_pattern = e.g. [1,1,0,1,0,1,0,1]</span>
+<span class="sd">        - sectC_bit_patter = e.g. [0,1,1]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sectA_bits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_bits_sectA</span><span class="p">)</span>
+        <span class="n">sectB_bits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_bits_sectB</span><span class="p">)</span>
+        <span class="n">sectC_bits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_bits_sectC</span><span class="p">)</span>
+
+        <span class="c1"># sect a</span>
+        <span class="n">sectA_pattern_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sectA_bit_pattern</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">sectA_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_bits_sectA</span><span class="p">,</span> <span class="n">sectA_pattern_length</span><span class="p">):</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> 
+            <span class="k">for</span> <span class="n">pattern_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sectA_pattern_length</span><span class="p">):</span>
+                <span class="n">sectA_bits</span><span class="p">[</span><span class="n">sectA_index</span><span class="o">+</span><span class="n">i</span><span class="p">]</span>  <span class="o">=</span> <span class="n">sectA_bit_pattern</span><span class="p">[</span><span class="n">pattern_index</span><span class="p">]</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span> 
+
+        <span class="c1"># sect b</span>
+        <span class="n">sectB_pattern_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sectB_bit_pattern</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">sectB_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_bits_sectB</span><span class="p">,</span> <span class="n">sectB_pattern_length</span><span class="p">):</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> 
+            <span class="k">for</span> <span class="n">pattern_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sectB_pattern_length</span><span class="p">):</span>
+                <span class="n">sectB_bits</span><span class="p">[</span><span class="n">sectB_index</span><span class="o">+</span><span class="n">i</span><span class="p">]</span>  <span class="o">=</span> <span class="n">sectB_bit_pattern</span><span class="p">[</span><span class="n">pattern_index</span><span class="p">]</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span> 
+
+        <span class="c1"># sect c</span>
+        <span class="n">sectC_pattern_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sectC_bit_pattern</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">signal_name</span> <span class="o">==</span> <span class="s1">&#39;misic2&#39;</span><span class="p">:</span>
+            <span class="c1"># special case</span>
+            <span class="k">for</span> <span class="n">sectC_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_bits_sectC</span><span class="p">,</span> <span class="n">sectC_pattern_length</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> 
+                <span class="k">for</span> <span class="n">pattern_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sectC_pattern_length</span><span class="p">):</span>
+                    <span class="n">sectC_bits</span><span class="p">[</span><span class="n">sectC_index</span><span class="o">+</span><span class="n">i</span><span class="p">]</span>  <span class="o">=</span> <span class="n">sectC_bit_pattern</span><span class="p">[</span><span class="n">pattern_index</span><span class="p">]</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span> 
+                    <span class="k">if</span> <span class="n">sectC_index</span><span class="o">+</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">num_bits_sectC</span><span class="p">:</span>
+                        <span class="c1"># reached end</span>
+                        <span class="k">break</span>
+            <span class="n">sectC_bits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">sectC_bits</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">signal_name</span> <span class="o">==</span> <span class="s1">&#39;misic4&#39;</span><span class="p">:</span>
+            <span class="c1"># special case</span>
+            <span class="k">for</span> <span class="n">sectC_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_bits_sectC</span><span class="p">,</span> <span class="n">sectC_pattern_length</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> 
+                <span class="k">for</span> <span class="n">pattern_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sectC_pattern_length</span><span class="p">):</span>
+                    <span class="n">sectC_bits</span><span class="p">[</span><span class="n">sectC_index</span><span class="o">+</span><span class="n">i</span><span class="p">]</span>  <span class="o">=</span> <span class="n">sectC_bit_pattern</span><span class="p">[</span><span class="n">pattern_index</span><span class="p">]</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span> 
+                    <span class="k">if</span> <span class="n">sectC_index</span><span class="o">+</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">num_bits_sectC</span><span class="p">:</span>
+                        <span class="c1"># reached end</span>
+                        <span class="k">break</span>
+            <span class="n">sectC_bits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">sectC_bits</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">signal_name</span> <span class="o">==</span> <span class="s1">&#39;misic5&#39;</span><span class="p">:</span>
+            <span class="c1"># special case</span>
+            <span class="k">for</span> <span class="n">sectC_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_bits_sectC</span><span class="p">,</span> <span class="n">sectC_pattern_length</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> 
+                <span class="k">for</span> <span class="n">pattern_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">sectC_pattern_length</span><span class="p">):</span>
+                    <span class="n">sectC_bits</span><span class="p">[</span><span class="n">sectC_index</span><span class="o">+</span><span class="n">i</span><span class="p">]</span>  <span class="o">=</span> <span class="n">sectC_bit_pattern</span><span class="p">[</span><span class="n">pattern_index</span><span class="p">]</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span> 
+                    <span class="k">if</span> <span class="n">sectC_index</span><span class="o">+</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">num_bits_sectC</span><span class="p">:</span>
+                        <span class="c1"># reached end</span>
+                        <span class="k">break</span>
+            <span class="n">sectC_bits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">sectC_bits</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># normal case</span>
+            <span class="k">for</span> <span class="n">sectC_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_bits_sectC</span><span class="p">,</span> <span class="n">sectC_pattern_length</span><span class="p">):</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> 
+                <span class="k">for</span> <span class="n">pattern_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sectC_pattern_length</span><span class="p">):</span>
+                    <span class="n">sectC_bits</span><span class="p">[</span><span class="n">sectC_index</span><span class="o">+</span><span class="n">i</span><span class="p">]</span>  <span class="o">=</span> <span class="n">sectC_bit_pattern</span><span class="p">[</span><span class="n">pattern_index</span><span class="p">]</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span> 
+                    <span class="k">if</span> <span class="n">sectC_index</span><span class="o">+</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="n">num_bits_sectC</span><span class="p">:</span>
+                        <span class="c1"># reached end</span>
+                        <span class="k">break</span>
+
+        <span class="c1"># return misic bit stream</span>
+        <span class="n">misic_bits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sectA_bits</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">sectB_bits</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">sectC_bits</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sectA_bits</span><span class="p">)):</span>
+            <span class="n">misic_bits</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sectA_bits</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sectA_bits</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">sectA_bits</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">sectB_bits</span><span class="p">)):</span>
+            <span class="n">misic_bits</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sectB_bits</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">sectA_bits</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sectA_bits</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">sectB_bits</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">misic_bits</span><span class="p">)):</span>
+            <span class="n">misic_bits</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">sectC_bits</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sectA_bits</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">sectB_bits</span><span class="p">))]</span>
+
+        <span class="k">return</span> <span class="n">misic_bits</span></div>
+
+<div class="viewcode-block" id="soaOutput"><a class="viewcode-back" href="../../soa.html#soa.signalprocessing.soaOutput">[docs]</a><span class="k">class</span> <span class="nc">soaOutput</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for getting and analysing soa output</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - awg = awg object</span>
+<span class="sd">    - osc = osc object</span>
+<span class="sd">    - num_points = number of points in signal</span>
+<span class="sd">    - time_start = time signal period starts</span>
+<span class="sd">    - time_stop = time signal period stops</span>
+<span class="sd">    - save_siganl = if want to save soa output signal</span>
+<span class="sd">    - directory = where to save data#</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                 <span class="n">awg</span><span class="p">,</span> 
+                 <span class="n">osc</span><span class="p">,</span> 
+                 <span class="n">num_points</span><span class="o">=</span><span class="mi">240</span><span class="p">,</span> 
+                 <span class="n">t_start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> 
+                 <span class="n">t_stop</span><span class="o">=</span><span class="mf">20e-9</span><span class="p">,</span> 
+                 <span class="n">save_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                 <span class="n">directory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">awg</span> <span class="o">=</span> <span class="n">awg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">osc</span> <span class="o">=</span> <span class="n">osc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_points</span> <span class="o">=</span> <span class="n">num_points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="n">t_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_stop</span> <span class="o">=</span> <span class="n">t_stop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_signal</span> <span class="o">=</span> <span class="n">save_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span> 
+                             <span class="bp">self</span><span class="o">.</span><span class="n">t_stop</span><span class="p">,</span> 
+                             <span class="bp">self</span><span class="o">.</span><span class="n">num_points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)))</span> 
+
+<div class="viewcode-block" id="soaOutput.getSoaOutput"><a class="viewcode-back" href="../../soa.html#soa.signalprocessing.soaOutput.getSoaOutput">[docs]</a>    <span class="k">def</span> <span class="nf">getSoaOutput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">drive_signal</span><span class="p">,</span> <span class="n">signal_name</span><span class="o">=</span><span class="s1">&#39;Unknown&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method sends a drive signal to the SOA and gets an soa output</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - drive_signal = signal you want to drive soa with</span>
+<span class="sd">        - signal_name = name under which you want to save soa output data</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        - soa_output = output of soa</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)))</span> 
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">awg</span><span class="o">.</span><span class="n">send_waveform</span><span class="p">(</span><span class="n">drive_signal</span><span class="p">,</span> <span class="n">suppress_messages</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">osc</span><span class="o">.</span><span class="n">measurement</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_signal</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__saveSignal</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span></div>
+
+    <span class="k">def</span> <span class="nf">__plotSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots and displays drive signal</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - signal_name = name you want to save signal data under</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;SOA output&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__saveSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves signal as csv and as image</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># SAVE IMAGE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__plotSignal</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">+</span> <span class="n">signal_name</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1"># SAVE CSV</span>
+        <span class="n">signal_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">)</span>
+        <span class="n">signal_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">+</span> <span class="n">signal_name</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">,</span> 
+                         <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+                         <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cost"><a class="viewcode-back" href="../../soa.html#soa.signalprocessing.cost">[docs]</a><span class="k">class</span> <span class="nc">cost</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class evaluates the cost of a signal output PV given some target output </span>
+<span class="sd">    SP. The higher the cost, the poorer the signal performed. There are various </span>
+<span class="sd">    ways to evaluate cost, each of which value different aspects of the signal </span>
+<span class="sd">    quality in different ways</span>
+
+<span class="sd">    Parameters to enter:</span>
+<span class="sd">    - PV = process variable i.e. an array of signal amplitudes</span>
+<span class="sd">    - SP = set point i.e. an array of target signal amplitudes</span>
+
+<span class="sd">    Parameters to return:</span>
+<span class="sd">    - meanSquaredError = the sum of the difference between PV and SP squared</span>
+<span class="sd">    - zweeLeePerformanceCriterion = weighted sum of the stepinfo information </span>
+<span class="sd">    (rise time, settling time, overshoot and steady state error). Set beta value </span>
+<span class="sd">    to determine how cost should be evaluated. Beta &lt; 0.7 prioritises quick rise </span>
+<span class="sd">    time and settling time, Beta &gt; 0.7 prioritises low overshoot and steady state </span>
+<span class="sd">    error</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                 <span class="n">t</span><span class="p">,</span> 
+                 <span class="n">PV</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                 <span class="n">cost_function_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                 <span class="n">st_importance_factor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                 <span class="n">SP</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PV</span> <span class="o">=</span> <span class="n">PV</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost_function_label</span> <span class="o">=</span> <span class="n">cost_function_label</span> 
+        <span class="c1"># set factor by which want settling time to be larger/smaller than mean </span>
+        <span class="c1"># squared error. Only (and must) specify if using s_mse+st cost_f:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_importance_factor</span> <span class="o">=</span> <span class="n">st_importance_factor</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">SP</span> <span class="o">=</span> <span class="n">SP</span> 
+        <span class="c1"># num points at end of signal output to average over to find steady state:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_steady_state</span> <span class="o">=</span> <span class="mi">5</span> 
+
+        <span class="c1"># find steady state and off indices</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">[:</span><span class="mi">5</span><span class="p">])):</span>
+            <span class="c1"># signal has fallen at end</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">))):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">[:</span><span class="mi">5</span><span class="p">])):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">index_signal_off</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># signal never settles</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">index_signal_off</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">))</span>
+            <span class="c1"># go back e.g. 10 points and use that to set steady state</span>
+            <span class="n">start_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_signal_off</span><span class="o">-</span><span class="mi">10</span>
+            <span class="n">end_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_signal_off</span><span class="o">-</span><span class="mi">5</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_ss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">[</span><span class="n">start_index</span><span class="p">:</span><span class="n">end_index</span><span class="p">])</span> <span class="c1"># steady stae</span>
+
+            <span class="c1"># find more accurately where index turned off</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mf">0.95</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y_ss</span><span class="p">):</span>
+                    <span class="c1"># signal is within 5% of steady state</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">index_signal_off</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># signal has not fallen to 0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_ss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">PV</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">n_steady_state</span><span class="p">:])</span> 
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measurements</span> <span class="o">=</span> <span class="n">get_fopdt_params</span><span class="o">.</span><span class="n">ResponseMeasurements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">,</span> 
+                                                                  <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index_signal_on</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurements</span><span class="o">.</span><span class="n">inflectionTimeIndex</span> 
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_function_label</span> <span class="o">==</span> <span class="s1">&#39;mSE&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">SP</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ERROR: To evaluate MSE, need to provide a set point to </span><span class="se">\</span>
+<span class="s1">                    cost object. Please provide a set point (in the form of a </span><span class="se">\</span>
+<span class="s1">                        step function)&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">costEval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getMeanSquaredError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_function_label</span> <span class="o">==</span> <span class="s1">&#39;st&#39;</span><span class="p">:</span>
+            <span class="n">responseMeasurementsObject</span> <span class="o">=</span> <span class="n">analyse</span><span class="o">.</span><span class="n">ResponseMeasurements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">,</span> 
+                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> 
+                                                                      <span class="n">SP</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settlingTime</span> <span class="o">=</span> <span class="n">responseMeasurementsObject</span><span class="o">.</span><span class="n">settlingTime</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settlingTimeCost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settlingTime</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">costEval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settlingTimeCost</span> 
+            
+        <span class="k">elif</span> <span class="n">cost_function_label</span> <span class="o">==</span> <span class="s1">&#39;mSE+st&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mseCost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getMeanSquaredError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
+
+            <span class="n">responseMeasurementsObject</span> <span class="o">=</span> <span class="n">analyse</span><span class="o">.</span><span class="n">ResponseMeasurements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">,</span> 
+                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> 
+                                                                      <span class="n">SP</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settlingTime</span> <span class="o">=</span> <span class="n">responseMeasurementsObject</span><span class="o">.</span><span class="n">settlingTime</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settlingTimeCost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settlingTime</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">costEval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mseCost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">settlingTimeCost</span> 
+
+        <span class="k">elif</span> <span class="n">cost_function_label</span> <span class="o">==</span> <span class="s1">&#39;s_mse+st&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getMeanSquaredError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
+            <span class="n">responseMeasurementsObject</span> <span class="o">=</span> <span class="n">analyse</span><span class="o">.</span><span class="n">ResponseMeasurements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">,</span> 
+                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> 
+                                                                      <span class="n">SP</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settlingTime</span> <span class="o">=</span> <span class="n">responseMeasurementsObject</span><span class="o">.</span><span class="n">settlingTime</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settlingTimeCost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">st_importance_factor</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">settlingTime</span>
+
+            <span class="c1"># scale st to some importance factor </span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">costEval</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settlingTimeCost</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mse</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settlingTimeCost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mse</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">cost_function_label</span> <span class="o">==</span> <span class="s1">&#39;mse+st+os&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mseCost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getMeanSquaredError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="mi">3</span>
+            <span class="n">responseMeasurementsObject</span> <span class="o">=</span> <span class="n">analyse</span><span class="o">.</span><span class="n">ResponseMeasurements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">,</span> 
+                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> 
+                                                                      <span class="n">SP</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settlingTime</span> <span class="o">=</span> <span class="n">responseMeasurementsObject</span><span class="o">.</span><span class="n">settlingTime</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">overShoot</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">responseMeasurementsObject</span><span class="o">.</span><span class="n">overshoot</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">)</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">costEval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mseCost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">settlingTime</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">overShoot</span> 
+            
+
+
+
+        <span class="k">elif</span> <span class="n">cost_function_label</span> <span class="o">==</span> <span class="s1">&#39;zlpc&#39;</span><span class="p">:</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.9</span> <span class="c1"># set beta parameter</span>
+            <span class="n">responseMeasurementsObject</span> <span class="o">=</span> <span class="n">analyse</span><span class="o">.</span><span class="n">ResponseMeasurements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">,</span> 
+                                                                      <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> 
+                                                                      <span class="n">SP</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">overShoot</span> <span class="o">=</span> <span class="n">responseMeasurementsObject</span><span class="o">.</span><span class="n">overshoot</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">riseTime</span> <span class="o">=</span> <span class="n">responseMeasurementsObject</span><span class="o">.</span><span class="n">riseTime</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">settlingTime</span> <span class="o">=</span> <span class="n">responseMeasurementsObject</span><span class="o">.</span><span class="n">settlingTime</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getMeanSquaredError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SP</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">costEval</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">beta</span><span class="p">))</span> <span class="o">*</span> \
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">overShoot</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mse</span><span class="p">)))</span> <span class="o">+</span> <span class="p">((</span><span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">beta</span><span class="p">))</span> <span class="o">*</span> \
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settlingTime</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">riseTime</span><span class="p">))</span>
+
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Must specify cost function to use!&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="cost.getSetPoint"><a class="viewcode-back" href="../../soa.html#soa.signalprocessing.cost.getSetPoint">[docs]</a>    <span class="k">def</span> <span class="nf">getSetPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method gets the set point of a given signal</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - PV = signal to use to get set point</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        - set point / target signal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">SP</span> <span class="o">=</span> <span class="n">analyse</span><span class="o">.</span><span class="n">ResponseMeasurements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">sp</span><span class="o">.</span><span class="n">sp</span>
+
+        <span class="k">return</span> <span class="n">SP</span></div>
+
+    <span class="k">def</span> <span class="nf">__getMeanSquaredError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SP</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function calcs the mean squared error for a given signal</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - SP = set point / target signal to use</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        - mean squared error</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># GET MSE</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">PV</span><span class="p">,</span> <span class="n">SP</span><span class="p">)</span> 
+        <span class="n">error_squared</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> 
+        <span class="n">meanSquaredError</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">error_squared</span><span class="p">)</span> 
+
+        <span class="k">return</span> <span class="n">meanSquaredError</span></div>
+
+
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Christopher W. F. Parsonson
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

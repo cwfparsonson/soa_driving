@@ -20,10 +20,10 @@ git clone https://github.com/cwfparsonson/soa_driving.git
 ```
 In `soa_driving/pso`, use either conda or pip to install the required packages
 ```
-conda install --file requirements.txt
+conda install --file requirements/default.txt
 ```
 ```
-pip install -r requirements.txt
+pip install -r requirements/default.txt
 ```
 In `soa_driving/pso`, make the soa module importable from anywhere on your machine:
 ```

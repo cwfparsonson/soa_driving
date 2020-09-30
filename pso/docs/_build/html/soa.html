@@ -1,0 +1,962 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>soa package &mdash; soa 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> soa
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Install.html">Install</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">soa</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>soa package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/soa.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="soa-package">
+<h1>soa package<a class="headerlink" href="#soa-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-soa.analyse">
+<span id="soa-analyse-module"></span><h2>soa.analyse module<a class="headerlink" href="#module-soa.analyse" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="soa.analyse.ResponseMeasurements">
+<em class="property">class </em><code class="sig-prename descclassname">soa.analyse.</code><code class="sig-name descname">ResponseMeasurements</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">gradientPoints</span><span class="o">=</span><span class="default_value">8</span></em>, <em class="sig-param"><span class="n">percentage</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">hopSize</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">SP</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/analyse.html#ResponseMeasurements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.analyse.ResponseMeasurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="soa.analyse.SetPoint">
+<em class="property">class </em><code class="sig-prename descclassname">soa.analyse.</code><code class="sig-name descname">SetPoint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">response</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/analyse.html#SetPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.analyse.SetPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-soa.devices">
+<span id="soa-devices-module"></span><h2>soa.devices module<a class="headerlink" href="#module-soa.devices" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="soa.devices.Agilent8156A">
+<em class="property">class </em><code class="sig-prename descclassname">soa.devices.</code><code class="sig-name descname">Agilent8156A</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent8156A"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent8156A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="soa.devices.Agilent8156A.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent8156A.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent8156A.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes instrument and resource manager.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent8156A.get_calibration_factor">
+<code class="sig-name descname">get_calibration_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent8156A.get_calibration_factor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent8156A.get_calibration_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the calibration factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Calibration factor in dB.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent8156A.restore_defaults">
+<code class="sig-name descname">restore_defaults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent8156A.restore_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent8156A.restore_defaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends <a href="#id1"><span class="problematic" id="id2">*</span></a>CLS and <a href="#id3"><span class="problematic" id="id4">*</span></a>RST to the device, restoring most defaults.</p>
+<p>The <a href="#id5"><span class="problematic" id="id6">*</span></a>CLS command clears the following:
+- error queue,
+- standard event status register (ESR),
+- status byte register (STB).
+<a href="#id7"><span class="problematic" id="id8">*</span></a>RST clears most parameters apart from the GPIB settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent8156A.set_calibration_factor">
+<code class="sig-name descname">set_calibration_factor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">calib</span><span class="o">=</span><span class="default_value">2.9</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent8156A.set_calibration_factor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent8156A.set_calibration_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the calibration factor for the instrument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>calib</strong> (<em>number</em>) – Calibration factor in dB.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent8156A.set_output">
+<code class="sig-name descname">set_output</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attenuation</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent8156A.set_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent8156A.set_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the output attenuation (without changing shutter).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attenuation</strong> (<em>number</em>) – Attenuation in dB, cannot be lower
+than calibration_factor.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent8156A.set_wavelength">
+<code class="sig-name descname">set_wavelength</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wavelength</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent8156A.set_wavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent8156A.set_wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the wavelength for the instrument.</p>
+<p>The value is used to make the compensation for the wavelength
+dependence of the filter, using the wavelength calibration data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wavelength</strong> (<em>number</em>) – Wavelength in nm (from 1200 to 1650).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent8156A.sweep">
+<code class="sig-name descname">sweep</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">stop</span></em>, <em class="sig-param"><span class="n">step</span></em>, <em class="sig-param"><span class="n">seconds</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent8156A.sweep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent8156A.sweep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sweeps the attenuation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<em>number</em>) – </p></li>
+<li><p><strong>stop</strong> (<em>number</em>) – </p></li>
+<li><p><strong>step</strong> (<em>number</em>) – Change between steps.</p></li>
+<li><p><strong>seconds</strong> (<em>number</em>) – Delay between steps.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent8156A.switch_output">
+<code class="sig-name descname">switch_output</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent8156A.switch_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent8156A.switch_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens or closes shutter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state</strong> (<em>bool</em>) – True opens the shutter (laser goes through),
+while False closes it (no light passes through).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="soa.devices.Agilent86100C">
+<em class="property">class </em><code class="sig-prename descclassname">soa.devices.</code><code class="sig-name descname">Agilent86100C</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent86100C"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent86100C" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="soa.devices.Agilent86100C.autoscale">
+<code class="sig-name descname">autoscale</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent86100C.autoscale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent86100C.autoscale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates current input signal, autoscales, prints result.</p>
+<p>Autoscale sets the following:
+• Channel Display, Scale, and Offset
+• Trigger and Level
+• Time Base Scale and Position
+Autoscale turns off the following:
+• Measurements on sources that are turned off
+• Functions
+• Windows
+• Memories</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent86100C.check_for_errors">
+<code class="sig-name descname">check_for_errors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent86100C.check_for_errors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent86100C.check_for_errors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent86100C.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent86100C.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent86100C.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes instrument and resource manager.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent86100C.measurement">
+<code class="sig-name descname">measurement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span><span class="o">=</span><span class="default_value">4</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent86100C.measurement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent86100C.measurement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a measurement on a selected channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>channel</strong> (<em>int</em>) – Channel to make measurement on.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>list of values in volts, where:</dt><dd><p>“99.999E+36” represents a hole in the acquisition data,
+“99.999E+33” represents a clipped-high level,
+“99.999E+30” represents a clipped-low level.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent86100C.restore_defaults">
+<code class="sig-name descname">restore_defaults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent86100C.restore_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent86100C.restore_defaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends <a href="#id9"><span class="problematic" id="id10">*</span></a>CLS and <a href="#id11"><span class="problematic" id="id12">*</span></a>RST to the device, restoring most defaults.</p>
+<p>The <a href="#id13"><span class="problematic" id="id14">*</span></a>CLS clears all status and error registers
+<a href="#id15"><span class="problematic" id="id16">*</span></a>RST clears most parameters apart from the GPIB settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent86100C.set_acquire">
+<code class="sig-name descname">set_acquire</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">average</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">count</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">points</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent86100C.set_acquire"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent86100C.set_acquire" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets parameters related to acquiring data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>average</strong> (<em>bool</em>) – Enables or disables averaging. When ON, the
+analyzer acquires multiple data values for each time
+bucket, and averages them. When OFF, averaging is
+disabled. To set number of averages, use param count.</p></li>
+<li><p><strong>count</strong> (<em>int</em>) – Sets the number of averages for the waveforms.
+Specifies the number of data values to be averaged for
+each time bucket before the acquisition is considered
+complete for that time bucket. count must be from 1 to
+4096.</p></li>
+<li><p><strong>points</strong> (<em>int</em><em> or </em><em>str</em>) – Sets the requested memory depth for an
+acquisition. You can set the points value to AUTO, which
+allows the analyzer to select the number of points based
+upon the sample rate and time base scale. points range
+is 16 to 16,384 points.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent86100C.set_channel">
+<code class="sig-name descname">set_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">display</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">range_</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent86100C.set_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent86100C.set_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets parameters related to channels (and y-axis).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel</strong> (<em>int</em>) – Channel to configure.</p></li>
+<li><p><strong>display</strong> (<em>bool</em>) – Turns the display of the specified channel
+on or off.</p></li>
+<li><p><strong>offset</strong> (<em>number</em>) – Sets the voltage that is represented at the
+center of the display for the selected channel.</p></li>
+<li><p><strong>range</strong> (<em>number</em>) – Defines the full-scale vertical axis of the
+selected channel in volts.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent86100C.set_timebase">
+<code class="sig-name descname">set_timebase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">range_</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">reference</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent86100C.set_timebase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent86100C.set_timebase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets parameters related to timebase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>position</strong> (<em>number</em>) – in seconds - Sets the time interval
+between the trigger event and the delay reference point.
+The delay reference point is set with the
+TIMebase:REFerence command. The &lt;position_value&gt;
+argument’s maximum value depends on the
+time-per-division setting. Must be greater or equal
+2.4e-8.</p></li>
+<li><p><strong>range</strong> (<em>number</em>) – Sets the full-scale horizontal time in
+seconds. The range value is ten times the
+time-per-division value. Range is always set in units of
+time (seconds), not in bits. &lt;full_scale_range&gt; is the
+full-scale horizontal time in seconds.</p></li>
+<li><p><strong>reference</strong> (<em>str</em>) – Sets the delay reference to the left or
+center side of the display. Must be “left” or “center”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Agilent86100C.set_trigger">
+<code class="sig-name descname">set_trigger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">'RMODule'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">0.01</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Agilent86100C.set_trigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Agilent86100C.set_trigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets parameters related to trigger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<em>str</em>) – One of FPANel, FRUN, LMODule, RMODule.</p></li>
+<li><p><strong>level</strong> (<em>number</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="soa.devices.AnritsuMS9740A">
+<em class="property">class </em><code class="sig-prename descclassname">soa.devices.</code><code class="sig-name descname">AnritsuMS9740A</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#AnritsuMS9740A"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.AnritsuMS9740A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="soa.devices.AnritsuMS9740A.ana_rms">
+<code class="sig-name descname">ana_rms</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spectrum_level</span></em>, <em class="sig-param"><span class="n">spectrum_deviation_factor</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#AnritsuMS9740A.ana_rms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.AnritsuMS9740A.ana_rms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the RMS spectrum analysis method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spectrum_level</strong> (<em>number</em>) – In dB, between 0.1 and 50.0.</p></li>
+<li><p><strong>spectrum_deviation_factor</strong> (<em>number</em>) – K: Standard deviation
+factor, between 1.0 and 10.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>center wavelength (nm)
+spectrum width (nm)
+standard deviation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[float, float, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.AnritsuMS9740A.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#AnritsuMS9740A.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.AnritsuMS9740A.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes instrument and resource manager</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.AnritsuMS9740A.screen_capture">
+<code class="sig-name descname">screen_capture</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#AnritsuMS9740A.screen_capture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.AnritsuMS9740A.screen_capture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a single sweep of the screen content and returns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>Each number is a sample at a wavelength,</dt><dd><p>depending on set_x, and length depends on
+set_sampling_points.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.AnritsuMS9740A.set_VBW">
+<code class="sig-name descname">set_VBW</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">VBW</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#AnritsuMS9740A.set_VBW"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.AnritsuMS9740A.set_VBW" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets VBW (video band width).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>VBW</strong> (<em>int</em><em> or </em><em>str</em>) – VBW in Hz, must be one of the following:
+10|100|200|1000|2000|10000|100000|1000000, or
+10HZ|100HZ|200HZ|1KHZ|2KHZ|10KHZ|100KHZ|1MHZ.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.AnritsuMS9740A.set_resolution">
+<code class="sig-name descname">set_resolution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resolution</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#AnritsuMS9740A.set_resolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.AnritsuMS9740A.set_resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets resolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>resolution</strong> (<em>float</em>) – Resolution in nm must be only one of the
+following: 0.03|0.05|0.07|0.1|0.2|0.5|1.0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.AnritsuMS9740A.set_sampling_points">
+<code class="sig-name descname">set_sampling_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#AnritsuMS9740A.set_sampling_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.AnritsuMS9740A.set_sampling_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the number of sampling points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – number of sampling points, must be one of the
+numbers: 51|101|251|501|1001|2001|5001|10001|20001|50001</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.AnritsuMS9740A.set_x">
+<code class="sig-name descname">set_x</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">center</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">span</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#AnritsuMS9740A.set_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.AnritsuMS9740A.set_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets parameters (in nm) related to x axis.</p>
+<p>Any one of these can be used, and the later parameters will
+overwrite the previous parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>center</strong> (<em>number</em>) – </p></li>
+<li><p><strong>span</strong> (<em>number</em>) – </p></li>
+<li><p><strong>start</strong> (<em>number</em>) – </p></li>
+<li><p><strong>stop</strong> (<em>number</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.AnritsuMS9740A.set_y">
+<code class="sig-name descname">set_y</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_per_div</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ref</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#AnritsuMS9740A.set_y"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.AnritsuMS9740A.set_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets parameter related to y axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_per_div</strong> (<em>number</em>) – Distance between divs, in dB. Must be
+between 0.1 and 10.</p></li>
+<li><p><strong>ref</strong> (<em>number</em>) – At the time of setting the Log scale, this
+command sets the reference level. Must be between -100
+and 100.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="soa.devices.Lightwave3220">
+<em class="property">class </em><code class="sig-prename descclassname">soa.devices.</code><code class="sig-name descname">Lightwave3220</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">current_limit</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Lightwave3220"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Lightwave3220" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="soa.devices.Lightwave3220.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Lightwave3220.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Lightwave3220.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes instrument and resource manager.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Lightwave3220.set_output">
+<code class="sig-name descname">set_output</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">current</span></em>, <em class="sig-param"><span class="n">switch_output_on</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Lightwave3220.set_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Lightwave3220.set_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the current output to specified value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current</strong> (<em>number</em>) – </p></li>
+<li><p><strong>switch_output_on</strong> (<em>bool</em>) – If True, it will turn on the
+output after specifying the current, otherwise it will
+stay in the initial state, whether on or off.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Lightwave3220.sweep_current">
+<code class="sig-name descname">sweep_current</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">stop</span></em>, <em class="sig-param"><span class="n">step</span></em>, <em class="sig-param"><span class="n">seconds</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Lightwave3220.sweep_current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Lightwave3220.sweep_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns on the current source and sweeps the output current.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<em>number</em>) – Starting point of sweep in mA.</p></li>
+<li><p><strong>stop</strong> (<em>number</em>) – Sweep does not include this value in mA.</p></li>
+<li><p><strong>step</strong> (<em>number</em>) – Size of step in mA.</p></li>
+<li><p><strong>seconds</strong> (<em>number</em>) – Time between steps.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Lightwave3220.switch_off">
+<code class="sig-name descname">switch_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Lightwave3220.switch_off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Lightwave3220.switch_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switches the current source off.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="soa.devices.Lightwave7900B">
+<em class="property">class </em><code class="sig-prename descclassname">soa.devices.</code><code class="sig-name descname">Lightwave7900B</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Lightwave7900B"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Lightwave7900B" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="soa.devices.Lightwave7900B.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Lightwave7900B.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Lightwave7900B.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes instrument and resource manager</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Lightwave7900B.set_channel_power">
+<code class="sig-name descname">set_channel_power</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">power</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Lightwave7900B.set_channel_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Lightwave7900B.set_channel_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets power on a specified channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel</strong> (<em>int</em>) – </p></li>
+<li><p><strong>power</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Lightwave7900B.set_channel_wavelength">
+<code class="sig-name descname">set_channel_wavelength</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">wavelength</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Lightwave7900B.set_channel_wavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Lightwave7900B.set_channel_wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets wavelength on a specified channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel</strong> (<em>int</em>) – </p></li>
+<li><p><strong>wavelength</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Lightwave7900B.start_channels">
+<code class="sig-name descname">start_channels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channels</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Lightwave7900B.start_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Lightwave7900B.start_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Selects and starts specified channels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>channels</strong> – Tuple of integers between 1 and 8.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.Lightwave7900B.sweep_channel_power">
+<code class="sig-name descname">sweep_channel_power</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">channel</span></em>, <em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">stop</span></em>, <em class="sig-param"><span class="n">step</span></em>, <em class="sig-param"><span class="n">seconds</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#Lightwave7900B.sweep_channel_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.Lightwave7900B.sweep_channel_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns on a channel and sweeps the power output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel</strong> (<em>int</em>) – </p></li>
+<li><p><strong>start</strong> (<em>number</em>) – Starting point of sweep.</p></li>
+<li><p><strong>stop</strong> (<em>number</em>) – Sweep does not include this value.</p></li>
+<li><p><strong>step</strong> (<em>number</em>) – Size of step.</p></li>
+<li><p><strong>seconds</strong> (<em>number</em>) – Time between steps.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="soa.devices.TektronixAWG7122B">
+<em class="property">class </em><code class="sig-prename descclassname">soa.devices.</code><code class="sig-name descname">TektronixAWG7122B</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#TektronixAWG7122B"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.TektronixAWG7122B" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="soa.devices.TektronixAWG7122B.check_for_errors">
+<code class="sig-name descname">check_for_errors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#TektronixAWG7122B.check_for_errors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.TektronixAWG7122B.check_for_errors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.TektronixAWG7122B.close">
+<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#TektronixAWG7122B.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.TektronixAWG7122B.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes instrument and resource manager.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.TektronixAWG7122B.restore_defaults">
+<code class="sig-name descname">restore_defaults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#TektronixAWG7122B.restore_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.TektronixAWG7122B.restore_defaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends <a href="#id17"><span class="problematic" id="id18">*</span></a>CLS and <a href="#id19"><span class="problematic" id="id20">*</span></a>RST to the device, restoring most defaults.</p>
+<p>The <a href="#id21"><span class="problematic" id="id22">*</span></a>CLS command clears the following:
+- error queue,
+- standard event status register (ESR),
+- status byte register (STB).
+<a href="#id23"><span class="problematic" id="id24">*</span></a>RST clears most parameters apart from the GPIB settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.devices.TektronixAWG7122B.send_waveform">
+<code class="sig-name descname">send_waveform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">markers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sampling_freq</span><span class="o">=</span><span class="default_value">12000000000.0</span></em>, <em class="sig-param"><span class="n">amplitude</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">channel</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'konrad'</span></em>, <em class="sig-param"><span class="n">suppress_messages</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/devices.html#TektronixAWG7122B.send_waveform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.devices.TektronixAWG7122B.send_waveform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends waveform to the device and turns on specified channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>Any</em><em>[</em><em>float</em><em>]</em>) – List of at least 1 float values, each
+value must be between -1 and 1, where the max values are
+equivalent to max set amplitude.</p></li>
+<li><p><strong>markers</strong> (<em>Any</em><em>[</em><em>int</em><em>]</em>) – List of integers, either 0 or 1, which
+will determine if the markers are high or low. For now,
+this code supports setting both markers to the same
+value only. Must be the same length as signal.</p></li>
+<li><p><strong>sampling_freq</strong> (<em>int</em>) – Sampling frequency for the AWG.
+Combined with the length of signal, it determines the
+output signal frequency, i.e.
+output_frequency = sampling_frequency/len(signal)
+Must be between 10 MHz and 12 GHz.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the waveform.</p></li>
+<li><p><strong>amplitude</strong> (<em>number</em>) – Sets Vpp range of the signal. E.g. if
+signal is [0.0, 1.0] and amplitude is 0.5, the output
+signal will be [0.0 V, 0.25 V].</p></li>
+<li><p><strong>suppress_messages</strong> (<em>bool</em>) – If True, info and warning messages
+will not be shown.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-soa.distort_tf">
+<span id="soa-distort-tf-module"></span><h2>soa.distort_tf module<a class="headerlink" href="#module-soa.distort_tf" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="soa.distort_tf.find_x_init">
+<code class="sig-prename descclassname">soa.distort_tf.</code><code class="sig-name descname">find_x_init</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tf</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/distort_tf.html#find_x_init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.distort_tf.find_x_init" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method calculates the state-vector from a long -1 drive signal.
+Must call before sending / receiving signals to / from transfer function
+model</p>
+<p>Args:
+- tf = transfer function</p>
+<p>Returns:
+- X0 = system’s state-vector result for steady state</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="soa.distort_tf.gen_dummy_tf_num_den">
+<code class="sig-prename descclassname">soa.distort_tf.</code><code class="sig-name descname">gen_dummy_tf_num_den</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_fac</span></em>, <em class="sig-param"><span class="n">a_facs</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/distort_tf.html#gen_dummy_tf_num_den"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.distort_tf.gen_dummy_tf_num_den" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="soa.distort_tf.gen_tfs">
+<code class="sig-prename descclassname">soa.distort_tf.</code><code class="sig-name descname">gen_tfs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_facs</span><span class="o">=</span><span class="default_value">[1]</span></em>, <em class="sig-param"><span class="n">a0_facs</span><span class="o">=</span><span class="default_value">[1]</span></em>, <em class="sig-param"><span class="n">a1_facs</span><span class="o">=</span><span class="default_value">[1]</span></em>, <em class="sig-param"><span class="n">a2_facs</span><span class="o">=</span><span class="default_value">[1]</span></em>, <em class="sig-param"><span class="n">a3_facs</span><span class="o">=</span><span class="default_value">[1]</span></em>, <em class="sig-param"><span class="n">a4_facs</span><span class="o">=</span><span class="default_value">[1]</span></em>, <em class="sig-param"><span class="n">a5_facs</span><span class="o">=</span><span class="default_value">[1]</span></em>, <em class="sig-param"><span class="n">a6_facs</span><span class="o">=</span><span class="default_value">[1]</span></em>, <em class="sig-param"><span class="n">a7_facs</span><span class="o">=</span><span class="default_value">[1]</span></em>, <em class="sig-param"><span class="n">a8_facs</span><span class="o">=</span><span class="default_value">[1]</span></em>, <em class="sig-param"><span class="n">a9_facs</span><span class="o">=</span><span class="default_value">[1]</span></em>, <em class="sig-param"><span class="n">all_combos</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/distort_tf.html#gen_tfs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.distort_tf.gen_tfs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="soa.distort_tf.getTransferFunctionOutput">
+<code class="sig-prename descclassname">soa.distort_tf.</code><code class="sig-name descname">getTransferFunctionOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tf</span></em>, <em class="sig-param"><span class="n">U</span></em>, <em class="sig-param"><span class="n">T</span></em>, <em class="sig-param"><span class="n">atol</span><span class="o">=</span><span class="default_value">1e-12</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/distort_tf.html#getTransferFunctionOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.distort_tf.getTransferFunctionOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method sends a drive signal to a transfer function model and gets the
+output</p>
+<p>Args:
+- tf = transfer function
+- U = signal to drive transfer function with
+- T = array of time values
+- X0 = initial value
+- atol = scipy ode func parameter</p>
+<p>Returns:
+- PV = resultant output signal of transfer function</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="soa.distort_tf.plot_output">
+<code class="sig-prename descclassname">soa.distort_tf.</code><code class="sig-name descname">plot_output</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signals</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/distort_tf.html#plot_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.distort_tf.plot_output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-soa.get_fopdt_params">
+<span id="soa-get-fopdt-params-module"></span><h2>soa.get_fopdt_params module<a class="headerlink" href="#module-soa.get_fopdt_params" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="soa.get_fopdt_params.ResponseMeasurements">
+<em class="property">class </em><code class="sig-prename descclassname">soa.get_fopdt_params.</code><code class="sig-name descname">ResponseMeasurements</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">gradientPoints</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">percentage</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">hopSize</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/get_fopdt_params.html#ResponseMeasurements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.get_fopdt_params.ResponseMeasurements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-soa.optimisation">
+<span id="soa-optimisation-module"></span><h2>soa.optimisation module<a class="headerlink" href="#module-soa.optimisation" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="soa.optimisation.PSO">
+<em class="property">class </em><code class="sig-prename descclassname">soa.optimisation.</code><code class="sig-name descname">PSO</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">init_OP</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">iter_max</span></em>, <em class="sig-param"><span class="n">rep_max</span></em>, <em class="sig-param"><span class="n">init_v_f</span></em>, <em class="sig-param"><span class="n">max_v_f</span></em>, <em class="sig-param"><span class="n">w_init</span><span class="o">=</span><span class="default_value">0.9</span></em>, <em class="sig-param"><span class="n">w_final</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">c1</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">c2</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">adapt_accel</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">sect_to_optimise</span><span class="o">=</span><span class="default_value">'whole_signal'</span></em>, <em class="sig-param"><span class="n">areas_to_suppress</span><span class="o">=</span><span class="default_value">'None'</span></em>, <em class="sig-param"><span class="n">off_suppress_f</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">on_suppress_f</span><span class="o">=</span><span class="default_value">0.8</span></em>, <em class="sig-param"><span class="n">embed_init_signal</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">path_to_embedded_signal</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">'Unknown'</span></em>, <em class="sig-param"><span class="n">cost_f</span><span class="o">=</span><span class="default_value">'Unknown'</span></em>, <em class="sig-param"><span class="n">st_importance_factor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sim_model</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">awg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">osc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">awg_res</span><span class="o">=</span><span class="default_value">8</span></em>, <em class="sig-param"><span class="n">min_val</span><span class="o">=</span><span class="default_value">- 1.0</span></em>, <em class="sig-param"><span class="n">max_val</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">record_extra_info</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">linux</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">SP</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/optimisation.html#PSO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.optimisation.PSO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Optimises parameters using particle swarm optimisation (PSO) algorithm</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="soa.optimisation.run_test">
+<code class="sig-prename descclassname">soa.optimisation.</code><code class="sig-name descname">run_test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory_for_run</span></em>, <em class="sig-param"><span class="n">tf_for_run</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">init_OP</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">iter_max</span></em>, <em class="sig-param"><span class="n">rep_max</span></em>, <em class="sig-param"><span class="n">init_v_f</span></em>, <em class="sig-param"><span class="n">max_v_f</span></em>, <em class="sig-param"><span class="n">w_init</span></em>, <em class="sig-param"><span class="n">w_final</span></em>, <em class="sig-param"><span class="n">adapt_accel</span></em>, <em class="sig-param"><span class="n">areas_to_suppress</span></em>, <em class="sig-param"><span class="n">on_suppress_f</span></em>, <em class="sig-param"><span class="n">embed_init_signal</span></em>, <em class="sig-param"><span class="n">path_to_embedded_signal</span></em>, <em class="sig-param"><span class="n">cost_f</span></em>, <em class="sig-param"><span class="n">st_importance_factor</span></em>, <em class="sig-param"><span class="n">record_extra_info</span></em>, <em class="sig-param"><span class="n">linux</span></em>, <em class="sig-param"><span class="n">sp</span></em>, <em class="sig-param"><span class="n">pso_objs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/optimisation.html#run_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.optimisation.run_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function defines the test we want to run for each job in a list of
+python multiprocessing jobs. It is not essential to use this function
+to run a loop of different PSO runs, but this will execute the PSO runs in
+parallel and therefore significantly speed up your experiments.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-soa.signalprocessing">
+<span id="soa-signalprocessing-module"></span><h2>soa.signalprocessing module<a class="headerlink" href="#module-soa.signalprocessing" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="soa.signalprocessing.cost">
+<em class="property">class </em><code class="sig-prename descclassname">soa.signalprocessing.</code><code class="sig-name descname">cost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="n">PV</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cost_function_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">st_importance_factor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">SP</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/signalprocessing.html#cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.signalprocessing.cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class evaluates the cost of a signal output PV given some target output
+SP. The higher the cost, the poorer the signal performed. There are various
+ways to evaluate cost, each of which value different aspects of the signal
+quality in different ways</p>
+<p>Parameters to enter:
+- PV = process variable i.e. an array of signal amplitudes
+- SP = set point i.e. an array of target signal amplitudes</p>
+<p>Parameters to return:
+- meanSquaredError = the sum of the difference between PV and SP squared
+- zweeLeePerformanceCriterion = weighted sum of the stepinfo information
+(rise time, settling time, overshoot and steady state error). Set beta value
+to determine how cost should be evaluated. Beta &lt; 0.7 prioritises quick rise
+time and settling time, Beta &gt; 0.7 prioritises low overshoot and steady state
+error</p>
+<dl class="py method">
+<dt id="soa.signalprocessing.cost.getSetPoint">
+<code class="sig-name descname">getSetPoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/signalprocessing.html#cost.getSetPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.signalprocessing.cost.getSetPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method gets the set point of a given signal</p>
+<p>Args:
+- PV = signal to use to get set point</p>
+<p>Returns:
+- set point / target signal</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="soa.signalprocessing.generateSignal">
+<em class="property">class </em><code class="sig-prename descclassname">soa.signalprocessing.</code><code class="sig-name descname">generateSignal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_points</span><span class="o">=</span><span class="default_value">240</span></em>, <em class="sig-param"><span class="n">t_start</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">t_stop</span><span class="o">=</span><span class="default_value">2e-08</span></em>, <em class="sig-param"><span class="n">save_signal</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/signalprocessing.html#generateSignal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.signalprocessing.generateSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Args:
+- num_points = number of points you want in signal
+- t_start = time to start signal period
+- t_stop = time to stop signal period
+- save_signal = True or False for saving generated signal
+- directory = where to save generated signal</p>
+<dl class="py method">
+<dt id="soa.signalprocessing.generateSignal.misic">
+<code class="sig-name descname">misic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">off_v</span><span class="o">=</span><span class="default_value">- 0.5</span></em>, <em class="sig-param"><span class="n">on_v</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">impulse_v</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">duty_cycle</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">num_misic_bits</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">bit_rate</span><span class="o">=</span><span class="default_value">2.4e-10</span></em>, <em class="sig-param"><span class="n">signal_name</span><span class="o">=</span><span class="default_value">'misic1'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/signalprocessing.html#generateSignal.misic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.signalprocessing.generateSignal.misic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates misic driving signal</p>
+<p>Args:
+- off_v = voltage in off state
+- on_v = voltage in on state
+- impulse_v = voltage of misic impulses
+- duty_cycle = fraction of time period signal is on
+- num_misic_bits = total number of bits in misic signal (paper used 100)
+- bit_rate = (enter in ps i.e. units of e-12) rate at which misic
+impulses/bits are repeated (in paper, misic pulses repeated every
+240 ps == 4.16 Gb/s)
+- signal_name = name you want to save signal data under. Can be misic1,
+misic2, misic3, misic4, misic5 or misic6</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.signalprocessing.generateSignal.pisic">
+<code class="sig-name descname">pisic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">off_v</span><span class="o">=</span><span class="default_value">- 0.5</span></em>, <em class="sig-param"><span class="n">on_v</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">impulse_v</span><span class="o">=</span><span class="default_value">0.2</span></em>, <em class="sig-param"><span class="n">duty_impulse</span><span class="o">=</span><span class="default_value">0.05</span></em>, <em class="sig-param"><span class="n">duty_cycle</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">signal_name</span><span class="o">=</span><span class="default_value">'pisic'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/signalprocessing.html#generateSignal.pisic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.signalprocessing.generateSignal.pisic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates pisic driving signal</p>
+<p>Args:
+- off_v = voltage in off state
+- on_v = voltage in on state
+- impulse_v = pre-impulse voltage (added to on_v at signal leading edge)
+- duty_impulse = fraction of time period pre impulse be should on for
+- duty_cycle = fraction of time period signal should be on for
+- signal_name = name you want to save signal data under</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="soa.signalprocessing.generateSignal.square">
+<code class="sig-name descname">square</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">off_v</span><span class="o">=</span><span class="default_value">- 0.5</span></em>, <em class="sig-param"><span class="n">on_v</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">duty_cycle</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">signal_name</span><span class="o">=</span><span class="default_value">'square'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/signalprocessing.html#generateSignal.square"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.signalprocessing.generateSignal.square" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates square driving signal</p>
+<p>Args:
+- off_v = voltage in off state
+- on_v = voltage in on state
+- duty_cycle = fraction of time signal should be on for
+- signal_name = name you want to save signal data under</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="soa.signalprocessing.soaOutput">
+<em class="property">class </em><code class="sig-prename descclassname">soa.signalprocessing.</code><code class="sig-name descname">soaOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">awg</span></em>, <em class="sig-param"><span class="n">osc</span></em>, <em class="sig-param"><span class="n">num_points</span><span class="o">=</span><span class="default_value">240</span></em>, <em class="sig-param"><span class="n">t_start</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">t_stop</span><span class="o">=</span><span class="default_value">2e-08</span></em>, <em class="sig-param"><span class="n">save_signal</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">directory</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/signalprocessing.html#soaOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.signalprocessing.soaOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for getting and analysing soa output</p>
+<p>Args:
+- awg = awg object
+- osc = osc object
+- num_points = number of points in signal
+- time_start = time signal period starts
+- time_stop = time signal period stops
+- save_siganl = if want to save soa output signal
+- directory = where to save data#</p>
+<dl class="py method">
+<dt id="soa.signalprocessing.soaOutput.getSoaOutput">
+<code class="sig-name descname">getSoaOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">drive_signal</span></em>, <em class="sig-param"><span class="n">signal_name</span><span class="o">=</span><span class="default_value">'Unknown'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soa/signalprocessing.html#soaOutput.getSoaOutput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soa.signalprocessing.soaOutput.getSoaOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method sends a drive signal to the SOA and gets an soa output</p>
+<p>Args:
+- drive_signal = signal you want to drive soa with
+- signal_name = name under which you want to save soa output data</p>
+<p>Returns:
+- soa_output = output of soa</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-soa">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-soa" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Christopher W. F. Parsonson
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
