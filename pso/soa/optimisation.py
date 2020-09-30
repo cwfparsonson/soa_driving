@@ -1429,7 +1429,7 @@ if __name__ == '__main__':
 
 
         # pickle data
-        PIK = directory + self.slash + 'pickle.dat'
+        PIK = directory + '/pickle.dat'
         data = pso_objs
         with open(PIK, 'wb') as f:
             pickle.dump(data, f)
