@@ -3,10 +3,12 @@ Tutorial
 This code can help you get started with using this Python package to
 optimise semiconductor optical amplifiers (SOAs) with particle swarm optimisation (PSO).
 
-Pre-requisites:
+Pre-requisites (key concepts described in the following such as what rise time,
+settling time, overshoot, dynamic PSO, transfer functions etc. will not
+be re-explained in this tutorial):
 
 - `An Artificial Intelligence Approach to Optimal Control of Sub-Nanosecond SOA-Based Optical Switches <https://ieeexplore.ieee.org/document/9124678?arnumber=9124678>`_ (and any references in the paper not recognised by the reader)
-- Chapter 16 of S.Kiranyaz's 2014 book 'Particle Swarm Optimisation'
+- Chapter 16 of S. Kiranyaz's 2014 book 'Particle Swarm Optimisation'
 - Basic Python
 
 
@@ -33,9 +35,9 @@ and change the properties of your light signal. For certain applications, such a
 next-generation optical circuit switched data centre networks, the `speed` with which
 you can switch light signals is extremely important. It turns out that SOAs are
 excellent for switching light quickly, with theoretical switching speeds limited
-only by their ~100 picosecond (10^-12) second excitation times. However, due to
-instability issues, this switching speed is in practice much slower (on the nanosecond
-(10^-9) scale), which is too slow for many desirable applications.
+only by their ~100 pico- (10^-12) second excitation times. However, due to
+instability issues, this switching speed is in practice much slower (on the nano- 
+(10^-9) second scale), which is too slow for many desirable applications.
 
 To help fix instability issues and improve SOA switching times, researchers need
 to `optimise` their SOA. Optimisation can come in two forms; optimising the physical
@@ -43,12 +45,14 @@ properties of the SOA and its surrounding setup, `or` optimising the electronic
 drive signal passed into the SOA in order to turn the SOA 'on'. The most basic
 electronic drive signal to apply is the `step` drive signal:
 
-<STEP_DRIVE_FIGURE>
+.. image:: images/step_drive_signal.png 
+    :align: center
 
 However, this simple signal results in the following unstable optical output, resulting
 in nanosecond-scale switching times:
 
-<STEP_DRIVE_OUTPUT_FIGURE>
+.. image:: images/step_output_signal.png
+    :align: center
 
 To remedy this, researchers previously attempted to apply a range of different electronic
 drive signals, from standard PID solutions from control theory to carefuly tuned
@@ -67,8 +71,9 @@ a particle swarm optimisation approach to optimising the electronic drive signal
 put into the SOA. The below figure is a step-by-step visualisation of how PSO was applied to the problem of SOA 
 drive signal optimisation at the most basic level. 
 
-<COMPOSITE_FIGURE>
 
+.. image:: images/composite_diagram.png
+    :align: center
 
 The paper implements a couple of other key ideas such as the concept of a PISIC
 shell to reduce the PSO algorithm's search space and dynamic PSO, however the above
@@ -87,7 +92,7 @@ is a succinct visualisation of the core idea.
 
 
 
-Running Basic Simulations
+Running Simulations
 -------------------------
 .. note::
     As mentioned, this PSO code has not been cleanly implemented for the most part and is not actively maintained.
@@ -96,6 +101,22 @@ Running Basic Simulations
     optimise SOAs. You are encouraged to fork the project and re-write parts/add
     functionality as you see fit. Contact cwfparsonson@gmail.com if you are interested
     in merging your code.
+
+.. note::
+    In the below examples, to save time, only ``n = 3`` particles have been used.
+    Having such a low number of particles allows for short optimsation times, but
+    will signficantly reduce the efficacy of the final optimal solution. To find
+    better solutions, you should increase the number of particles. If you change
+    certain hyperparameters, you may also need to change e.g. the number of particles.
+    For example, increasing the number of dimensions (i.e. number of points) in the
+    particles/drive signals will increase the size of the search space and therefore
+    also likely require more particles to find sufficiently good solutions.
+
+A Walkthrough Example
+^^^^^^^^^^^^^^^^^^^^^
+
+In this example, you will see how to use PSO to optimise the driving signals for 10 different 
+SOAs by simulating 10 different transfer functions.
 
 In your Python script, start by importing the following core functionalities from the soa module:
 
@@ -124,6 +145,9 @@ Import any other useful packages you'd like to use
     import numpy as np
     import multiprocessing
     import pickle
+    from scipy import signal
+    import os
+    import matplotlib.pyplot as plt
 
 Create a folder on your local machine in which to store your PSO/SOA data and
 create a ``directory`` variable with the path to this folder:
@@ -200,7 +224,7 @@ Run your experiments in parallel using the multiprocessing functionality provide
     pso_objs = multiprocessing.Manager().list()
     jobs = []
     test_nums = [test+1 for test in range(len(tfs))]
-    direcs = [directory + '\\test_{}'.format(test_num) for test_num in test_nums]
+    direcs = [directory + '/test_{}'.format(test_num) for test_num in test_nums]
     for tf, direc in zip(tfs, direcs):
         if os.path.exists(direc) == False:
             os.mkdir(direc)
@@ -222,8 +246,9 @@ Run your experiments in parallel using the multiprocessing functionality provide
                                           True, 
                                           None, 
                                           cost_f, 
-                                          st_importance_factor, 
+                                          None, 
                                           True, 
+                                          True,
                                           sp, 
                                           pso_objs,))
 
@@ -232,24 +257,110 @@ Run your experiments in parallel using the multiprocessing functionality provide
     for job in jobs:
         job.join()
 
-Optionally plot the final optical outputs of each of your tests:
-
-.. nbplot::
-    pso_objs = list(pso_objs)
-    plt.figure()
-    plt.plot(t, sp, color='green')
-    for pso_obj in pso_objs:
-        plt.plot(t, pso_obj.gbest_PV)
-    plt.show()
-
 Pickle your PSO objects so you can re-import and analyse them later:
 
 .. nbplot::
-    PIK = directory + '\pickle.dat'
+    PIK = directory + '/pickle.dat'
     data = pso_objs
     with open(PIK, 'wb') as f:
         pickle.dump(data, f)
 
+Pulling all of the above together, your script should look something like:
+
+.. literalinclude:: scripts/tutorial_script_1.py
+
+Run the above by executing your Python script. Some information will be printed
+out in your terminal telling you how many iterations have passed and how much
+the 'cost' (in the above example, the mean squared error) has been reduced by 
+so far. 
+
+.. note::
+    Since the above example uses multiprocessing by running the 10 tests
+    in parallel, the information will be printed out to your terminal in parallel,
+    which is quite messy. Feel free to go into the PSO code in ``optimisation.py`` and organise this
+    to improve the message printed out (if any message at all).
+    
+In your ``directory`` path, you should now have a folder for each of the tests
+you ran (in the above example, you used multiprocessing to run a PSO optimisation
+for 10 different transfer functions (SOAs) in parallel, so you have 10 test folders
+(one for each test you ran)). You should also have the PSO objects saved as a 
+pickle so that you can re-load them later if needed.
+
+.. image:: images/folder_image.png
+    :align: center
+
+In each test file, there is a data folder which contains a folder whose name
+is automatically determined by the hyperparameters you used. Inside this folder
+is some key data:
+
+.. image:: images/name_data_image.png
+    :align: center
+
+The data saved is either a ``.png`` file (for quick visualisation of what your 
+PSO run has done) or a ``.csv`` file (for loading and analysing yourself). In the 
+above folder, the key data are:
+
+- ``0_gen_inputs.png``: The input driving signals at the 0th generation of the PSO i.e. before any optimisation has begun (as described in the paper, we embed a particle whose position is equivalent to a step driving signal, which initially will be better than all other particles since other particle positions are randomly initialised (within the PISIC shell constrained area)). In the above example, we used ``n = 3`` particles, therefore there are 3 driving signals (and a 4th driving signal, which is the embedded step signal)
+
+.. image:: images/0_gen_inputs.png
+    :align: center
+
+
+- ``0_gen_outputs.png``: The corresponding output driving signals of the 0th generation particles
+
+.. image:: images/0_gen_outputs.png
+    :align: center
+
+
+For each repetition of the PSO, there will be a ``rep_X`` folder. Since you set
+``rep_max = 1`` in the above example, there is only one repetition folder, ``rep_1``.
+Inside this ``rep_1`` folder are they key PSO data. 
+
+
+.. image:: images/rep_1_folder_image.png
+    :align: center
+
+Again, the raw data is saved as a ``.csv`` file, and some ``.png`` images are 
+saved for quick visualisation of the PSO optimisation process. In the above folder,
+the PSO class was configured to save data every 7 generations. Some of the key data
+saved includes:
+
+- ``X_gen_inputs``: Particle (driving signal) positions at generation X
+- ``X_gen_outputs``: Corresponding SOA optical output in response to particle driving signals at generation X
+- ``curr_inputs_X``: Raw data of particle positions at generation X (useful to save incase PSO crashes and want to resume without having to start over)
+- ``curr_outputs_X``: Raw data of corresponding optical outputs of particle positions
+- ``final_input``: The final 'optimal' driving signal found by the PSO optimisation process after finishing all iterations
+- ``final_output``: The corresponding SOA optical output of the final optimal driving signal
+- ``final_learning_curve``: How the 'cost' (in the above example, the mean squared error) varied with the number of PSO iterations
+- ``g_best_cost_history``: The global best costs that were found across all iterations
+- ``iter_gbest_reached``: The corresponding iteration that each global best cost value was found at (use these data to plot cost curves)
+- ``initial_OP``: The initial driving signal (in the above example, a step driving signal)
+- ``initial_PV``: The corresponding optical output of the initial driving signal
+- ``optimised_OP``: The final optimised driving signal found by the PSO
+- ``optimised_PV``: The corresponding optical output of the final optimsed driving signal
+- ``pbest_post_X``: The personal best position found by each particle at iteration X
+- ``rt_st_os_analysis``: The rise time, settling time, overshoot, and settling time index (i.e. the index in the output signal at which the signal was registered as having settled) of the best particle's corresponding optical output at each iteration of the PSO
+- ``rtstos_learning_curve``: Hoe rise time, settling time and overshoot varied across iterations
+- ``SP``: The target set point that was used as the target SOA optical output signal that the PSO was trying to achieve (in the above example, a step signal with 0 rise time, settling and rise time generated from the initial PV)
+- ``time``: The time axis used by all signals
+
+Looking at what the PSO did in the above examples, you can see that it converged
+on an interesting final driving signal with an improved corresponding optical output
+signal:
+
+
+.. image:: images/final_input.png
+    :align: center
+
+
+.. image:: images/final_output.png
+    :align: center
+
+This led to a significant decrease in settling time, which is usually considered
+the key metric for switching time:
+
+.. image:: images/rtstos_learning_curve.png
+    :align: center
 
 
 
@@ -257,8 +368,16 @@ Pickle your PSO objects so you can re-import and analyse them later:
 
 
 
-Example Simulation Scripts 
+
+
+
+
+
+Additional Example Scripts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Running PSO with 120, 140, 160, 180, 200, 220 and 240 dimensions (number of points in the drive signal):
+
+.. literalinclude:: scripts/tutorial_script_2.py
 
 
 
@@ -281,5 +400,17 @@ Overview of Backend PSO and SOA Code
 ------------------------------------
 
 
+The following Python files make up the backend of this package:
+
+- ``devices.py``: Module for interfacing with the SOA experimental setup (**not needed if only using transfer function simulations**)
+- ``signalprocessing.py``: Module for generating standard literature SOA driving signals (e.g. PISIC, MISIC, etc.) and for evaluating optical response cost in terms of e.g. mean squared error
+- ``analyse.py``: Module for analysing signal performance and retrieving optical output signal metrics (e.g. rise time, settling time, overshoot etc.)
+- ``distort_tf.py``: Module for distorting the original SOA transfer function to generate new transfer functions and therefore simulate different SOAs (useful for testing the generalisability of your optimisation method(s))
+- ``optimisation.py``: The main module that holds the ``PSO`` class (the key class with the PSO algorithm, send & receive functionality for drive & optical signal(s) respectively, plotting, etc.) and the ``run_test`` function, which is a function used for multiprocessing (running multiple PSO experiments in parallel - not required but recommended to speed up your tests).
+
+You are encouraged to change the code in these, add new functionality, re-write parts
+etc. Each file has reasonably good comments and you should be able to follow the code.
+``optimisation.py`` is the key file which holds the PSO code, so this is likely the file
+you will want to become most familiar with.
 
 

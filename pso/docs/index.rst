@@ -30,8 +30,8 @@ to completely re-write parts they consider poorly implemented.
 Free Software
 =============
 This is free software; you can redistribute it and/or modify it under the terms
-of the Apache License 2.0. Contributions and forks are welcome. Contact 
-cwfparsonson@gmail.com for questions.
+of the Apache License 2.0. Contributions and forks are welcome - see the :doc:`contribute guide <Contribute>`. 
+Contact cwfparsonson@gmail.com for questions.
 
 
 
@@ -46,6 +46,9 @@ Documentation
 
    Install
    Tutorial
+   Contribute
+   License
+   Citing
 
 
 
