@@ -1,6 +1,6 @@
 Tutorial
 ========
-This code can help you get started with using this Python package to
+This tutorial can help you get started with using this Python package to
 optimise semiconductor optical amplifiers (SOAs) with particle swarm optimisation (PSO).
 
 Pre-requisites (key concepts described in the following such as what rise time,
