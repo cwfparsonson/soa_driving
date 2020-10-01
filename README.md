@@ -1,5 +1,7 @@
 # SOA Drive Signal Optimisation with Artificial Intelligence
 
+**Documentation**: https://soa-driving.readthedocs.io/en/latest/index.html
+
 This project formed part of the journal paper 'An Artificial 
 Intelligence Approach to Optimal Control of Sub-Nanosecond 
 SOA-Based Optical Switches' (link will be provided when published). 
