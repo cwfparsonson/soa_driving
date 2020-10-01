@@ -1,6 +1,6 @@
 # SOA Drive Signal Optimisation with Artificial Intelligence
 
-**Documentation**: https://soa-driving.readthedocs.io/en/latest/
+**Documentation**: soa-driving.readthedocs.io/
 
 This project formed part of the journal paper 'An Artificial 
 Intelligence Approach to Optimal Control of Sub-Nanosecond 

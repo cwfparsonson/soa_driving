@@ -1,6 +1,6 @@
 # SOA Drive Signal Optimisation with Particle Swarm Optimisation
 
-**Documentation**: https://soa-driving.readthedocs.io/en/latest/
+**Documentation**: soa-driving.readthedocs.io/
 
 This project formed part of the journal paper 'An Artificial Intelligence Approach to Optimal Control of Sub-Nanosecond SOA-Based Optical Switches' (link will be provided when published). All data (https://doi.org/10.5522/04/12356696.v1) used in the paper for PSO was generated with this code. The PSO algorithm is used to optimise the driving signal for SOA switches both in simulation and experiment. Researchers should be able to download this project and blackbox the PSO algorithm to optimise a range of SOA transfer functions/simulation objects without needing to write any code (other than minor directory variable adjustments). 
 
