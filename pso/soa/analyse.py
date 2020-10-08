@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class ResponseMeasurements:
-    def __init__(self,signal,t,gradientPoints=8,percentage=5,hopSize=1,SP=None):
+    def __init__(self,signal,t,gradientPoints=2,percentage=5,hopSize=1,SP=None):
         """
         60 points: gradientPoints=8
         240 points: gradientPoints=8

@@ -6,6 +6,7 @@ soa/devices.py
 soa/distort_tf.py
 soa/get_fopdt_params.py
 soa/optimisation.py
+soa/optimisation2.py
 soa/signalprocessing.py
 soa.egg-info/PKG-INFO
 soa.egg-info/SOURCES.txt

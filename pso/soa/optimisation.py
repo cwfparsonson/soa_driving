@@ -14,6 +14,8 @@ import random
 import math
 
 import multiprocessing
+
+
 import pickle
 
 from scipy import signal
@@ -1263,6 +1265,7 @@ def run_test(directory_for_run,
 
 
 if __name__ == '__main__':
+    
     '''
     Below is an example implementation of the above PSO code. Note that there 
     are 2 main modes of using this PSO implementation:
@@ -1296,12 +1299,9 @@ if __name__ == '__main__':
     As a general rule-of-thumb, increasing n (the number of particles) is a 
     reliable way to improve PSO performance and find more optimal solutions.
     '''
+    
+    
     import soa
-
-
-
-    # set dir to save data
-    directory = '/Users/hadi/Desktop/SOA_Complexity/PSO_Data'
 
     # specify whether running simulation or experiment
     sim = True
@@ -1309,16 +1309,20 @@ if __name__ == '__main__':
     # specify if using linux (or mac) (for backslash or forward slash dirs)
     linux = True
 
-    num_points = 240
+    m = 10  #number of points in search space to begin with 
+    points = int(m)
+    max_points = 40  #number of points in search space to end  
+  
+    TF_points = int(1000)    #number of points in search space for transfer function 
+   
     time_start = 0.0
     time_stop = 20e-9 
-    t = np.linspace(time_start,time_stop,num_points)
-    init_OP = np.zeros(num_points)
+   
 
     # config pso params
-    n = 3 
-    iter_max = 150
-    rep_max = 1
+    n = 3  #number of input driving signals 
+    iter_max = 10
+    rep_max = 1  
     max_v_f = 0.05
     init_v_f = max_v_f
     cost_f = 'mSE'
@@ -1330,7 +1334,7 @@ if __name__ == '__main__':
     if sim == True:
         # define transfer function(s)
         # N.B. init_OP low must be -1 for tf
-        init_OP[:int(0.25*num_points)],init_OP[int(0.25*num_points):] = -1, 0.5
+        
         num = [2.01199757841099e85]
         den = [
             1.64898505756825e0,
@@ -1345,71 +1349,90 @@ if __name__ == '__main__':
             2.40236028415562e90,
         ]
         tf = signal.TransferFunction(num, den)
+        
+
+        
 
         # set up simulation(s) you want to run
-        init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t)
-        sp = analyse.ResponseMeasurements(init_PV, t).sp.sp
-        tfs, _ = distort_tf.gen_tfs(num_facs=[1.0,1.2,1.4], 
+        """tfs, _ = distort_tf.gen_tfs(num_facs=[1.0,1.2,1.4], 
                                     a0_facs=[0.8],
                                     a1_facs=[0.7,0.8,1.2],
                                     a2_facs=[1.05,1.1,1.2],
-                                    all_combos=False)
+                                    all_combos=False)"""
 
         pso_objs = multiprocessing.Manager().list()
         jobs = []
-        test_nums = [test+1 for test in range(len(tfs))]
-        direcs = [directory + '/test_{}'.format(test_num) for test_num in test_nums]
-        for tf, direc in zip(tfs, direcs):
+        #test_nums = [test+1 for test in range(len(tfs))]
+    
+        while points <= max_points:    
+            counter = 0
+            directory = ('/Users/hadi/Desktop/SOA_Complexity/PSO_Data/m={}'.format(points))
+            os.mkdir(directory)
+            #for tf in tfs:
+            
+            init_OP = np.zeros(TF_points)                                           #initialise driving signal 
+            init_OP[:int(0.25*TF_points)],init_OP[int(0.25*TF_points):] = -1, 0.5
+            t = np.linspace(time_start,time_stop,TF_points)
+            init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t)
+                        
+            sp = analyse.ResponseMeasurements(init_PV, t).sp.sp
+               # set dir to save data
+                
+                
+
+            direc = directory + '/test_{}'.format(counter) 
+
             if os.path.exists(direc) == False:
                 os.mkdir(direc)
+            
             p = multiprocessing.Process(target=run_test, 
                                         args=(direc, 
-                                              tf, 
-                                              t, 
-                                              init_OP, 
-                                              n, 
-                                              iter_max, 
-                                              rep_max, 
-                                              init_v_f, 
-                                              max_v_f, 
-                                              w_init, 
-                                              w_final, 
-                                              True, 
-                                              'pisic_shape', 
-                                              on_suppress_f, 
-                                              True, 
-                                              None, 
-                                              cost_f, 
-                                              st_importance_factor, 
-                                              True, 
-                                              linux,
-                                              sp, 
-                                              pso_objs,))
-            
+                                          tf, 
+                                          t, 
+                                          init_OP, 
+                                          n, 
+                                          iter_max, 
+                                          rep_max, 
+                                          init_v_f, 
+                                          max_v_f, 
+                                          w_init, 
+                                          w_final, 
+                                          True, 
+                                          'pisic_shape', 
+                                          on_suppress_f, 
+                                          True, 
+                                          None, 
+                                          cost_f, 
+                                          st_importance_factor, 
+                                          True, 
+                                          linux,
+                                          sp, 
+                                          pso_objs,))
+
             jobs.append(p)
             p.start()
+
+            """
+                # plot composite graph
+                pso_objs = list(pso_objs)
+                plt.figure()
+                plt.plot(t, sp, color='green')
+                for pso_obj in pso_objs:
+                    plt.plot(t, pso_obj.gbest_PV)
+                #plt.show()
+            """
+
+            pickle data
+            PIK = directory + '/pickle.dat'
+            data = pso_objs
+            with open(PIK, 'wb') as f:
+                pickle.dump(data, f)
+        
+            counter +=1
+            points +=10
         for job in jobs:
-            job.join()
-
-        # plot composite graph
-        pso_objs = list(pso_objs)
-        plt.figure()
-        plt.plot(t, sp, color='green')
-        for pso_obj in pso_objs:
-            plt.plot(t, pso_obj.gbest_PV)
-        plt.show()
-
-
-        # pickle data
-        PIK = directory + self.slash + 'pickle.dat'
-        data = pso_objs
-        with open(PIK, 'wb') as f:
-            pickle.dump(data, f)
-
-
-
-
-
+            job.join()        
+        
     else:
         # set up experiment(s) you want to run
         directory = r"C:\Users\onglab\Desktop\SOA_project\Chris\pso_no_fall_test_09012020" 
@@ -1439,3 +1462,7 @@ if __name__ == '__main__':
                         st_importance_factor=st_importance_factor, 
                         awg=awg, 
                         osc=osc) 
+        
+
+
+    
