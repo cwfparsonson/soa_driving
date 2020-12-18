@@ -44,6 +44,12 @@ def getTransferFunctionOutput(tf, U, T, atol=1e-12):
     - PV = resultant output signal of transfer function
     """
     X0 = find_x_init(tf)
+    if type(U) is list:
+        U = np.array(U)
+    if U.size < 240:
+        n = 240 // U.size
+        U = np.repeat(U, n)
+
     (_, PV, _) = signal.lsim2(tf, U, T, X0=X0, atol=atol)
 
     min_PV = np.copy(min(PV))

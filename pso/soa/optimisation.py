@@ -5,6 +5,8 @@ import pyvisa as visa
 # sys.path.append(r'C:\Users\Christopher\OneDrive - University College London\ipes_cdt\phd_project\projects\soa_driving\code\soa_driving\optimisation\python\\')
 from soa import devices, signalprocessing, analyse, distort_tf
 
+from upsampling import upsampling
+
 import time
 import csv
 import matplotlib.pyplot as plt
@@ -595,6 +597,12 @@ class PSO:
         Returns:
         - PV = resultant output signal of transfer function
         """
+
+        if type(U) is list:
+            U = np.array(U)
+        if U.size < 240:
+            n = 240 // U.size
+            U = np.repeat(U, n)
         (_, PV, _) = signal.lsim2(tf, U, T, X0=X0, atol=atol)
 
         # ensure lower point of signal >=0 (can occur for sims), otherwise
@@ -1329,13 +1337,13 @@ if __name__ == '__main__':
 
 
     # set dir to save data
-    directory = os.path.dirname(soa.__file__)+'/../data/'
+    directory = r'C:\Users\billv\3project\pythoncode\data'
 
     # specify whether running simulation or experiment
     sim = True
 
     # specify if using linux (or mac) (for backslash or forward slash dirs)
-    linux = True
+    linux = False
 
     num_points = 240
     time_start = 0.0
@@ -1386,7 +1394,7 @@ if __name__ == '__main__':
         pso_objs = multiprocessing.Manager().list()
         jobs = []
         test_nums = [test+1 for test in range(len(tfs))]
-        direcs = [directory + '/test_{}'.format(test_num) for test_num in test_nums]
+        direcs = [directory + '\test_{}'.format(test_num) for test_num in test_nums]
         for tf, direc in zip(tfs, direcs):
             if os.path.exists(direc) == False:
                 os.mkdir(direc)
@@ -1429,7 +1437,7 @@ if __name__ == '__main__':
 
 
         # pickle data
-        PIK = directory + '/pickle.dat'
+        PIK = directory + '\pickle.dat'
         data = pso_objs
         with open(PIK, 'wb') as f:
             pickle.dump(data, f)
