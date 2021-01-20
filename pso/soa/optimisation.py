@@ -1,9 +1,9 @@
-import sys, os
+import sys, os, shutil
 import pyvisa as visa
 
 # make modules importable from anywhere
 # sys.path.append(r'C:\Users\Christopher\OneDrive - University College London\ipes_cdt\phd_project\projects\soa_driving\code\soa_driving\optimisation\python\\')
-from soa import devices, signalprocessing, analyse, distort_tf
+from soa import devices, signalprocessing, analyse, distort_tf, subsampling
 
 import time
 import csv
@@ -114,8 +114,22 @@ class PSO:
         else:
             self.slash = '\\'
 
-        self.t = t
+        #self.t = t
+
+        """t = np.array(t)
+        p2p = 240/len(t)
+        t = np.repeat(t, p2p)"""
+
+
+        self.t2 = t 
+        #np.linspace(t[0], t[-1], 240)
         self.init_OP = init_OP
+        self.p2p = p2p
+
+        """init_OP = np.array(init_OP)
+        p2p = 240/len(init_OP)
+        t = np.repeat(init_OP, p2p)"""
+
         self.n = n
         self.iter_max = iter_max
         self.rep_max = rep_max
@@ -158,7 +172,7 @@ class PSO:
             self.X0 = self.__find_x_init(self.sim_model) 
             self.init_PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                             self.init_OP, 
-                                                            self.t, 
+                                                            self.t2, 
                                                             self.X0) 
         else:
             self.init_PV = self.__getSoaOutput(self.init_OP) 
@@ -166,7 +180,7 @@ class PSO:
         # init params
         self.K_index, self.K = self.__getSectionToOptimise() # opt indices
         self.m = len(self.K) # num params to optimise
-        self.num_points = int(len(self.t)) # num points in signal
+        self.num_points = int(len(self.t2)) # num points in signal
         self.curr_iter = 0 
         self.x = np.zeros((self.n, self.m)) # current pop position array
         self.x_value = np.zeros(self.n) # fitness vals of positions
@@ -176,7 +190,7 @@ class PSO:
         self.gbest_cost = self.pbest_value[self.min_cost_index] # global best val
         self.awg_step_size = (self.max_val - self.min_val) / (2**self.awg_res)
         if self.SP is None:
-            self.SP = analyse.ResponseMeasurements(self.init_PV, self.t).sp.sp 
+            self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp 
         else:
             self.SP = SP
 
@@ -360,7 +374,7 @@ class PSO:
         if self.sim_model != None:
             PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                   OP, 
-                                                  self.t, 
+                                                  self.t2, 
                                                   self.X0) 
         else:
             PV = self.__getSoaOutput(OP) 
@@ -374,12 +388,13 @@ class PSO:
                      index=None, 
                      header=False)
 
-        responseMeasurementsObject = analyse.ResponseMeasurements(PV, self.t) 
+        responseMeasurementsObject = analyse.ResponseMeasurements(PV, self.t2) 
 
         rt = responseMeasurementsObject.riseTime
         st = responseMeasurementsObject.settlingTime
         os = responseMeasurementsObject.overshoot
         st_index = responseMeasurementsObject.settlingTimeIndex
+
 
         return [rt, st, os, st_index]
 
@@ -597,7 +612,24 @@ class PSO:
         Returns:
         - PV = resultant output signal of transfer function
         """
+        p2p = 240/len(U)
+        U = np.array(U)
+        
+        T = np.linspace(0, 20e-9, 240)
+        T = np.array(T)
+        U = np.repeat(U, p2p)
+        #T = np.repeat(T, p2p)
+        #print('Size of drive signal {}, size of time values {}'.format(len(U), len(T)))
+
+
+        #plt.plot(T, U)
+        #plt.show()
+        
+        #print('Size of new U {}, size of new T {}'.format(len(new_U), len(new_T)))
+
         (_, PV, _) = signal.lsim2(tf, U, T, X0=X0, atol=atol)
+    
+        
 
         # ensure lower point of signal >=0 (can occur for sims), otherwise
         # will destroy st, os and rt analysis
@@ -813,12 +845,12 @@ class PSO:
             if self.sim_model != None:
                 PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                       OP, 
-                                                      self.t, 
+                                                      self.t2, 
                                                       self.X0) 
             else:
                 PV = self.__getSoaOutput(OP) 
 
-            x_value[j] = signalprocessing.cost(self.t, 
+            x_value[j] = signalprocessing.cost(self.t2, 
                                                PV, 
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
@@ -826,13 +858,22 @@ class PSO:
 
             if self.record_extra_info == True:
                 # store particle output
+                #curr_outputs = curr_outputs.flatten()
+                #curr_outputs = np.zeros(240)
+                curr_outputs = np.resize(curr_outputs,(self.num_points,240))
+                #print(curr_outputs)
+                #print(curr_outputs[:2].size)
+                #print(PV.size)
                 curr_outputs[j, :] = PV
             
             if plot == True:
+
+                OP = np.repeat(OP, self.p2p)
+                #OP = np.resize(OP,(1,240))
                 plt.figure(1) 
-                plt.plot(self.t, PV, c='b') 
+                plt.plot(self.t2, PV, c='b') 
                 plt.figure(2)
-                plt.plot(self.t, OP, c='r')
+                plt.plot(self.t2, OP, c='r')
 
         if plot == True:
         # get best fitness for analysis
@@ -840,7 +881,7 @@ class PSO:
             if self.sim_model != None:
                 best_PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                            particles[min_cost_index,:], 
-                                                           self.t, 
+                                                           self.t2, 
                                                            self.X0) 
             else:
                 best_PV = self.__getSoaOutput(particles[min_cost_index, :])      
@@ -849,26 +890,31 @@ class PSO:
         if plot == True:
             # finalise and save plot
             plt.figure(1)
-            plt.plot(self.t, self.SP, c='g', label='Target SP')
-            plt.plot(self.t, self.init_PV, c='r', label='Initial Output')
-            plt.plot(self.t, best_PV, c='c', label='Best fitness')
-            st_index = analyse.ResponseMeasurements(best_PV, self.t).settlingTimeIndex
-            plt.plot(self.t[st_index], 
+            plt.plot(self.t2, self.SP, c='g', label='Target SP')
+            plt.plot(self.t2, self.init_PV, c='r', label='Initial Output')
+            plt.plot(self.t2, best_PV, c='c', label='Best fitness')
+            st_index = analyse.ResponseMeasurements(best_PV, self.t2).settlingTimeIndex
+            plt.plot(self.t2[st_index], 
                      best_PV[st_index], 
                      marker='x', 
                      markersize=6, 
                      color="red", 
                      label='Settling Point')
             plt.legend(loc='lower right')
-            plt.title('PSO-Optimised Output Signals After ' + str(curr_iter) + \
+            plt.title('Number of points: ' + str(num_points) + '\n PSO-Optimised Output Signals After ' + str(curr_iter) + \
                 ' Generations')
             plt.xlabel('Time')
             plt.ylabel('Amplitude')
             plt.savefig(self.path_to_pso_data + str(curr_iter) + '_gen_outputs.png')  
             plt.close()
 
+
+            particles = np.resize(particles,(self.num_points,240))
+            #print(particles)
+
+
             plt.figure(2)
-            plt.plot(self.t, 
+            plt.plot(self.t2, 
                      particles[min_cost_index, :], 
                      c='c', 
                      label='Best fitness')
@@ -1100,18 +1146,18 @@ class PSO:
         if self.sim_model != None:
             self.gbest_PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                              self.gbest, 
-                                                             self.t, 
+                                                             self.t2, 
                                                              self.X0) 
         else:
             self.gbest_PV = self.__getSoaOutput(self.gbest) 
     
         # plot final output signal
         plt.figure()
-        plt.plot(self.t, self.SP, c='g', label='Target SP')
-        plt.plot(self.t, self.init_PV, c='r', label='Initial Output')
-        plt.plot(self.t, self.gbest_PV, c='c', label='PSO-Optimised Output')
+        plt.plot(self.t2, self.SP, c='g', label='Target SP')
+        plt.plot(self.t2, self.init_PV, c='r', label='Initial Output')
+        plt.plot(self.t2, self.gbest_PV, c='c', label='PSO-Optimised Output')
         st_index = int(rt_st_os_analysis[len(rt_st_os_analysis)-1, 3]) 
-        plt.plot(self.t[st_index], 
+        plt.plot(self.t2[st_index], 
                  self.gbest_PV[st_index], 
                  marker='x', 
                  markersize=6, 
@@ -1124,16 +1170,22 @@ class PSO:
         plt.savefig(self.path_to_pso_data + 'final_output.png')  
         plt.close()
 
+
+
+        """
+
         # plot final driving signal
         plt.figure()
-        plt.plot(self.t, self.init_OP, c='r', label='Initial Input')
-        plt.plot(self.t, self.gbest, c='c', label='PSO-Optimised Input')
+        plt.plot(self.t2, self.init_OP, c='r', label='Initial Input')
+        plt.plot(self.t2, self.gbest, c='c', label='PSO-Optimised Input')
         plt.legend(loc='lower right')
         plt.title('Final PSO-Optimised Input Signal')
         plt.xlabel('Time')
         plt.ylabel('Voltage')
         plt.savefig(self.path_to_pso_data + 'final_input.png')  
         plt.close()
+"""
+
 
         # plot learning curve
         plt.figure()
@@ -1167,7 +1219,7 @@ class PSO:
 
 
         # save key data
-        t_df = pd.DataFrame(self.t) 
+        t_df = pd.DataFrame(self.t2) 
         init_OP_df = pd.DataFrame(self.init_OP) #
         OP_df = pd.DataFrame(self.gbest) 
         SP_df = pd.DataFrame(self.SP) 
@@ -1309,12 +1361,12 @@ if __name__ == '__main__':
     # specify if using linux (or mac) (for backslash or forward slash dirs)
     linux = True
 
-    m = 10  #number of points in search space to begin with 
-    points = int(m)
-    max_points = 40  #number of points in search space to end  
+    #m = 24  #number of points in search space to begin with 
+    #points = int(m)
+    max_points = 64  #number of points in search space to end  
   
-    TF_points = int(1000)    #number of points in search space for transfer function 
-   
+    #num_points_list = [12, 15, 16, 20, 24, 30, 40, 48, 60, 80, 120, 240]
+    num_points_list = [10, 240]   
     time_start = 0.0
     time_stop = 20e-9 
    
@@ -1364,74 +1416,93 @@ if __name__ == '__main__':
         jobs = []
         #test_nums = [test+1 for test in range(len(tfs))]
     
-        while points <= max_points:    
-            counter = 0
-            directory = ('/Users/hadi/Desktop/SOA_Complexity/PSO_Data/m={}'.format(points))
-            os.mkdir(directory)
-            #for tf in tfs:
-            
-            init_OP = np.zeros(TF_points)                                           #initialise driving signal 
-            init_OP[:int(0.25*TF_points)],init_OP[int(0.25*TF_points):] = -1, 0.5
-            t = np.linspace(time_start,time_stop,TF_points)
-            init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t)
-                        
-            sp = analyse.ResponseMeasurements(init_PV, t).sp.sp
-               # set dir to save data
+        for x in range (1):
+
+            for num_points in num_points_list:   
+                counter = 0
+                directory = ('/Users/hadi/Desktop/SOA_Complexity/PSO_Data/points={}'.format(num_points))
+                            # set dir to save data  
+                            # /home/uceelkh/Desktop/SOA_Complexity/PSO_Data/ - mammoth directory    
                 
+                if os.path.exists(directory):  #check if directory is exists and remove existing directory with new run
+                    shutil.rmtree(directory)
+                os.makedirs(directory)
+                
+                direc = directory + '/test_{}'.format(counter) 
+
+                if os.path.exists(direc) == False:
+                    os.mkdir(direc)
+                
+                init_OP = np.zeros(num_points)          #initialise driving signal
+                init_OP[:int(0.25*num_points)],init_OP[int(0.25*num_points):] = -1, 0.5    
+
+
+                """                                            
+                init_OP[:int(0.25*num_points)],init_OP[int(0.25*num_points):int(0.75*num_points)],init_OP[int(0.75*num_points):] = -1, 0.5, -1   
+                
+                #above line for square output of driving signals from TF   
+                """
+
+
+                p2p = 240/num_points        # p2p is the ratio of input output (240) points to the actual points of input signal - for upsampling
+
+                t = np.linspace(time_start,time_stop,240)                       #hardcode time parameter to 240 points
+                init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t)    #get initial output of initial signal and use to generate a target set point
                 
 
-            direc = directory + '/test_{}'.format(counter) 
-
-            if os.path.exists(direc) == False:
-                os.mkdir(direc)
-            
-            p = multiprocessing.Process(target=run_test, 
-                                        args=(direc, 
-                                          tf, 
-                                          t, 
-                                          init_OP, 
-                                          n, 
-                                          iter_max, 
-                                          rep_max, 
-                                          init_v_f, 
-                                          max_v_f, 
-                                          w_init, 
-                                          w_final, 
-                                          True, 
-                                          'pisic_shape', 
-                                          on_suppress_f, 
-                                          True, 
-                                          None, 
-                                          cost_f, 
-                                          st_importance_factor, 
-                                          True, 
-                                          linux,
-                                          sp, 
-                                          pso_objs,))
-
-            jobs.append(p)
-            p.start()
-
-            """
-                # plot composite graph
-                pso_objs = list(pso_objs)
-                plt.figure()
-                plt.plot(t, sp, color='green')
-                for pso_obj in pso_objs:
-                    plt.plot(t, pso_obj.gbest_PV)
+                #plt.plot(init_PV)
                 #plt.show()
-            """
+                            
+                sp = analyse.ResponseMeasurements(init_PV, t).sp.sp         #target set point optical output signal the PSO is trying to achieve
+                
+                p = multiprocessing.Process(target=run_test, 
+                                            args=(direc, 
+                                            tf, 
+                                            t, 
+                                            init_OP, 
+                                            n, 
+                                            iter_max, 
+                                            rep_max, 
+                                            init_v_f, 
+                                            max_v_f, 
+                                            w_init, 
+                                            w_final, 
+                                            True, 
+                                            'pisic_shape', 
+                                            on_suppress_f, 
+                                            True, 
+                                            None, 
+                                            cost_f, 
+                                            st_importance_factor, 
+                                            True, 
+                                            linux,
+                                            sp, 
+                                            pso_objs,))
 
-            pickle data
-            PIK = directory + '/pickle.dat'
-            data = pso_objs
-            with open(PIK, 'wb') as f:
-                pickle.dump(data, f)
-        
-            counter +=1
-            points +=10
-        for job in jobs:
-            job.join()        
+                jobs.append(p)
+                p.start()
+
+                """
+                    # plot composite graph
+                    pso_objs = list(pso_objs)
+                    plt.figure()
+                    plt.plot(t, sp, color='green')
+                    for pso_obj in pso_objs:
+                        plt.plot(t, pso_obj.gbest_PV)
+                    #plt.show()
+                
+                """
+                #pickle data
+                PIK = directory + '/pickle.dat'
+                data = pso_objs
+                with open(PIK, 'wb') as f:
+                    pickle.dump(data, f)
+            
+                #counter +=1
+                #points +=10
+            for job in jobs:
+                job.join()   
+        x += 1     
         
     else:
         # set up experiment(s) you want to run

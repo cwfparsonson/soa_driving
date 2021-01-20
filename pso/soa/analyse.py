@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class ResponseMeasurements:
-    def __init__(self,signal,t,gradientPoints=2,percentage=5,hopSize=1,SP=None):
+    def __init__(self,signal,t,gradientPoints=8,percentage=5,hopSize=1,SP=None):
         """
         60 points: gradientPoints=8
         240 points: gradientPoints=8
@@ -39,9 +39,9 @@ class ResponseMeasurements:
     def __getInflectionTimeIndex(self):
         if self.SP is None:
             grad = []
-            n = len(self.signal)
-            for i in range(n):
-                if i + self.gradientPoints < n:
+            n = len(self.signal)        #length of signal
+            for i in range(n):          
+                if i + self.gradientPoints < n:     
                     grad.append(abs(self.signal[i] \
                         - self.signal[i+self.gradientPoints]))
                 else:

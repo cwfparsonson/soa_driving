@@ -1,11 +1,9 @@
 from scipy import signal
+from soa import subsampling
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
-
-
-
-
+   
 
 
 def find_x_init(tf):
@@ -43,7 +41,34 @@ def getTransferFunctionOutput(tf, U, T, atol=1e-12):
     Returns:
     - PV = resultant output signal of transfer function
     """
+
     X0 = find_x_init(tf)
+
+    p2p = 240/len(U)
+    U = np.array(U)
+    
+
+
+    T = np.linspace(0, 20e-9, 240)
+    T = np.array(T)
+    #print(T.shape)
+    #print(type(T))
+    U = np.repeat(U, p2p)
+
+    #print(U.shape)
+    #print(type(U))
+    
+    
+    
+    #T = np.repeat(T, p2p)
+
+    #print("ratio = ",p2p)
+
+    #U = subsampling.getSampledInitialDrivingSignal(240, U)
+
+    #T = subsampling.getSampledInitialDrivingSignal(240, T)
+    
+
     (_, PV, _) = signal.lsim2(tf, U, T, X0=X0, atol=atol)
 
     min_PV = np.copy(min(PV))
