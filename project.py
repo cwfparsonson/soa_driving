@@ -61,7 +61,7 @@ if __name__ == '__main__':
     jobs = []
     for num_points in num_points_list:
         # make directory for this test
-        direc = directory + '\\num_points_{}'.format(num_points)
+        direc = directory + '/num_points_{}'.format(num_points)
         if os.path.exists(direc) == False:
             os.mkdir(direc)
 
@@ -109,7 +109,7 @@ if __name__ == '__main__':
         job.join()
 
     # pickle PSO objects so can re-load later if needed
-    PIK = directory + '\pickle.dat'
+    PIK = directory + '/pickle.dat'
     data = pso_objs
     with open(PIK, 'wb') as f:
         pickle.dump(data, f)
