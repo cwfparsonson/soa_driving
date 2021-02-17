@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     # set dir to save data
     linux = False
-    directory = r'C:\Users\billv\3project\pythoncode\data'
+    directory = r'../../ReportData'
     
     def factorize(num):
         return [n for n in range(1, num + 1) if num % n == 0]
@@ -30,8 +30,8 @@ if __name__ == '__main__':
     time_stop = 20e-9
 
     # set PSO params
-    n = 10
-    iter_max = 150
+    n = 12
+    iter_max = 15
     rep_max = 1 
     max_v_f = 0.05 
     init_v_f = max_v_f 
