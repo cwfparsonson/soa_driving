@@ -1,6 +1,6 @@
 if __name__ == '__main__':
-    from soa import devices, signalprocessing, analyse, distort_tf2 
-    from soa.optimisation2 import PSO, run_test
+    from soa import devices, signalprocessing, analyse, distort_tf
+    from soa.optimisation import PSO, run_test
 
 
     import numpy as np
