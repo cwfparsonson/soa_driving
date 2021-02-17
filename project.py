@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     # set dir to save data
     linux = True
-    directory = r'../../ReportData'
+    directory = '/ReportData'
     
     def factorize(num):
         return [n for n in range(1, num + 1) if num % n == 0]
