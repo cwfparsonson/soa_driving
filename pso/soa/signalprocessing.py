@@ -32,7 +32,7 @@ class generateSignal:
         self.t_start = t_start
         self.t_stop = t_stop
         self.save_signal = save_signal
-        self.directory = directory + "\\"
+        self.directory = directory + "/"
         
         self.t = np.linspace(self.t_start, self.t_stop, self.num_points) 
         self.signal = np.zeros(len(self.t))
