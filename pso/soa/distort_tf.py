@@ -2,6 +2,7 @@ from scipy import signal
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
+from soa import upsampling
 
 
 
@@ -43,14 +44,19 @@ def getTransferFunctionOutput(tf, U, T, atol=1e-12):
     Returns:
     - PV = resultant output signal of transfer function
     """
+    T = np.linspace(0, 20e-9, 240)
     X0 = find_x_init(tf)
+    U = np.array(U)
+    p = upsampling.ups(240)
+    U = p.create(U)
+
+
     (_, PV, _) = signal.lsim2(tf, U, T, X0=X0, atol=atol)
 
     min_PV = np.copy(min(PV))
     if min_PV < 0:
         for i in range(0, len(PV)):
             PV[i] = PV[i] + abs(min_PV) # translate signal up
-
     return PV
 
 

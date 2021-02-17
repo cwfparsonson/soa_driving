@@ -18,6 +18,10 @@ import pickle
 
 from scipy import signal
 
+from soa import upsampling
+
+from collections import defaultdict
+
 
 
 class PSO:
@@ -32,20 +36,22 @@ class PSO:
                  iter_max, 
                  rep_max, 
                  init_v_f, 
-                 max_v_f, 
+                 max_v_f,
+                 q = 1, 
                  w_init=0.9, 
                  w_final=None, 
                  c1=0.2, c2=0.2, 
                  adapt_accel=True, 
                  sect_to_optimise='whole_signal', 
-                 areas_to_suppress='None', 
+                 areas_to_suppress='None',
+                 epsilon = 0.1, 
                  off_suppress_f=0.2, 
                  on_suppress_f=0.8, 
                  embed_init_signal=True, 
                  path_to_embedded_signal=None, 
                  directory='Unknown', 
                  cost_f='Unknown', 
-                 st_importance_factor=None, 
+                 st_importance_factor=0.8, 
                  sim_model=None, 
                  awg=None, 
                  osc=None, 
@@ -107,14 +113,20 @@ class PSO:
         - linux (bool): If True, file dirs have forward slash. If false, have backslash
         - SP (list of floats): target SP PSO should try to achieve
         """
+        self.cascade_out = 0
+
         if linux:
             self.slash = '/'
         else:
             self.slash = '\\'
 
         self.t = t
-        self.init_OP = init_OP
+        self.t2 = np.linspace(t[0], t[-1], 240)
+        p = upsampling.ups(240)
         self.n = n
+        self.q = q
+        self.epsilon = epsilon
+        self.init_OP = self.cascade(init_OP)
         self.iter_max = iter_max
         self.rep_max = rep_max
         self.init_v_f = init_v_f
@@ -151,30 +163,34 @@ class PSO:
         if self.adapt_accel == True and w_final == None:
             sys.exit('Must specifiy w_final value if using adaptive accel.')
 
+        # init params
+        self.num_points = int(len(self.t)) # num points in signal
+        self.K_index, self.K = self.__getSectionToOptimise() # opt indices
+        self.m = len(self.K) # num params to optimise
+                
+
         # get init output
         if self.sim_model != None:
             self.X0 = self.__find_x_init(self.sim_model) 
             self.init_PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                             self.init_OP, 
-                                                            self.t, 
+                                                            self.t2, 
                                                             self.X0) 
         else:
             self.init_PV = self.__getSoaOutput(self.init_OP) 
 
-        # init params
-        self.K_index, self.K = self.__getSectionToOptimise() # opt indices
-        self.m = len(self.K) # num params to optimise
-        self.num_points = int(len(self.t)) # num points in signal
+
         self.curr_iter = 0 
-        self.x = np.zeros((self.n, self.m)) # current pop position array
+        self.x = self.cascade(np.zeros((self.n, self.m))) # current pop position array
         self.x_value = np.zeros(self.n) # fitness vals of positions
         self.pbest_value = np.copy(self.x_value) # best local fitness vals
         self.min_cost_index = np.argmin(self.pbest_value) # index best fitness
-        self.gbest = np.copy(self.K) # global best positions
+        # May cause Issues
+        self.gbest = self.cascade(np.copy(self.K)) # global best positions
         self.gbest_cost = self.pbest_value[self.min_cost_index] # global best val
         self.awg_step_size = (self.max_val - self.min_val) / (2**self.awg_res)
         if self.SP is None:
-            self.SP = analyse.ResponseMeasurements(self.init_PV, self.t).sp.sp 
+            self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp 
         else:
             self.SP = SP
 
@@ -184,17 +200,30 @@ class PSO:
         for g in range(0, self.m):
             self.LB[g] = self.min_val
             self.UB[g] = self.max_val
+        
+        self.LB = self.cascade(self.LB) # lower bound on particle positions
+        self.UB = self.cascade(self.UB) # upper bound on particle positions        
+        
         self.v_LB = np.zeros(self.m) # lower bound on particle velocities
         self.v_UB = np.zeros(self.m) # upper bound on particle velocities
         for g in range(0, self.m):
             self.v_UB[g] = self.UB[g] * self.max_v_f
             self.v_LB[g] = self.v_UB[g] * (-1)
+        
+        self.v_LB = self.cascade(self.v_LB)
+        self.v_UB = self.cascade(self.v_UB)
+
+        self.m_c = self.m * self.q
+
+        self.misic_sig = signalprocessing.generateSignal(num_points = self.num_points, directory= self.directory).misic()
+
+        self.misic_sig = self.cascade(self.misic_sig)
 
         # initialise particle positions
-        for g in range(0, self.m):
+        for g in range(0, self.m_c):
             if self.embed_init_signal == True:
                 if self.path_to_embedded_signal == None:
-                    self.x[0, g] = self.init_OP[g] # embed init OP at start
+                    self.x[0, g] = self.misic_sig[g] # embed init OP at start
                 else:
                     init_sig = self.__getInitialDrivingSignalGuess(self.path_to_embedded_signal)
                     self.x[0, g] = init_sig[g]
@@ -206,7 +235,7 @@ class PSO:
                 self.x[0, :] = self.__suppressAreasOfSignal(self.x[0, :])
                 self.x[0, :] = self.__discretiseParticlePosition(self.x[0, :])
         for j in range(1, self.n):
-            for g in range(0, self.m):
+            for g in range(0, self.m_c):
                 self.x[j, g] = self.LB[g] + \
                     (random.uniform(0,1) * (self.UB[g] - self.LB[g]))
             self.x[j, :] = self.__discretiseParticlePosition(self.x[j, :]) 
@@ -216,9 +245,9 @@ class PSO:
             self.x[j, :] = self.__discretiseParticlePosition(self.x[j, :]) 
 
         # initialise particle velocities
-        self.v = np.zeros((self.n, self.m))
+        self.v = self.cascade(np.zeros((self.n, self.m)))
         for j in range(0, self.n):
-            for g in range(0, self.m):
+            for g in range(0, self.m_c):
                 self.v[j, g] = self.init_v_f * self.x[j, g]
 
         self.pbest = np.copy(self.x) 
@@ -291,9 +320,10 @@ class PSO:
             # evaluate init particle positions
             print('Initialising PSO...')
             start_time = time.time()
-            self.x_value = self.__evaluateParticlePositions(np.copy(self.x), 
+            self.x_value = self.__evaluateParticlePositions(self.x, 
                                                             curr_iter=self.curr_iter, 
-                                                            plot=True) 
+                                                            plot=True, is_first = True) 
+
             self.pbest_value = np.copy(self.x_value) # store local best vals
             end_time = time.time()
             time_all_particles = end_time - start_time
@@ -314,7 +344,8 @@ class PSO:
             # init global cost history for plotting
             self.gbest_cost_history = [] 
             self.min_cost_index = np.argmin(self.pbest_value)
-            for g in range(0, self.m):
+
+            for g in range(0, self.m_c):
                 self.gbest[g] = self.pbest[self.min_cost_index, g] 
             self.gbest_cost = self.pbest_value[self.min_cost_index] 
             self.gbest_cost_history = np.append([self.gbest_cost_history], 
@@ -358,7 +389,7 @@ class PSO:
         if self.sim_model != None:
             PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                   OP, 
-                                                  self.t, 
+                                                  self.t2, 
                                                   self.X0) 
         else:
             PV = self.__getSoaOutput(OP) 
@@ -372,7 +403,7 @@ class PSO:
                      index=None, 
                      header=False)
 
-        responseMeasurementsObject = analyse.ResponseMeasurements(PV, self.t) 
+        responseMeasurementsObject = analyse.ResponseMeasurements(PV, self.t2) 
 
         rt = responseMeasurementsObject.riseTime
         st = responseMeasurementsObject.settlingTime
@@ -595,14 +626,32 @@ class PSO:
         Returns:
         - PV = resultant output signal of transfer function
         """
-        (_, PV, _) = signal.lsim2(tf, U, T, X0=X0, atol=atol)
 
-        # ensure lower point of signal >=0 (can occur for sims), otherwise
-        # will destroy st, os and rt analysis
-        min_PV = np.copy(min(PV))
-        if min_PV < 0:
-            for i in range(0, len(PV)):
-                PV[i] = PV[i] + abs(min_PV)
+        
+
+        T = np.linspace(T[0], T[-1], 240)
+
+        U = np.array(U)
+        sample = 240
+        p = upsampling.ups(sample)
+        input_init = np.copy(U)
+        
+
+        for _ in range(self.q):
+            PV = np.array([])
+            input = input_init[:self.m]
+            input = p.create(input)
+
+            
+            (_, PV, X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
+            X0 = X0_init[-1]
+            min_PV = np.copy(min(PV))
+            if min_PV < 0:
+                for i in range(0, len(PV)):
+                    PV[i] = PV[i] + abs(min_PV)
+            
+            input_init = input_init[self.m:]
+
 
         return PV
 
@@ -645,12 +694,14 @@ class PSO:
         """
 
         if self.sect_to_optimise == 'whole_signal':
-            start_opt_index = 0
-            end_opt_index = int(self.num_points) 
+            start_opt_index = 0     
+            end_opt_index = int(len(self.t)) 
+            
+
         
         # create index and value arrays of points (particles K) to optimise
-        K_index = np.asarray(list(range(start_opt_index, end_opt_index+1)))
-        K = np.asarray([self.init_OP[start_opt_index:end_opt_index]])
+        K_index = np.asarray(list(range(start_opt_index, end_opt_index + 1)))
+        K = np.asarray(self.init_OP[start_opt_index:end_opt_index])
 
         # transpose to column vectors 
         K_index = K_index.transpose()
@@ -660,7 +711,8 @@ class PSO:
 
     def __discretiseParticlePosition(self, part_pos):
         """
-        This method discretises a drive signal/particle positions so that they 
+        This method 
+        tises a drive signal/particle positions so that they 
         can be read by awg. This also reduces the size of the pso algorithm
         search space of particle positions, which will speed up convergence
 
@@ -670,7 +722,6 @@ class PSO:
         Returns: 
         - discretised particle position
         """
-
         for g in range(0, len(part_pos)):
             if part_pos[g] % self.awg_step_size != 0:
                 # value not allowed therefore must discretise
@@ -679,7 +730,7 @@ class PSO:
         
         return part_pos
 
-    def __suppressAreasOfSignal(self, part_pos):
+    def __suppressAreasOfSignal(self, part_pos, is_first = False):
         """
         This method suppresses (or doesn't) various areas of the drive signal 
         from being able to take certain values depending on what user has specified
@@ -699,11 +750,14 @@ class PSO:
             # get params
             start_drive = self.init_OP[0] 
             end_drive = self.init_OP[-1] 
-            max_drive = np.amax(self.init_OP) 
-            for i in range(0, len(self.init_OP)):
+            max_drive = np.amax(self.init_OP)
+
+            K_index_signal_on = 0.25 * self.m
+
+            for i in range(0, self.m):
                 if self.init_OP[i] > start_drive:
                     # get particle index signal turns on
-                    K_index_signal_on = int(i - 0.5*(len(self.init_OP) - len(self.K))) 
+                    K_index_signal_on = int(i - 0.5*(self.m - len(self.K))) 
                     break
             for i in range(int(len(self.init_OP)-1), K_index_signal_on, -1):
                 if self.init_OP[i] > end_drive:
@@ -712,13 +766,16 @@ class PSO:
 
             # suppress start and centre
             for index in range(0, K_index_signal_on):
-                if part_pos[index] > start_drive + abs(self.off_suppress_f*start_drive):
+                for q in range(0, self.q):
+                    if part_pos[index + q * self.m] > start_drive + abs(self.off_suppress_f*start_drive):
                         # suppress start of signal
-                        part_pos[index] = start_drive + abs(self.off_suppress_f*start_drive)
+                        part_pos[index + q * self.m] = start_drive + abs(self.off_suppress_f*start_drive)
+            
             for index in range(K_index_signal_on, len(self.K)):
-                if part_pos[index] < max_drive - abs(self.on_suppress_f*max_drive):
-                    # suppress centre  to end of signal
-                    part_pos[index] = max_drive - abs(self.on_suppress_f*max_drive)
+                for q in range(0, self.q):
+                    if part_pos[index] < max_drive - abs(self.on_suppress_f*max_drive):
+                        # suppress centre  to end of signal
+                        part_pos[index] = max_drive - abs(self.on_suppress_f*max_drive)
         
         elif self.areas_to_suppress == 'start_centre_end':
             # get params
@@ -754,7 +811,7 @@ class PSO:
             max_drive = np.amax(self.init_OP) 
             for i in range(0, len(self.init_OP)):
                 if self.init_OP[i] > start_drive:
-                    K_index_signal_on = int(i - 0.5*(len(self.init_OP) - len(self.K))) 
+                    K_index_signal_on = int(i - 0.5*(self.m - len(self.K))) 
                     break
             for i in range(int(len(self.init_OP)-1), K_index_signal_on, -1):
                 if self.init_OP[i] > end_drive:
@@ -762,21 +819,25 @@ class PSO:
 
             # suppress start and centre
             for index in range(0, K_index_signal_on):
-                if part_pos[index] > start_drive + abs(self.off_suppress_f*start_drive):
-                    # suppress start of signal
-                    part_pos[index] = start_drive + abs(self.off_suppress_f*start_drive)
+                for q in range(self.q):
+                    if part_pos[index + q * self.m] > start_drive + abs(self.off_suppress_f*start_drive):
+                        # suppress start of signal
+                        part_pos[index + q * self.m] = start_drive + abs(self.off_suppress_f*start_drive)
 
+            
             for index in range(K_index_signal_on + int((len(self.K)*pisic_length_factor)), 
                                len(self.K)):
-                if part_pos[index] > self.init_OP[-1]:
-                    # suppress centre to below the step/initial input (except 
-                    # pisic area, whose length is defined by pisic_length_factor)
-                    part_pos[index] = self.init_OP[-1]
+                for q in range(self.q):
+                    if part_pos[index + q * self.m] > self.init_OP[-1]:
+                        # suppress centre to below the step/initial input (except 
+                        # pisic area, whose length is defined by pisic_length_factor)
+                        part_pos[index + q * self.m] = self.init_OP[-1]
 
 
         return part_pos
 
-    def __evaluateParticlePositions(self, particles, curr_iter=None, plot=False):
+
+    def __evaluateParticlePositions(self, particles,curr_iter=None, plot=False, is_first = False):
         """
         This method evaluates the positions of each particle in an array
 
@@ -791,7 +852,7 @@ class PSO:
         """
 
         if self.record_extra_info == True:
-            curr_outputs = np.zeros((self.n, self.m)) 
+            curr_outputs = np.zeros((self.n, len(self.t2))) 
 
         if plot == True and curr_iter == None:
             sys.exit('method requires arg curr_iter if want to plot')
@@ -802,21 +863,26 @@ class PSO:
         x_value = np.zeros(self.n) # int current particle fitnesses/costs storage
         for j in range(0, self.n): 
             particle = particles[j, :] 
-            OP = np.copy(self.init_OP) 
+            # OP = np.copy(self.init_OP) 
             particleIndex = 0
+
+            '''
             for signalIndex in range(self.K_index[0], self.K_index[-1]):
                 OP[signalIndex] = particle[particleIndex]
-                particleIndex += 1 
+                particleIndex += 1
+            '''
+
+            OP = np.copy(particle)
 
             if self.sim_model != None:
                 PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                       OP, 
-                                                      self.t, 
+                                                      self.t2, 
                                                       self.X0) 
             else:
                 PV = self.__getSoaOutput(OP) 
 
-            x_value[j] = signalprocessing.cost(self.t, 
+            x_value[j] = signalprocessing.cost(self.t2, 
                                                PV, 
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
@@ -828,9 +894,9 @@ class PSO:
             
             if plot == True:
                 plt.figure(1) 
-                plt.plot(self.t, PV, c='b') 
+                plt.plot(self.t2, PV, c='b') 
                 plt.figure(2)
-                plt.plot(self.t, OP, c='r')
+                plt.plot(np.linspace(self.t[0],self.t[-1], len(self.t)*self.q), OP, c='r')
 
         if plot == True:
         # get best fitness for analysis
@@ -838,20 +904,19 @@ class PSO:
             if self.sim_model != None:
                 best_PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                            particles[min_cost_index,:], 
-                                                           self.t, 
+                                                           self.t2, 
                                                            self.X0) 
             else:
                 best_PV = self.__getSoaOutput(particles[min_cost_index, :])      
 
         
-        if plot == True:
             # finalise and save plot
             plt.figure(1)
-            plt.plot(self.t, self.SP, c='g', label='Target SP')
-            plt.plot(self.t, self.init_PV, c='r', label='Initial Output')
-            plt.plot(self.t, best_PV, c='c', label='Best fitness')
-            st_index = analyse.ResponseMeasurements(best_PV, self.t).settlingTimeIndex
-            plt.plot(self.t[st_index], 
+            plt.plot(self.t2, self.SP, c='g', label='Target SP')
+            plt.plot(self.t2, self.init_PV, c='r', label='Initial Output')
+            plt.plot(self.t2, best_PV, c='c', label='Best fitness')
+            st_index = analyse.ResponseMeasurements(best_PV, self.t2).settlingTimeIndex
+            plt.plot(self.t2[st_index], 
                      best_PV[st_index], 
                      marker='x', 
                      markersize=6, 
@@ -866,7 +931,7 @@ class PSO:
             plt.close()
 
             plt.figure(2)
-            plt.plot(self.t, 
+            plt.plot(np.linspace(self.t[0],self.t[-1], len(self.t)*self.q), 
                      particles[min_cost_index, :], 
                      c='c', 
                      label='Best fitness')
@@ -887,6 +952,23 @@ class PSO:
                                    header=False)
         
         return x_value 
+    
+    def cascade(self, x):
+        """
+        This methods returns cascaded inputs for SOA
+
+        Args:
+        Parameters to be cascaded
+
+        Returns
+        Cascaded Parameter
+        """
+
+        
+        
+        x = np.tile(x, self.q)
+
+        return x
                 
     def __runPsoAlgorithm(self):
         """
@@ -925,26 +1007,26 @@ class PSO:
         iter_gbest_reached = np.copy(self.iter_gbest_reached)
         meta_path_to_pso_data = self.path_to_pso_data
 
+
         # # run thru pso multiple times
         curr_rep = 1 
         while curr_rep <= self.rep_max:
             self.path_to_pso_data = self.path_to_pso_data + 'rep' + \
                 str(curr_rep) + self.slash
-            os.mkdir(self.path_to_pso_data) 
+            os.mkdir(self.path_to_pso_data)
             for g in range(0, self.m):
                 if self.embed_init_signal == True:
-                    x[0, g] = gbest[g] # embed signal guess
+                    x[0, g] = gbest[g] # embed signal guess # embed signal guess
 
             w = np.ones(self.n) * self.w_init
             c1 = np.ones(self.n) * self.c1
             c2 = np.ones(self.n) * self.c2
 
-            if self.adapt_accel == True:
-                rel_improv = np.zeros(self.n)
-                c1_max = 2.5 
-                c2_max = 2.5 
-                c1_min = 0.1
-                c2_min = 0.1
+            rel_improv = np.zeros(self.n)
+            c1_max = 2.5 
+            c2_max = 2.5 
+            c1_min = 0.1
+            c2_min = 0.1
 
             pc_marker = int(0.05*self.iter_max) # for plotting/saving
             if pc_marker == 0:
@@ -966,14 +1048,14 @@ class PSO:
                 
                 # update particle velocities
                 for j in range(0, self.n):
-                    for g in range(0, self.m):
+                    for g in range(0, self.m_c):
                         v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
                             * (pbest[j, g] - x[j, g]) + (c2[j] * \
                                 random.uniform(0, 1) * (gbest[g] - x[j,g])))
 
                 # handle velocity boundary violations
                 for j in range(0, self.n):
-                    for g in range(0, self.m):
+                    for g in range(0, self.m_c):
                         if v[j, g] > self.v_UB[g]:
                             v[j, g] = self.v_UB[g]
                         if v[j, g] < self.v_LB[g]:
@@ -985,7 +1067,7 @@ class PSO:
                 
                 # handle position boundary violations
                 for j in range(0, self.n):
-                    for g in range(0, self.m):
+                    for g in range(0, self.m_c):
                         if x[j, g] < self.LB[g]:
                             x[j, g] = self.LB[g]
                         elif x[j, g] > self.UB[g]:
@@ -1012,15 +1094,15 @@ class PSO:
                 
                 # update local best particle positions & fitness vals
                 for j in range(0, self.n):
-                    if x_value[j] < pbest_value[j]:
+                    if x_value[j] < pbest_value[j] and self.epsilon * random.uniform(0,10) > 0.2:
                         pbest_value[j] = x_value[j] 
-                        for g in range(0, self.m):
+                        for g in range(0, self.m_c):
                             pbest[j, g] = x[j, g] 
                 
                 # update global best particle positions & history
                 min_cost_index = np.argmin(pbest_value)
                 if pbest_value[min_cost_index] < gbest_cost_history[-1]:
-                    for g in range(0, self.m):
+                    for g in range(0, self.m_c):
                         gbest[g] = pbest[min_cost_index, g]
                     rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
                                                    self.__analyseSignal(gbest, 
@@ -1092,24 +1174,25 @@ class PSO:
         Returns:
         - 
         """
-        self.gbest = [i[0] for i in gbest]
+
+        self.gbest = np.copy(gbest)
 
         # get best particle position output signal
         if self.sim_model != None:
             self.gbest_PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                              self.gbest, 
-                                                             self.t, 
+                                                             self.t2, 
                                                              self.X0) 
         else:
             self.gbest_PV = self.__getSoaOutput(self.gbest) 
     
         # plot final output signal
         plt.figure()
-        plt.plot(self.t, self.SP, c='g', label='Target SP')
-        plt.plot(self.t, self.init_PV, c='r', label='Initial Output')
-        plt.plot(self.t, self.gbest_PV, c='c', label='PSO-Optimised Output')
+        plt.plot(self.t2, self.SP, c='g', label='Target SP')
+        plt.plot(self.t2, self.init_PV, c='r', label='Initial Output')
+        plt.plot(self.t2, self.gbest_PV, c='c', label='PSO-Optimised Output')
         st_index = int(rt_st_os_analysis[len(rt_st_os_analysis)-1, 3]) 
-        plt.plot(self.t[st_index], 
+        plt.plot(self.t2[st_index], 
                  self.gbest_PV[st_index], 
                  marker='x', 
                  markersize=6, 
@@ -1124,8 +1207,12 @@ class PSO:
 
         # plot final driving signal
         plt.figure()
-        plt.plot(self.t, self.init_OP, c='r', label='Initial Input')
-        plt.plot(self.t, self.gbest, c='c', label='PSO-Optimised Input')
+        plt.plot(np.linspace(self.t[0],self.t[-1], len(self.t)*self.q), self.init_OP, c='r', label='Initial Input for SOA')
+        
+        plt.plot(np.linspace(self.t[0],self.t[-1], len(self.t)*self.q), self.gbest, c='c', label='PSO-Optimised Input')
+    
+
+        
         plt.legend(loc='lower right')
         plt.title('Final PSO-Optimised Input Signal')
         plt.xlabel('Time')
@@ -1145,7 +1232,8 @@ class PSO:
         # plot how rt, st and os varied with iterations
         max_rt, max_st, max_os = np.amax(rt_st_os_analysis[:,0]),\
                                  np.amax(rt_st_os_analysis[:,1]),\
-                                 np.amax(rt_st_os_analysis[:,2]) 
+                                 np.amax(rt_st_os_analysis[:,2])
+
         plt.figure()
         plt.plot(iter_gbest_reached, 
                  rt_st_os_analysis[:,0]/max_rt, 
@@ -1165,7 +1253,7 @@ class PSO:
 
 
         # save key data
-        t_df = pd.DataFrame(self.t) 
+        t_df = pd.DataFrame(self.t2) 
         init_OP_df = pd.DataFrame(self.init_OP) #
         OP_df = pd.DataFrame(self.gbest) 
         SP_df = pd.DataFrame(self.SP) 
@@ -1193,6 +1281,12 @@ class PSO:
         PV_df.to_csv(self.path_to_pso_data + "optimised_PV.csv", 
                      index = None, 
                      header=False)
+        
+        # save for time analysis
+        PV_df.to_csv("../../opt" + "optimised_PV_" + str(self.num_points) + ".csv", 
+                     index = None, 
+                     header=['Data'])        
+        
         iter_gbest_reached_df.to_csv(self.path_to_pso_data + "iter_gbest_reached.csv", 
                                      index = None, 
                                      header=False)
@@ -1213,7 +1307,8 @@ def run_test(directory_for_run,
              iter_max, 
              rep_max, 
              init_v_f, 
-             max_v_f, 
+             max_v_f,
+             q, 
              w_init, 
              w_final, 
              adapt_accel, 
@@ -1240,7 +1335,8 @@ def run_test(directory_for_run,
                     iter_max, 
                     rep_max, 
                     init_v_f, 
-                    max_v_f, 
+                    max_v_f,
+                    q = q, 
                     w_init=w_init, 
                     w_final=w_final, 
                     adapt_accel=True, 
