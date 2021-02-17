@@ -30,8 +30,8 @@ if __name__ == '__main__':
     time_stop = 20e-9
 
     # set PSO params
-    n = 12
-    iter_max = 15
+    n = 120
+    iter_max = 150
     rep_max = 1 
     max_v_f = 0.05 
     init_v_f = max_v_f 
@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
         # get initial output of initial signal and use to generate a target set point
         t2 = np.linspace(time_start, time_stop, 240)
-        init_PV = distort_tf2.getTransferFunctionOutput(tf,init_OP,t2)
+        init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t2)
         sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
 
         p = multiprocessing.Process(target=run_test, 
