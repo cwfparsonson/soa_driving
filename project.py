@@ -61,7 +61,7 @@ if __name__ == '__main__':
     jobs = []
     for num_points in num_points_list:
         # make directory for this test
-        direc = directory + '/num_points_{}'.format(num_points)
+        direc = directory + '\\num_points_{}'.format(num_points)
         if os.path.exists(direc) == False:
             os.mkdir(direc)
 

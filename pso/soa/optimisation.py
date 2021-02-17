@@ -1283,9 +1283,11 @@ class PSO:
                      header=False)
         
         # save for time analysis
+        '''
         PV_df.to_csv( self.path_to_pso_data + "/opt" + "optimised_PV_" + str(self.num_points) + ".csv", 
                      index = None, 
-                     header=['Data'])        
+                     header=['Data'])  
+        '''      
         
         iter_gbest_reached_df.to_csv(self.path_to_pso_data + "iter_gbest_reached.csv", 
                                      index = None, 
