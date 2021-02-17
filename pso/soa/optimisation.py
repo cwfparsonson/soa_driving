@@ -1283,7 +1283,7 @@ class PSO:
                      header=False)
         
         # save for time analysis
-        PV_df.to_csv("../../opt" + "optimised_PV_" + str(self.num_points) + ".csv", 
+        PV_df.to_csv( self.path_to_pso_data + "/opt" + "optimised_PV_" + str(self.num_points) + ".csv", 
                      index = None, 
                      header=['Data'])        
         
