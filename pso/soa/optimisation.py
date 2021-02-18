@@ -223,7 +223,7 @@ class PSO:
         for g in range(0, self.m_c):
             if self.embed_init_signal == True:
                 if self.path_to_embedded_signal == None:
-                    self.x[0, g] = self.misic_sig[g] # embed init OP at start
+                    self.x[0, g] = self.init_OP[g] # embed init OP at start
                 else:
                     init_sig = self.__getInitialDrivingSignalGuess(self.path_to_embedded_signal)
                     self.x[0, g] = init_sig[g]
