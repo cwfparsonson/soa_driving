@@ -253,7 +253,7 @@ class generateSignal:
                 counter += 1 
 
         # add misic impulses to square
-        self.signal[int(num_points_off/2):int(num_points_off/2)+int(len(misic_impulses))] = misic_impulses[:36]
+        self.signal[int(num_points_off/2):int(num_points_off/2)+int(len(misic_impulses))] = misic_impulses[int(num_points_off/2):len(self.t)]
 
         self.__checkSignal() # check signal within acceptable range
         
