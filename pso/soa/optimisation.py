@@ -213,6 +213,12 @@ class PSO:
         self.v_LB = self.cascade(self.v_LB)
         self.v_UB = self.cascade(self.v_UB)
 
+        self.rho = 6.0/(5.0*1.1e-2)
+        self.swarm_radius = np.zeros(self.iter_max)
+        self.d_norm = np.zeros(self.iter_max)
+        self.range_regroup = self.cascade(np.zeros(self.m))
+        self.lmd = 0.4
+
         self.m_c = self.m * self.q
 
         self.misic_sig = signalprocessing.generateSignal(num_points = self.num_points, directory= self.directory).misic()
@@ -223,7 +229,7 @@ class PSO:
         for g in range(0, self.m_c):
             if self.embed_init_signal == True:
                 if self.path_to_embedded_signal == None:
-                    self.x[0, g] = self.init_OP[g] # embed init OP at start
+                    self.x[0, g] = self.misic_sig[g] # embed init OP at start
                 else:
                     init_sig = self.__getInitialDrivingSignalGuess(self.path_to_embedded_signal)
                     self.x[0, g] = init_sig[g]
@@ -969,7 +975,68 @@ class PSO:
         x = np.tile(x, self.q)
 
         return x
+    
+    def detect_regroup(self, x , gbest, curr_iter):
+        """
+        This method determines if regrouping is required to avoid premature convergence
+        
+        Args:
+        - Particle Positions
+        - Global Best Position
+        - Current Iteration
+
+        Returns
+        - True if Regrouping is required
+        """
+        for i in range(0, self.n):
+            
+            distance = np.linalg.norm(x[i]-gbest)/self.num_points
+            
+            if distance > self.swarm_radius[curr_iter - 1]:
+                self.swarm_radius[curr_iter - 1] = distance
+
+        self.d_norm[curr_iter - 1] = self.swarm_radius[curr_iter - 1]/(self.max_val - self.min_val)
+        
+
+        if self.d_norm[curr_iter - 1] < 1.1e-2:
+            return True
+        
+        else: 
+            return False
+
+    def regroup(self, x, gbest):
+        """
+        This method regroups the data if premature convergence is found and updates boundaries
+
+        Args:
+        - Particle Positions
+        - Global Best Positions
+
+        Returns:
+        -
+        """
+        
+        for g in range(0, self.m_c):
+            
+            dist = 0
+            
+            for j in range(0, self.n):
                 
+                dist = max(dist, x[j, g] - gbest[g])
+           
+            self.range_regroup[g] = max(self.max_val - self.min_val, self.rho * dist)
+
+            self.LB[g] = gbest[g] - 0.5 * self.range_regroup[g]
+            self.UB[g] = gbest[g] + 0.5 * self.range_regroup[g]
+
+            self.v_LB[g] = - self.lmd * self.range_regroup[g]
+            self.v_UB[g] = self.lmd * self.range_regroup[g]
+        
+        for j in range(0, self.n):
+
+            for g in range(0, self.m_c):
+
+                x[j, g] = gbest[g] + random.uniform(0,1) * self.range_regroup[g] - 0.5 * self.range_regroup[g]
     def __runPsoAlgorithm(self):
         """
         This method runs the pso algorithm
@@ -1033,6 +1100,8 @@ class PSO:
                 pc_marker = 1 
 
             while curr_iter <= self.iter_max:
+
+                regroup_id = False
 
                 if self.adapt_accel == True:
                     for j in range(0, self.n):
@@ -1112,6 +1181,14 @@ class PSO:
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
+                
+                regroup_id = self.detect_regroup(x, gbest, curr_iter)
+
+                if regroup_id:
+                    
+                    self.regroup(x, gbest)
+                    print('Regrouping Performed')
+
 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
 
@@ -1281,7 +1358,8 @@ class PSO:
         PV_df.to_csv(self.path_to_pso_data + "optimised_PV.csv", 
                      index = None, 
                      header=False)
-        
+        d_norm_df = pd.DataFrame(self.d_norm)
+        d_norm_df.to_csv(self.path_to_pso_data + 'd_norm.csv', header = ['Normalised Distance'])
         # save for time analysis
         '''
         PV_df.to_csv( self.path_to_pso_data + "/opt" + "optimised_PV_" + str(self.num_points) + ".csv", 
