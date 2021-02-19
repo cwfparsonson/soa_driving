@@ -998,7 +998,7 @@ class PSO:
         self.d_norm[curr_iter - 1] = self.swarm_radius[curr_iter - 1]/(self.max_val - self.min_val)
         
 
-        if self.d_norm[curr_iter - 1] < 1.1e-3:
+        if self.d_norm[curr_iter - 1] < 6e-3:
             return True
         
         else: 
