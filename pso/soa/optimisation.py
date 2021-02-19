@@ -213,7 +213,7 @@ class PSO:
         self.v_LB = self.cascade(self.v_LB)
         self.v_UB = self.cascade(self.v_UB)
 
-        self.rho = 6.0/(5.0*9.1e-2)
+        self.rho = 6.0/(5.0*0.12)
         self.swarm_radius = np.zeros(self.iter_max)
         self.d_norm = np.zeros(self.iter_max)
         self.range_regroup = self.cascade(np.zeros(self.m))
