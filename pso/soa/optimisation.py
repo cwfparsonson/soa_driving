@@ -976,7 +976,7 @@ class PSO:
 
         return x
     
-    def detect_regroup(self, x , gbest, curr_iter):
+    def detect_regroup(self, x , gbest, curr_iter, v):
         """
         This method determines if regrouping is required to avoid premature convergence
         
@@ -999,12 +999,12 @@ class PSO:
         
 
         if self.d_norm[curr_iter - 1] < 6e-3:
-            return True
-        
-        else: 
-            return False
+            self.regroup(x, gbest, v)
+            print('Regrouping Performed')
+    
 
-    def regroup(self, x, gbest):
+
+    def regroup(self, x, gbest, v):
         """
         This method regroups the data if premature convergence is found and updates boundaries
 
@@ -1022,9 +1022,9 @@ class PSO:
             
             for j in range(0, self.n):
                 
-                dist = max(dist, x[j, g] - gbest[g])
+                dist = max(dist, abs(x[j, g] - gbest[g]))
            
-            self.range_regroup[g] = max(self.max_val - self.min_val, self.rho * dist)
+            self.range_regroup[g] = self.rho * dist
 
             self.LB[g] = gbest[g] - 0.5 * self.range_regroup[g]
             self.UB[g] = gbest[g] + 0.5 * self.range_regroup[g]
@@ -1036,7 +1036,8 @@ class PSO:
 
             for g in range(0, self.m_c):
 
-                x[j, g] = gbest[g] + random.uniform(0,1) * self.range_regroup[g] - 0.5 * self.range_regroup[g]
+                x[j, g] = 0.7 * gbest[g] +  0.3 * x[j,g] * v[j,g] + random.uniform(0,1) * self.range_regroup[g] - 0.5 * self.range_regroup[g]
+    
     def __runPsoAlgorithm(self):
         """
         This method runs the pso algorithm
@@ -1101,7 +1102,6 @@ class PSO:
 
             while curr_iter <= self.iter_max:
 
-                regroup_id = False
 
                 if self.adapt_accel == True:
                     for j in range(0, self.n):
@@ -1182,12 +1182,10 @@ class PSO:
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
                 
-                regroup_id = self.detect_regroup(x, gbest, curr_iter)
+                self.detect_regroup(x, gbest, curr_iter, v)
 
-                if regroup_id:
                     
-                    self.regroup(x, gbest)
-                    print('Regrouping Performed')
+
 
 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
