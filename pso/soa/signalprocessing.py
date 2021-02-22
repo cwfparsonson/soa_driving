@@ -516,7 +516,7 @@ class cost:
                  t, 
                  PV=None, 
                  cost_function_label=None, 
-                 st_importance_factor= 0.8, 
+                 st_importance_factor = 0.8, 
                  SP=None):
         self.t = t
         self.PV = PV
@@ -591,7 +591,7 @@ class cost:
                                                                       self.t, 
                                                                       SP=self.SP)
             self.settlingTime = responseMeasurementsObject.settlingTime
-            self.settlingTimeCost = self.st_importance_factor * self.settlingTime
+            self.settlingTimeCost = 0.8 * self.settlingTime
 
             # scale st to some importance factor 
             self.costEval = (self.settlingTimeCost * self.mse) / (self.settlingTimeCost + self.mse)
