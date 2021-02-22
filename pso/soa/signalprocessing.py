@@ -516,7 +516,7 @@ class cost:
                  t, 
                  PV=None, 
                  cost_function_label=None, 
-                 st_importance_factor=None, 
+                 st_importance_factor= 0.8, 
                  SP=None):
         self.t = t
         self.PV = PV
