@@ -219,6 +219,8 @@ class PSO:
         self.range_regroup = self.cascade(np.zeros(self.m))
         self.lmd = 0.4
 
+        self.c = 100
+
         self.m_c = self.m * self.q
 
         self.misic_sig = signalprocessing.generateSignal(num_points = self.num_points, directory= self.directory).misic()
@@ -976,7 +978,7 @@ class PSO:
 
         return x
     
-    def detect_regroup(self, x , gbest, curr_iter, v):
+    def detect_regroup(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter):
         """
         This method determines if regrouping is required to avoid premature convergence
         
@@ -999,10 +1001,71 @@ class PSO:
         
 
         if self.d_norm[curr_iter - 1] < 6e-3:
-            self.regroup(x, gbest, v)
+            print('Chaotic Search Started')
+            self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
             print('Regrouping Performed')
     
+    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter):
+        '''
+        This method performs chaotic search for C times in case premature convergence is detected
 
+        Args:
+        - Particle Positions
+        - Global Best Position
+        - Global Best Value
+        - Current Iteration
+
+        Returns:
+        -
+        '''
+        
+        p = 1 - (1 / 1 + np.log(curr_iter))
+
+        z = np.copy(self.x)
+
+        # Map to interval [0, 1]
+        z = np.interp(x, [self.min_val, self.max_val], [0, 1])
+
+        
+        # Chaotic Search Using Tent Mapping
+        for _ in range(0, self.c):
+            
+            tent_map_1 = lambda z: 2 * z if random.uniform(0, 1) < p else z 
+            tent_map_2 = lambda z: 2 * (1 - z) if random.uniform(0, 1) < p else z
+            
+            z = np.piecewise(z, [z < 0.5, z >= 0.5], [tent_map_1,tent_map_2])
+        
+            x = np.interp(z, [0, 1], [self.min_val, self.max_val])
+            
+            fitness = np.zeros(self.n)
+            
+            for j in range(0, self.n): 
+                particle = x[j, :] 
+                
+                OP = np.copy(particle)
+
+                if self.sim_model != None:
+                    PV = self.__getTransferFunctionOutput(self.sim_model, OP, self.t2, self.X0) 
+                else:
+                    PV = self.__getSoaOutput(OP) 
+
+                fitness[j] = signalprocessing.cost(self.t2, PV, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
+
+                if fitness[j] > pbest_value[j]:
+
+                    for g in range(0, self.m_c):
+
+                        pbest[j, g] = x[j, g]
+
+                    pbest_value[j] = fitness[j] 
+
+                if fitness[j] < gbest_cost:
+                    
+                    for g in range(0 , self.m_c):
+                       
+                       gbest[g] = x[j, g]
+
+                    gbest_cost_history = np.append([gbest_cost_history], [fitness[j]])
 
     def regroup(self, x, gbest, v):
         """
@@ -1182,7 +1245,7 @@ class PSO:
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
                 
-                self.detect_regroup(x, gbest, curr_iter, v)
+                self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
                     
 
