@@ -1052,18 +1052,12 @@ class PSO:
                 fitness[j] = signalprocessing.cost(self.t2, PV, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
 
                 if fitness[j] > pbest_value[j]:
-
-                    for g in range(0, self.m_c):
-
-                        pbest[j, g] = x[j, g]
+                    pbest[j, :] = x[j, :]
 
                     pbest_value[j] = fitness[j] 
 
-                if fitness[j] < gbest_cost:
-                    
-                    for g in range(0 , self.m_c):
-                       
-                       gbest[g] = x[j, g]
+                if fitness[j] < gbest_cost:   
+                    gbest = x[j, :]
 
                     gbest_cost_history = np.append([gbest_cost_history], [fitness[j]])
 
