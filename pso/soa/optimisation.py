@@ -1020,21 +1020,23 @@ class PSO:
         '''
         
         p = 1 - (1 / 1 + np.log(curr_iter))
-
-        z = np.copy(self.x)
-
-        # Map to interval [0, 1]
-        z = np.interp(x, [self.min_val, self.max_val], [0, 1])
+        
+        tent_map_1 = lambda z: 2 * z if random.uniform(0, 1) < p else z 
+        tent_map_2 = lambda z: 2 * (1 - z) if random.uniform(0, 1) < p else z
 
         
         # Chaotic Search Using Tent Mapping
-        for _ in range(0, self.c):
+        for i in range(0, self.c):
+
+            print(f'{i}/{self.c}')
+
+            # Map to interval [0, 1]
+            z = np.interp(x, [self.min_val, self.max_val], [0, 1])
             
-            tent_map_1 = lambda z: 2 * z if random.uniform(0, 1) < p else z 
-            tent_map_2 = lambda z: 2 * (1 - z) if random.uniform(0, 1) < p else z
-            
+            # Tent Mapping
             z = np.piecewise(z, [z < 0.5, z >= 0.5], [tent_map_1,tent_map_2])
-        
+
+            # Map to original interval
             x = np.interp(z, [0, 1], [self.min_val, self.max_val])
             
             fitness = np.zeros(self.n)
