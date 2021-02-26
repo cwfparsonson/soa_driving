@@ -1022,11 +1022,16 @@ class PSO:
         p = 1 - (1 / 1 + np.log(curr_iter))
         
         def tent_map_1(x):
-            
-            return 2 * x
+            if p > random.uniform(0, 1):
+                return 2 * x
+            else: 
+                return x
         
         def tent_map_2(x):
-            return 2 * (1 - x)
+            if p > random.uniform(0,1):
+                return 2 * (1 - x)
+            else:
+                return x
 
         
         # Chaotic Search Using Tent Mapping
@@ -1066,7 +1071,7 @@ class PSO:
                     pbest_value[j] = fitness[j] 
 
                 if fitness[j] < gbest_cost:   
-                    gbest = x[j, :]
+                    gbest[:] = x[j, :]
 
                     gbest_cost_history = np.append([gbest_cost_history], [fitness[j]])
 
