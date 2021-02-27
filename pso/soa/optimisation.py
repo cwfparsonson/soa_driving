@@ -219,7 +219,8 @@ class PSO:
         self.range_regroup = self.cascade(np.zeros(self.m))
         self.lmd = 0.4
 
-        self.c = 100
+        self.c = 500
+        self.r = 1
 
         self.m_c = self.m * self.q
 
@@ -1000,10 +1001,11 @@ class PSO:
         self.d_norm[curr_iter - 1] = self.swarm_radius[curr_iter - 1]/(self.max_val - self.min_val)
         
 
-        if self.d_norm[curr_iter - 1] < 6e-3:
+        if self.d_norm[curr_iter - 1] < 6e-3/self.r:
             print('Chaotic Search Started')
             self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
-            print('Regrouping Performed')
+            self.r = self.r * np.exp
+            print('Chaotic Mapping Performed')
     
     def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter):
         '''
@@ -1033,14 +1035,15 @@ class PSO:
             else:
                 return x
 
-        
+        p = np.copy(gbest)
+
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.c):
 
             print(f'{i}/{self.c}')
 
             # Map to interval [0, 1]
-            z = np.interp(x, [self.min_val, self.max_val], [0, 1])
+            z = np.interp(p, [self.min_val, self.max_val], [0, 1])
             
             # Tent Mapping
             conds = [z < 0.5, z >= 0.5, z == 0]
@@ -1049,31 +1052,29 @@ class PSO:
             z = np.piecewise(z, conds, funcs)
 
             # Map to original interval
-            x = np.interp(z, [0, 1], [self.min_val, self.max_val])
+            p = np.interp(z, [0, 1], [self.min_val, self.max_val])
             
-            fitness = np.zeros(self.n)
+            particle = p[:] 
             
-            for j in range(0, self.n): 
-                particle = x[j, :] 
-                
-                OP = np.copy(particle)
+            OP = np.copy(particle)
 
-                if self.sim_model != None:
-                    PV = self.__getTransferFunctionOutput(self.sim_model, OP, self.t2, self.X0) 
-                else:
-                    PV = self.__getSoaOutput(OP) 
+            if self.sim_model != None:
+                PV = self.__getTransferFunctionOutput(self.sim_model, OP, self.t2, self.X0) 
+            else:
+                PV = self.__getSoaOutput(OP) 
 
-                fitness[j] = signalprocessing.cost(self.t2, PV, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
+            fitness = signalprocessing.cost(self.t2, PV, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
 
-                if fitness[j] > pbest_value[j]:
-                    pbest[j, :] = x[j, :]
+            for j in range(0, self.n):
+                if fitness > pbest_value[j]:
+                    pbest[j, :] = p[:]
 
-                    pbest_value[j] = fitness[j] 
+                    pbest_value[j] = fitness 
 
-                if fitness[j] < gbest_cost:   
-                    gbest[:] = x[j, :]
+            if fitness < gbest_cost:   
+                gbest[:] = p[:]
 
-                    gbest_cost_history = np.append([gbest_cost_history], [fitness[j]])
+                gbest_cost_history = np.append([gbest_cost_history], [fitness[j]])
 
     def regroup(self, x, gbest, v):
         """
