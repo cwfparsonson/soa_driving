@@ -1066,7 +1066,7 @@ class PSO:
             fitness = signalprocessing.cost(self.t2, PV, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
 
             for j in range(0, self.n):
-                if fitness > pbest_value[j]:
+                if fitness < pbest_value[j]:
                     pbest[j, :] = p[:]
 
                     pbest_value[j] = fitness 
