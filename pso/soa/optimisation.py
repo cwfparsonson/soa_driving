@@ -993,7 +993,7 @@ class PSO:
         """
         for i in range(0, self.n):
             
-            distance = np.linalg.norm(x[i]-gbest)/self.num_points
+            distance = np.linalg.norm(x[i]-gbest)*self.num_points/2300
             
             if distance > self.swarm_radius[curr_iter - 1]:
                 self.swarm_radius[curr_iter - 1] = distance
@@ -1254,7 +1254,8 @@ class PSO:
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
                 
-                self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+                if curr_iter > 50 and self.iter_max % 10 == 0:
+                    self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
                     
 
