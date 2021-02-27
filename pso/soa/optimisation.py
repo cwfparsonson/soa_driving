@@ -1021,16 +1021,16 @@ class PSO:
         -
         '''
         
-        p = 1 - (1 / 1 + np.log(curr_iter))
+        prob = 1 - (1 / 1 + np.log(curr_iter))
         
         def tent_map_1(x):
-            if p > random.uniform(0, 1):
+            if prob > random.uniform(0, 1):
                 return 2 * x
             else: 
                 return x
         
         def tent_map_2(x):
-            if p > random.uniform(0,1):
+            if prob > random.uniform(0,1):
                 return 2 * (1 - x)
             else:
                 return x
