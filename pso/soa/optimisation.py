@@ -21,7 +21,7 @@ from scipy import signal
 from soa import upsampling
 
 from collections import defaultdict
-from tqdm import tqdm
+# from tqdm import tqdm
 
 
 
@@ -1002,7 +1002,7 @@ class PSO:
         self.d_norm[curr_iter - 1] = self.swarm_radius[curr_iter - 1]/(self.max_val - self.min_val)
         
 
-        if self.d_norm[curr_iter - 1] < 6e-3/self.r:
+        if self.d_norm[curr_iter - 1] < 6e-3:
             print('Chaotic Search Started')
             self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
             # self.r = self.r * np.exp(1)
@@ -1039,7 +1039,7 @@ class PSO:
         p = np.copy(gbest)
 
         # Chaotic Search Using Tent Mapping
-        for _ in tqdm(range(0, self.c)):
+        for _ in range(0, self.c):
 
             # Map to interval [0, 1]
             z = np.interp(p, [self.min_val, self.max_val], [0, 1])
@@ -1255,7 +1255,7 @@ class PSO:
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
                 
-                if curr_iter > 50 and self.iter_max % 10 == 0:
+                if curr_iter > 50 and curr_iter % 10 == 0:
                     self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
                     
