@@ -21,6 +21,7 @@ from scipy import signal
 from soa import upsampling
 
 from collections import defaultdict
+from tqdm import tqdm
 
 
 
@@ -1004,7 +1005,7 @@ class PSO:
         if self.d_norm[curr_iter - 1] < 6e-3/self.r:
             print('Chaotic Search Started')
             self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
-            self.r = self.r * np.exp(1)
+            # self.r = self.r * np.exp(1)
             print('Chaotic Mapping Performed')
     
     def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter):
@@ -1038,9 +1039,7 @@ class PSO:
         p = np.copy(gbest)
 
         # Chaotic Search Using Tent Mapping
-        for i in range(0, self.c):
-
-            print(f'{i}/{self.c}')
+        for _ in tqdm(range(0, self.c)):
 
             # Map to interval [0, 1]
             z = np.interp(p, [self.min_val, self.max_val], [0, 1])
@@ -1075,6 +1074,8 @@ class PSO:
                 gbest[:] = p[:]
 
                 gbest_cost_history = np.append([gbest_cost_history], [fitness[j]])
+        
+        x[np.argmax(pbest_value)] = p[:]
 
     def regroup(self, x, gbest, v):
         """
