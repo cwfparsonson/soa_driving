@@ -1073,7 +1073,7 @@ class PSO:
             if fitness < gbest_cost:   
                 gbest[:] = particle[:]
 
-                gbest_cost_history = np.append([gbest_cost_history], [fitness[j]])
+                gbest_cost_history = np.append([gbest_cost_history], [fitness])
         
         x[np.argmax(pbest_value)] = particle[:]
 
