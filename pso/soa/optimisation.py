@@ -1041,6 +1041,8 @@ class PSO:
         # Chaotic Search Using Tent Mapping
         for _ in range(0, self.c):
 
+            print(f'{_}/{self.iter_max}')
+
             # Map to interval [0, 1]
             z = np.interp(p, [self.min_val, self.max_val], [0, 1])
             
@@ -1066,14 +1068,14 @@ class PSO:
 
             for j in range(0, self.n):
                 if fitness < pbest_value[j]:
-                    x[j, : ] = particle[:]
-                    pbest[j, :] = particle[:]
+                    for g in range(0, self.m_c):
+                        pbest[j, g] = particle[g]
                     print('Personal Best Changed')
-
                     pbest_value[j] = fitness 
 
             if fitness < gbest_cost:   
-                gbest[:] = particle[:]
+                for g in range(0, self.m_c):
+                    gbest[g] = particle[g]
                 gbest_cost = fitness
                 cost_reduction = ((gbest_cost_history[0] - fitness) \
                     / gbest_cost_history[0])*100
