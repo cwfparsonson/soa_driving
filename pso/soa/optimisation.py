@@ -1074,6 +1074,7 @@ class PSO:
 
             if fitness < gbest_cost:   
                 gbest[:] = particle[:]
+                gbest_cost = fitness
                 cost_reduction = ((gbest_cost_history[0] - fitness) \
                     / gbest_cost_history[0])*100
                 
