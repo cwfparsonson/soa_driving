@@ -1066,16 +1066,20 @@ class PSO:
 
             for j in range(0, self.n):
                 if fitness < pbest_value[j]:
+                    x[j, : ] = particle[:]
                     pbest[j, :] = particle[:]
+                    print('Personal Best Changed')
 
                     pbest_value[j] = fitness 
 
             if fitness < gbest_cost:   
                 gbest[:] = particle[:]
-
+                cost_reduction = ((gbest_cost_history[0] - fitness) \
+                    / gbest_cost_history[0])*100
+                
+                print(f'Chaos Search Reduced by {cost_reduction}')
                 gbest_cost_history = np.append([gbest_cost_history], [fitness])
         
-        x[np.argmax(pbest_value)] = particle[:]
 
     def regroup(self, x, gbest, v):
         """
