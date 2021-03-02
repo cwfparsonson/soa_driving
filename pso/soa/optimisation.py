@@ -1036,7 +1036,7 @@ class PSO:
             else:
                 return x
 
-        p = np.copy(gbest)
+        p = np.copy(random.choice(x))
 
         # Chaotic Search Using Tent Mapping
         for _ in range(0, self.c):
@@ -1050,10 +1050,10 @@ class PSO:
             
             z = np.piecewise(z, conds, funcs)
 
+            p = np.add(gbest, z)
+
             # Map to original interval
-            p = np.interp(z, [0, 1], [self.min_val, self.max_val])
-            
-            particle = p[:] 
+            particle = np.interp(p, [self.min_val, self.max_val + 1], [self.min_val, self.max_val])
             
             OP = np.copy(particle)
 
@@ -1066,16 +1066,16 @@ class PSO:
 
             for j in range(0, self.n):
                 if fitness < pbest_value[j]:
-                    pbest[j, :] = p[:]
+                    pbest[j, :] = particle[:]
 
                     pbest_value[j] = fitness 
 
             if fitness < gbest_cost:   
-                gbest[:] = p[:]
+                gbest[:] = particle[:]
 
                 gbest_cost_history = np.append([gbest_cost_history], [fitness[j]])
         
-        x[np.argmax(pbest_value)] = p[:]
+        x[np.argmax(pbest_value)] = particle[:]
 
     def regroup(self, x, gbest, v):
         """
@@ -1252,13 +1252,13 @@ class PSO:
                     gbest_cost = pbest_value[min_cost_index]
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
-                cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
-                    / gbest_cost_history[0])*100
+
                 
                 if curr_iter > 50 and curr_iter % 10 == 0:
                     self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
-                    
+                cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
+                    / gbest_cost_history[0])*100                   
 
 
 
