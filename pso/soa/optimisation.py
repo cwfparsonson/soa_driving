@@ -1061,8 +1061,11 @@ class PSO:
                     p[g] = gbest[g]
                 else:
                     pass
+            
+            print('Input' + p[:10])
 
-            PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0) 
+            PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
+            print('PV' + PV_chaos[:10])
 
             fitness = signalprocessing.cost(self.t2, PV_chaos, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
             '''
@@ -1073,7 +1076,7 @@ class PSO:
                     print('Personal Best Changed')
                     pbest_value[j] = fitness 
             '''
-            print(p == gbest)
+            # print(f'{_}/{self.c}, Fitness={fitness}, Gbest_Cost = {gbest_cost}')
             if fitness < gbest_cost_history[-1]:   
                 for g in range(0, self.m_c):
                     gbest[g] = p[g]
