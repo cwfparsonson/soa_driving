@@ -1026,13 +1026,12 @@ class PSO:
         
 
 
-        p, dummy = np.copy(random.choice(x)), np.copy(random.choice(x))
+        dummy = np.copy(random.choice(x))
+
+        z = np.interp(np.copy(random.choice(x)), [self.min_val, self.max_val], [0, 1])
 
         # Chaotic Search Using Tent Mapping
         for _ in range(0, self.c):
-
-            # Map to interval [0, 1]
-            z = np.interp(p, [self.min_val, self.max_val], [0, 1])
             
             # Tent Mapping
             conds = [z < 0.5, z >= 0.5, z == 0]
