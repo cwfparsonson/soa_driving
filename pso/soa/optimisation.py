@@ -1082,7 +1082,7 @@ class PSO:
                     pbest_value[j] = fitness 
             '''
             fit = fitness[i]
-            print(f'{_}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
+            print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
             if fitness < gbest_cost_history[-1]:   
                 for g in range(0, self.m_c):
                     gbest[g] = p[g]
