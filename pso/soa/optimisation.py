@@ -1002,7 +1002,7 @@ class PSO:
         self.d_norm[curr_iter - 1] = self.swarm_radius[curr_iter - 1]/(self.max_val - self.min_val)
         
 
-        if self.d_norm[curr_iter - 1] < 9e-2:
+        if self.d_norm[curr_iter - 1] < 9e-3:
             print('Chaotic Search Started')
             self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
             # self.r = self.r * np.exp(1)
@@ -1271,7 +1271,7 @@ class PSO:
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
 
                 
-                if curr_iter > 5 and curr_iter % 10 == 0:
+                if curr_iter > 50 and curr_iter % 10 == 0:
                     self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
 
