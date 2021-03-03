@@ -1061,11 +1061,12 @@ class PSO:
                     p[g] = gbest[g]
                 else:
                     pass
-            
-            print('Input' + p[:10])
+            print('Input')
+            print(p[:10])
 
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
-            print('PV' + PV_chaos[:10])
+            print('PV')
+            print(PV_chaos[:10])
 
             fitness = signalprocessing.cost(self.t2, PV_chaos, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
             '''
