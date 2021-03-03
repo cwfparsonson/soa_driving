@@ -1041,7 +1041,7 @@ class PSO:
         # Chaotic Search Using Tent Mapping
         for _ in range(0, self.c):
 
-            print(f'{_}/{self.iter_max}')
+            print(f'{_}/{self.c}')
 
             # Map to interval [0, 1]
             z = np.interp(p, [self.min_val, self.max_val], [0, 1])
@@ -1066,23 +1066,24 @@ class PSO:
                 PV = self.__getSoaOutput(OP) 
 
             fitness = signalprocessing.cost(self.t2, PV, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
-
+            '''
             for j in range(0, self.n):
                 if fitness < pbest_value[j]:
                     for g in range(0, self.m_c):
                         pbest[j, g] = particle[g]
                     print('Personal Best Changed')
                     pbest_value[j] = fitness 
-
-            if fitness < gbest_cost:   
+            '''
+            if fitness < gbest_cost_history[-1]:   
                 for g in range(0, self.m_c):
                     gbest[g] = particle[g]
                 gbest_cost = fitness
-                cost_reduction = ((gbest_cost_history[0] - fitness) \
+                gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
+                cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
                 
                 print(f'Chaos Search Reduced by {cost_reduction}')
-                gbest_cost_history = np.append([gbest_cost_history], [fitness])
+                
         
 
     def regroup(self, x, gbest, v):
@@ -1261,16 +1262,18 @@ class PSO:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
 
-                
-                if curr_iter > 50 and curr_iter % 10 == 0:
-                    self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
-
-                cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
+                    cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100                   
 
 
 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
+
+                
+                if curr_iter > 50 and curr_iter % 10 == 0:
+                    self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+
+
 
                 self.__savePsoData(x, 
                                    x_value, 
