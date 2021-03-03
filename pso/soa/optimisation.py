@@ -1002,7 +1002,7 @@ class PSO:
         self.d_norm[curr_iter - 1] = self.swarm_radius[curr_iter - 1]/(self.max_val - self.min_val)
         
 
-        if self.d_norm[curr_iter - 1] < 9e-3:
+        if self.d_norm[curr_iter - 1] < 9e-2:
             print('Chaotic Search Started')
             self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
             # self.r = self.r * np.exp(1)
@@ -1040,7 +1040,7 @@ class PSO:
             
 
             # Map to interval [0, 1]
-            z = np.interp(p, [self.min_val, self.max_val], [0, 1])
+            z = np.interp(particle, [self.min_val, self.max_val], [0, 1])
             
             # Tent Mapping
             conds = [z < 0.5, z >= 0.5, z == 0]
@@ -1059,12 +1059,9 @@ class PSO:
             
             OP = np.copy(particle)
 
-            if self.sim_model != None:
-                PV = self.__getTransferFunctionOutput(self.sim_model, OP, self.t2, self.X0) 
-            else:
-                PV = self.__getSoaOutput(OP) 
+            PV_chaos = self.__getTransferFunctionOutput(self.sim_model, OP, self.t2, self.X0) 
 
-            fitness = signalprocessing.cost(self.t2, PV, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
+            fitness = signalprocessing.cost(self.t2, PV_chaos, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
             '''
             for j in range(0, self.n):
                 if fitness < pbest_value[j]:
