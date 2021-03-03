@@ -1063,8 +1063,7 @@ class PSO:
                     p[g] = gbest[g]
                 else:
                     pass
-            print('Input')
-            print(p[:10])
+ 
 
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
 
@@ -1083,15 +1082,16 @@ class PSO:
             '''
             fit = fitness[i]
             print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
-            if fitness < gbest_cost_history[-1]:   
+            if fitness[i] < gbest_cost_history[-1]:   
                 for g in range(0, self.m_c):
                     gbest[g] = p[g]
-                gbest_cost = fitness
+                gbest_cost = fitness[i]
                 gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
-                
+                print('----------------------------------------------------------')
                 print(f'Chaos Search Reduced by {cost_reduction}')
+                print('----------------------------------------------------------')
                 
         
 
