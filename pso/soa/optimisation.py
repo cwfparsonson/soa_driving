@@ -1002,7 +1002,7 @@ class PSO:
         self.d_norm[curr_iter - 1] = self.swarm_radius[curr_iter - 1]/(self.max_val - self.min_val)
         
 
-        if self.d_norm[curr_iter - 1] < 9e-2:
+        if self.d_norm[curr_iter - 1] < 9e-3:
             print('Chaotic Search Started')
             self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
             # self.r = self.r * np.exp(1)
@@ -1072,14 +1072,16 @@ class PSO:
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP).costEval 
-            '''
+
             for j in range(0, self.n):
                 if fitness < pbest_value[j]:
                     for g in range(0, self.m_c):
-                        pbest[j, g] = particle[g]
+                        pbest[j, g] = p[g]
+                    print('----------------------------------------------------------')
                     print('Personal Best Changed')
-                    pbest_value[j] = fitness 
-            '''
+                    print('----------------------------------------------------------')
+                    pbest_value[j] = fitness[i] 
+
             fit = fitness[i]
             print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
             if fitness[i] < gbest_cost_history[-1]:   
@@ -1279,7 +1281,7 @@ class PSO:
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
 
                 
-                if curr_iter > 5 and curr_iter % 10 == 0:
+                if curr_iter > 50 and curr_iter % 10 == 0:
                     self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
 
