@@ -1271,7 +1271,7 @@ class PSO:
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
 
                 
-                if curr_iter > 50 and curr_iter % 10 == 0:
+                if curr_iter > 5 and curr_iter % 10 == 0:
                     self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
 
