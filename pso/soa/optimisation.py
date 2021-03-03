@@ -1031,9 +1031,11 @@ class PSO:
         z = np.interp(np.copy(random.choice(x)), [-2.5, 2.5], [0, 1])
 
         p = np.zeros(self.m_c)
+        
+        fitness = np.zeros(self.c)
 
         # Chaotic Search Using Tent Mapping
-        for _ in range(0, self.c):
+        for i in range(0, self.c):
             
             # Tent Mapping
             conds = [z < 0.5, z >= 0.5, z == 0]
@@ -1065,10 +1067,12 @@ class PSO:
             print(p[:10])
 
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
-            print('PV')
-            print(PV_chaos[:10])
 
-            fitness = signalprocessing.cost(self.t2, PV_chaos, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
+            fitness[i] = signalprocessing.cost(self.t2, 
+                                               PV_chaos, 
+                                               cost_function_label=self.cost_f, 
+                                               st_importance_factor=self.st_importance_factor, 
+                                               SP=self.SP).costEval 
             '''
             for j in range(0, self.n):
                 if fitness < pbest_value[j]:
@@ -1077,7 +1081,8 @@ class PSO:
                     print('Personal Best Changed')
                     pbest_value[j] = fitness 
             '''
-            # print(f'{_}/{self.c}, Fitness={fitness}, Gbest_Cost = {gbest_cost}')
+            fit = fitness[i]
+            print(f'{_}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
             if fitness < gbest_cost_history[-1]:   
                 for g in range(0, self.m_c):
                     gbest[g] = p[g]
