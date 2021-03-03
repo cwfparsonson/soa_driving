@@ -1039,7 +1039,19 @@ class PSO:
             conds = [z < 0.5, z >= 0.5, z == 0]
             funcs = [lambda z: 2 * z, lambda z: 2 * (1 - z), lambda z: z + random.uniform(0,1)]
             
+            '''
             z = np.piecewise(z, conds, funcs)
+            '''
+            for g in range(0, self.m_c):
+
+                if z[g] == 0:
+                    z[g] = random.uniform(0,1)
+                
+                elif z[g] < 0.5:
+                    z[g] = 2 * z[g]
+                
+                else:
+                    z[g] = 2 * (1 - z[g])
 
             for g in range(0, self.m_c):
                 if prob > random.uniform(0,1):
