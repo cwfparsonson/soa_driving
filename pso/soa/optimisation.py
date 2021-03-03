@@ -1074,7 +1074,7 @@ class PSO:
                                                SP=self.SP).costEval 
 
             for j in range(0, self.n):
-                if fitness < pbest_value[j]:
+                if fitness[i] < pbest_value[j]:
                     for g in range(0, self.m_c):
                         pbest[j, g] = p[g]
                     print('----------------------------------------------------------')
