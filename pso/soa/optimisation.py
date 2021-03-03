@@ -1030,6 +1030,8 @@ class PSO:
 
         z = np.interp(np.copy(random.choice(x)), [self.min_val, self.max_val], [0, 1])
 
+        p = np.zeros(self.m_c)
+
         # Chaotic Search Using Tent Mapping
         for _ in range(0, self.c):
             
