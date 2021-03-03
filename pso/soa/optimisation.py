@@ -1032,7 +1032,7 @@ class PSO:
             return 2 * (1 - x)
 
 
-        p = np.copy(random.choice(x))
+        p, dummy = np.copy(random.choice(x)), np.copy(random.choice(x))
 
         # Chaotic Search Using Tent Mapping
         for _ in range(0, self.c):
@@ -1262,7 +1262,7 @@ class PSO:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
 
-                    cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
+                cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100                   
 
 
