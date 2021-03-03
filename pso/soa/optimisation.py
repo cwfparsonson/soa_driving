@@ -1002,7 +1002,7 @@ class PSO:
         self.d_norm[curr_iter - 1] = self.swarm_radius[curr_iter - 1]/(self.max_val - self.min_val)
         
 
-        if self.d_norm[curr_iter - 1] < 9e-3:
+        if self.d_norm[curr_iter - 1] < 9e-2:
             print('Chaotic Search Started')
             self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
             # self.r = self.r * np.exp(1)
@@ -1058,7 +1058,7 @@ class PSO:
 
             for g in range(0, self.m_c):
                 if prob > random.uniform(0,1):
-                    p[g] = (p[g] + gbest[g])/2
+                    p[g] = p[g]
                 else:
                     p[g] = gbest[g]
             
