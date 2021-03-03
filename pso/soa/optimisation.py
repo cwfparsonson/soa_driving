@@ -1025,23 +1025,19 @@ class PSO:
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
         def tent_map_1(x):
-            if prob > random.uniform(0, 1):
-                return 2 * x
-            else: 
-                return x
+            return 2 * x
+
         
         def tent_map_2(x):
-            if prob > random.uniform(0,1):
-                return 2 * (1 - x)
-            else:
-                return x
+            return 2 * (1 - x)
+
 
         p = np.copy(random.choice(x))
 
         # Chaotic Search Using Tent Mapping
         for _ in range(0, self.c):
 
-            print(f'{_}/{self.c}')
+            
 
             # Map to interval [0, 1]
             z = np.interp(p, [self.min_val, self.max_val], [0, 1])
@@ -1053,7 +1049,10 @@ class PSO:
             z = np.piecewise(z, conds, funcs)
 
             for g in range(0, self.m_c):
-                p[g] = gbest[g] + z[g]
+                if prob > random.uniform(0,1):
+                    p[g] = gbest[g] + z[g]
+                else:
+                    p[g] = gbest[g]
 
             # Map to original interval
             particle = np.interp(p, [self.min_val, self.max_val + 1], [self.min_val, self.max_val])
@@ -1074,6 +1073,7 @@ class PSO:
                     print('Personal Best Changed')
                     pbest_value[j] = fitness 
             '''
+            print(f'{_}/{self.c}, Fitness={fitness}, Gbest_Cost = {gbest_cost}')
             if fitness < gbest_cost_history[-1]:   
                 for g in range(0, self.m_c):
                     gbest[g] = particle[g]
