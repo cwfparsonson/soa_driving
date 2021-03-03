@@ -1064,7 +1064,7 @@ class PSO:
             '''
 
             # Map to original interval
-            p = np.interp(z, [0, 1], [2.5, 2.5])
+            p = np.interp(z, [0, 1], [-2.5, 2.5])
             
 
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0) 
