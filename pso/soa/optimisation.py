@@ -1040,7 +1040,7 @@ class PSO:
             
 
             # Map to interval [0, 1]
-            z = np.interp(particle, [self.min_val, self.max_val], [0, 1])
+            z = np.interp(p, [self.min_val, self.max_val], [0, 1])
             
             # Tent Mapping
             conds = [z < 0.5, z >= 0.5, z == 0]
@@ -1055,9 +1055,9 @@ class PSO:
                     p[g] = gbest[g]
 
             # Map to original interval
-            particle = np.interp(p, [self.min_val, self.max_val + 1], [self.min_val, self.max_val])
+            p = np.interp(p, [self.min_val, self.max_val + 1], [self.min_val, self.max_val])
             
-            OP = np.copy(particle)
+            OP = np.copy(p)
 
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, OP, self.t2, self.X0) 
 
@@ -1073,7 +1073,7 @@ class PSO:
             print(f'{_}/{self.c}, Fitness={fitness}, Gbest_Cost = {gbest_cost}')
             if fitness < gbest_cost_history[-1]:   
                 for g in range(0, self.m_c):
-                    gbest[g] = particle[g]
+                    gbest[g] = p[g]
                 gbest_cost = fitness
                 gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
