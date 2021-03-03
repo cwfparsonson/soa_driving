@@ -220,7 +220,7 @@ class PSO:
         self.range_regroup = self.cascade(np.zeros(self.m))
         self.lmd = 0.4
 
-        self.c = 500
+        self.c = 1000
         self.r = 1
 
         self.m_c = self.m * self.q
@@ -1052,7 +1052,8 @@ class PSO:
             
             z = np.piecewise(z, conds, funcs)
 
-            p = np.add(gbest, z)
+            for g in range(0, self.m_c):
+                p[g] = gbest[g] + z[g]
 
             # Map to original interval
             particle = np.interp(p, [self.min_val, self.max_val + 1], [self.min_val, self.max_val])
