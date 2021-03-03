@@ -1024,12 +1024,6 @@ class PSO:
         
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
-        def tent_map_1(x):
-            return 2 * x
-
-        
-        def tent_map_2(x):
-            return 2 * (1 - x)
 
 
         p, dummy = np.copy(random.choice(x)), np.copy(random.choice(x))
@@ -1042,7 +1036,7 @@ class PSO:
             
             # Tent Mapping
             conds = [z < 0.5, z >= 0.5, z == 0]
-            funcs = [lambda z: tent_map_1(z), lambda z: tent_map_2(z), lambda z: z + random.uniform(0,1)]
+            funcs = [lambda z: 2 * z, lambda z: 2 * (1 - z), lambda z: z + random.uniform(0,1)]
             
             z = np.piecewise(z, conds, funcs)
 
@@ -1054,8 +1048,6 @@ class PSO:
 
             # Map to original interval
             p = np.interp(p, [self.min_val, self.max_val + 1], [self.min_val, self.max_val])
-
-            print(p)
             
 
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0) 
@@ -1069,7 +1061,7 @@ class PSO:
                     print('Personal Best Changed')
                     pbest_value[j] = fitness 
             '''
-            # print(f'{_}/{self.c}, Fitness={fitness}, Gbest_Cost = {gbest_cost}')
+            print(f'{_}/{self.c}, Fitness={fitness}, Gbest_Cost = {gbest_cost}')
             if fitness < gbest_cost_history[-1]:   
                 for g in range(0, self.m_c):
                     gbest[g] = p[g]
