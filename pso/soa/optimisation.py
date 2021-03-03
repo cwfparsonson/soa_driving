@@ -1037,8 +1037,6 @@ class PSO:
         # Chaotic Search Using Tent Mapping
         for _ in range(0, self.c):
 
-            
-
             # Map to interval [0, 1]
             z = np.interp(p, [self.min_val, self.max_val], [0, 1])
             
@@ -1056,10 +1054,11 @@ class PSO:
 
             # Map to original interval
             p = np.interp(p, [self.min_val, self.max_val + 1], [self.min_val, self.max_val])
-            
-            OP = np.copy(p)
 
-            PV_chaos = self.__getTransferFunctionOutput(self.sim_model, OP, self.t2, self.X0) 
+            print(p)
+            
+
+            PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0) 
 
             fitness = signalprocessing.cost(self.t2, PV_chaos, cost_function_label=self.cost_f, st_importance_factor=self.st_importance_factor, SP=self.SP).costEval
             '''
@@ -1070,7 +1069,7 @@ class PSO:
                     print('Personal Best Changed')
                     pbest_value[j] = fitness 
             '''
-            print(f'{_}/{self.c}, Fitness={fitness}, Gbest_Cost = {gbest_cost}')
+            # print(f'{_}/{self.c}, Fitness={fitness}, Gbest_Cost = {gbest_cost}')
             if fitness < gbest_cost_history[-1]:   
                 for g in range(0, self.m_c):
                     gbest[g] = p[g]
@@ -1267,7 +1266,7 @@ class PSO:
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
 
                 
-                if curr_iter > 10 and curr_iter % 10 == 0:
+                if curr_iter > 5 and curr_iter % 10 == 0:
                     self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
 
