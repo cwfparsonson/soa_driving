@@ -1053,18 +1053,14 @@ class PSO:
                 else:
                     z[g] = 2 * (1 - z[g])
             
-            '''
+            # Map to original interval
+            p = np.interp(z, [0, 1], [-2.5, 2.5])
 
             for g in range(0, self.m_c):
                 if prob > random.uniform(0,1):
-                    p[g] = gbest[g] + z[g]
+                    p[g] = (p[g] + gbest[g])/2
                 else:
                     p[g] = gbest[g]
-            
-            '''
-
-            # Map to original interval
-            p = np.interp(z, [0, 1], [-2.5, 2.5])
             
 
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0) 
