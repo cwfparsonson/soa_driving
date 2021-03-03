@@ -1058,10 +1058,9 @@ class PSO:
 
             for g in range(0, self.m_c):
                 if prob > random.uniform(0,1):
-                    p[g] = p[g]
-                else:
                     p[g] = gbest[g]
-            
+                else:
+                    pass
 
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0) 
 
@@ -1074,7 +1073,7 @@ class PSO:
                     print('Personal Best Changed')
                     pbest_value[j] = fitness 
             '''
-            print(f'{_}/{self.c}, Fitness={fitness}, Gbest_Cost = {gbest_cost}')
+            print(p == gbest)
             if fitness < gbest_cost_history[-1]:   
                 for g in range(0, self.m_c):
                     gbest[g] = p[g]
