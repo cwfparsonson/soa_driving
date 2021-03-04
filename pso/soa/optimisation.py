@@ -1030,13 +1030,14 @@ class PSO:
 
         z = np.interp(np.copy(random.choice(x)), [-2.5, 2.5], [0, 1])
 
-        p = np.zeros(self.m_c)
+        p = np.copy(gbest)
         
         fitness = np.zeros(self.c)
 
+
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.c):
-            
+            r = random.randint(0, self.q)
             # Tent Mapping
             conds = [z < 0.5, z >= 0.5, z == 0]
             funcs = [lambda z: 2 * z, lambda z: 2 * (1 - z), lambda z: z + random.uniform(0,1)]
@@ -1056,11 +1057,11 @@ class PSO:
                     z[g] = 2 * (1 - z[g])
             
             # Map to original interval
-            p = np.interp(z, [0, 1], [-2.5, 2.5])
+            b = np.interp(z, [0, 1], [-2.5, 2.5])
 
-            for g in range(0, self.m_c):
+            for g in range(r * self.m, (r+1)*self.m - 1):
                 if prob > random.uniform(0,1):
-                    p[g] = gbest[g]
+                    p[g] = b[g]
                 else:
                     pass
  
