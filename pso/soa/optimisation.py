@@ -1038,7 +1038,7 @@ class PSO:
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.c):
             p = np.copy(random.choice(x))
-            r = random.randint(0, self.q)
+            r = random.randint(0, self.q - 1)
             # Tent Mapping
             conds = [z < 0.5, z >= 0.5, z == 0]
             funcs = [lambda z: 2 * z, lambda z: 2 * (1 - z), lambda z: z + random.uniform(0,1)]
