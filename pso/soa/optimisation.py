@@ -1287,7 +1287,7 @@ class PSO:
                 if flag >= 4:
                     print('Chaotic Search Started')
                     self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
-                    # self.r = self.r * np.exp(1)
+                    flag += 1
                     print('Chaotic Mapping Performed')
 
                 '''
