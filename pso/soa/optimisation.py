@@ -1079,7 +1079,8 @@ class PSO:
                     print('----------------------------------------------------------')
                     print('Personal Best Changed')
                     print('----------------------------------------------------------')
-                    pbest_value[j] = fitness[i] 
+                    pbest_value[j] = fitness[i]
+                    break
 
             fit = fitness[i]
             print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
@@ -1283,7 +1284,7 @@ class PSO:
 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
 
-                if flag >= 2:
+                if flag >= 4:
                     print('Chaotic Search Started')
                     self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
                     # self.r = self.r * np.exp(1)
