@@ -1030,13 +1030,14 @@ class PSO:
 
         z = np.interp(np.copy(random.choice(x)), [-2.5, 2.5], [0, 1])
 
-        p = np.copy(gbest)
+        
         
         fitness = np.zeros(self.c)
 
-
+        
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.c):
+            p = np.copy(random.choice(x))
             r = random.randint(0, self.q)
             # Tent Mapping
             conds = [z < 0.5, z >= 0.5, z == 0]
@@ -1060,10 +1061,7 @@ class PSO:
             b = np.interp(z, [0, 1], [-2.5, 2.5])
 
             for g in range(r * self.m, (r+1)*self.m - 1):
-                if prob > random.uniform(0,1):
-                    p[g] = b[g]
-                else:
-                    pass
+                p[g] = b[g]
  
 
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
@@ -1194,6 +1192,8 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
 
+            flag = 0
+
             while curr_iter <= self.iter_max:
 
 
@@ -1273,18 +1273,26 @@ class PSO:
                     gbest_cost = pbest_value[min_cost_index]
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
+                
+                else:
+                    flag += 1
 
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100                   
 
 
-
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
 
-                
+                if flag >= 2:
+                    print('Chaotic Search Started')
+                    self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+                    # self.r = self.r * np.exp(1)
+                    print('Chaotic Mapping Performed')
+
+                '''
                 if curr_iter > 50 and curr_iter % 10 == 0:
                     self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
-
+                '''
 
 
                 self.__savePsoData(x, 
