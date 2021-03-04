@@ -1085,10 +1085,10 @@ class PSO:
 
             fit = fitness[i]
             print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
-            if fitness[i] < gbest_cost_history[-1]:   
+            if fit < gbest_cost_history[-1]:   
                 for g in range(0, self.m_c):
                     gbest[g] = p[g]
-                gbest_cost = fitness[i]
+                gbest_cost = fit
                 gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
