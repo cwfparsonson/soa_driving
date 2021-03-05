@@ -1037,7 +1037,7 @@ class PSO:
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.c):
-            p = np.copy(random.choice(pbest))
+            p = np.copy(random.choice(x))
             r = random.randint(0, self.q - 1)
             # Tent Mapping
             conds = [z < 0.5, z >= 0.5, z == 0]
@@ -1098,7 +1098,6 @@ class PSO:
                 print(f'Chaos Search Reduced by {cost_reduction}')
                 print('----------------------------------------------------------')
         
-        x[random.randint(0, self.n)] = pbest[random.randint(0, self.n)]
                 
         
 
