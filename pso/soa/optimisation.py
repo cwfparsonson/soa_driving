@@ -1286,7 +1286,7 @@ class PSO:
 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
    
-                if flag >= 4:
+                if flag >= 3:
                     print('Chaotic Search Started')
                     self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
                     flag = 0
