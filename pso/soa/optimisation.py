@@ -1060,7 +1060,7 @@ class PSO:
             # Map to original interval
             b = np.interp(z, [0, 1], [-2.5, 2.5])
 
-            for g in range(r * self.m, (r+1)*self.m - 1):
+            for g in range(r * self.m, (r + 1) * self.m - 1):
                 p[g] = b[g]
  
 
@@ -1080,9 +1080,6 @@ class PSO:
                     print('Personal Best Changed')
                     print('----------------------------------------------------------')
                     pbest_value[j] = fitness[i]
-                    if random.uniform(0,1) > prob:
-                        for g in range(0, self.m_c):
-                            x[j, g] = p[g]
                     break
 
             fit = fitness[i]
@@ -1288,7 +1285,7 @@ class PSO:
 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
    
-                if flag >= 3:
+                if flag >= 4:
                     print('Chaotic Search Started')
                     self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
                     flag = 0
