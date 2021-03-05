@@ -1039,7 +1039,7 @@ class PSO:
 
             p = np.copy(random.choice(dummy))
             
-            r = np.randint(self.q - 3)
+            r = np.random.randint(self.q - 3)
             
             # Tent Mapping
 
@@ -1101,7 +1101,7 @@ class PSO:
                 
                 achieved = True
 
-                n = np.randint(self.n - 1)  
+                n = np.random.randint(self.n - 1)  
                 
                 for g in range(0, self.m_c):
                     
