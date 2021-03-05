@@ -1080,6 +1080,9 @@ class PSO:
                     print('Personal Best Changed')
                     print('----------------------------------------------------------')
                     pbest_value[j] = fitness[i]
+                    if random.uniform(0,1) > prob:
+                        for g in range(0, self.m_c):
+                            x[j, g] = p[g]
                     break
 
             fit = fitness[i]
