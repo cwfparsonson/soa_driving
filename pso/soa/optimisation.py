@@ -220,7 +220,7 @@ class PSO:
         self.range_regroup = self.cascade(np.zeros(self.m))
         self.lmd = 0.4
 
-        self.c = 1000
+        self.c = 500
         self.r = 1
 
         self.m_c = self.m * self.q
@@ -1024,46 +1024,47 @@ class PSO:
         
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
-
-
         dummy = np.copy(x)
 
         z = np.interp(np.copy(random.choice(x)), [-2.5, 2.5], [0, 1])
 
-        
-        
         fitness = np.zeros(self.c)
 
+        tmp = np.copy(x[0])
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.c):
             
+            achieved = False
+
             p = np.copy(random.choice(dummy))
             
-            r = random.randint(0, self.q - 1)
+            r = np.randint(self.q - 3)
             
             # Tent Mapping
-            
-            conds = [z < 0.5, z >= 0.5, z == 0]
-            funcs = [lambda z: 2 * z, lambda z: 2 * (1 - z), lambda z: z + random.uniform(0,1)]
-            
-            '''
-            z = np.piecewise(z, conds, funcs)
-            '''
+
             for g in range(0, self.m_c):
 
-                if z[g] == 0:
+                if z[g] == 0 or z[g] == 2/3:
+                    
                     z[g] = random.uniform(0,1)
+                
                 elif z[g] < 0.5:
+                    
                     z[g] = 2 * z[g]
+                
                 else:
                     z[g] = 2 * (1 - z[g])
             
             # Map to original interval
             b = np.interp(z, [0, 1], [-2.5, 2.5])
 
-            for g in range(r * self.m, (r + 1) * self.m - 1):
-                p[g] = b[g]
+            for g in range(r * self.m, (r + 2) * self.m):
+                
+                if prob > random.uniform(0,1):
+                    
+                    p[g] = b[g]
+
  
 
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
@@ -1075,29 +1076,62 @@ class PSO:
                                                SP=self.SP).costEval 
  
             for j in range(0, self.n):
+                
                 if fitness[i] < pbest_value[j]:
+                    
                     for g in range(0, self.m_c):
+                        
                         dummy[j, g] = p[g]
+                    
                     break
 
 
             fit = fitness[i]
+            
             print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
-            if fit < gbest_cost_history[-1]:
-                n = random.randint(0, self.n - 1)  
+
+            if fit == min(fitness):
+                
                 for g in range(0, self.m_c):
+                    
+                    tmp[g] == p[g]
+
+            
+            if fit < gbest_cost_history[-1]:
+                
+                achieved = True
+
+                n = np.randint(self.n - 1)  
+                
+                for g in range(0, self.m_c):
+                    
                     gbest[g] = p[g]
+                    
                     pbest[n, g] = p[g]
-                    x[n , g] = p[g]
+                    
+                    x[n, g] = p[g]
                     
                 gbest_cost = fit
                 gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
+                
                 print('----------------------------------------------------------')
+                
                 print(f'Chaos Search Reduced by {cost_reduction} %')
+                
                 print('----------------------------------------------------------')
                 break
+        
+        if not achieved:
+
+            idx = random.sample(range(0, self.n), 2)
+            
+            for g in range(0, self.m_c):
+            
+                x[idx[0], g] = tmp[g]
+
+                x[idx[1], g] = dummy[idx[1], g]
         
                 
         
