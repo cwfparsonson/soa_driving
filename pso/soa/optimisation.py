@@ -1054,10 +1054,8 @@ class PSO:
 
                 if z[g] == 0:
                     z[g] = random.uniform(0,1)
-                
                 elif z[g] < 0.5:
                     z[g] = 2 * z[g]
-                
                 else:
                     z[g] = 2 * (1 - z[g])
             
@@ -1075,7 +1073,7 @@ class PSO:
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP).costEval 
-
+            '''
             for j in range(0, self.n):
                 if fitness[i] < pbest_value[j]:
                     for g in range(0, self.m_c):
@@ -1085,12 +1083,17 @@ class PSO:
                     print('----------------------------------------------------------')
                     pbest_value[j] = fitness[i]
                     break
+            '''
 
             fit = fitness[i]
             print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
-            if fit < gbest_cost_history[-1]:   
+            if fit < gbest_cost_history[-1]:
+                n = random.randint(0, self.n)  
                 for g in range(0, self.m_c):
                     gbest[g] = p[g]
+                    pbest[n, g] = p[g]
+                    x[n , g] = p[g]
+                    
                 gbest_cost = fit
                 gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
