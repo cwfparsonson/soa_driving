@@ -360,8 +360,6 @@ class PSO:
             self.gbest_cost = self.pbest_value[self.min_cost_index] 
             self.gbest_cost_history = np.append([self.gbest_cost_history], 
                                                 [self.gbest_cost])
-            
-            self.chaotic_search( self.x, self.pbest, self.pbest_value, self.gbest, self.gbest_cost, self.gbest_cost_history) 
 
             print('Costs: ' + str(self.pbest_value))
             print('Best cost: ' + str(self.gbest_cost))
