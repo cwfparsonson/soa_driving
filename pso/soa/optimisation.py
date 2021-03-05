@@ -1039,7 +1039,7 @@ class PSO:
 
             p = np.copy(random.choice(dummy))
             
-            r = np.random.randint(self.q - 3)
+            r = np.random.randint(self.q)
             
             # Tent Mapping
 
@@ -1059,10 +1059,8 @@ class PSO:
             # Map to original interval
             b = np.interp(z, [0, 1], [-2.5, 2.5])
 
-            for g in range(r * self.m, (r + 2) * self.m):
+            for g in range(r * self.m, (r + 1) * self.m):
                 
-                if prob > random.uniform(0,1):
-                    
                     p[g] = b[g]
 
  
@@ -1080,8 +1078,10 @@ class PSO:
                 if fitness[i] < pbest_value[j]:
                     
                     for g in range(0, self.m_c):
+
+                        if prob > random.uniform(0, 1):
                         
-                        dummy[j, g] = p[g]
+                            dummy[j, g] = p[g]
                     
                     break
 
@@ -1101,7 +1101,7 @@ class PSO:
                 
                 achieved = True
 
-                n = np.random.randint(self.n - 1)  
+                n = np.random.randint(self.n)  
                 
                 for g in range(0, self.m_c):
                     
