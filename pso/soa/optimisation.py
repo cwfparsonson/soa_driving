@@ -1026,7 +1026,7 @@ class PSO:
         
 
 
-        dummy = np.copy(random.choice(x))
+        dummy = np.copy(x)
 
         z = np.interp(np.copy(random.choice(x)), [-2.5, 2.5], [0, 1])
 
@@ -1038,7 +1038,7 @@ class PSO:
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.c):
             
-            p = np.copy(random.choice(x))
+            p = np.copy(random.choice(dummy))
             
             r = random.randint(0, self.q - 1)
             
@@ -1073,17 +1073,13 @@ class PSO:
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP).costEval 
-            '''
+ 
             for j in range(0, self.n):
                 if fitness[i] < pbest_value[j]:
                     for g in range(0, self.m_c):
-                        pbest[j, g] = p[g]
-                    print('----------------------------------------------------------')
-                    print('Personal Best Changed')
-                    print('----------------------------------------------------------')
-                    pbest_value[j] = fitness[i]
+                        dummy[j, g] = p[g]
                     break
-            '''
+
 
             fit = fitness[i]
             print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
@@ -1292,7 +1288,8 @@ class PSO:
 
 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
-   
+
+                print(np.gradient(gbest_cost_history)[-1])
                 if flag >= 4:
                     print('Chaotic Search Started')
                     self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
