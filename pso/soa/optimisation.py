@@ -1084,7 +1084,7 @@ class PSO:
             fit = fitness[i]
             print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
             if fit < gbest_cost_history[-1]:
-                n = random.randint(0, self.n)  
+                n = random.randint(0, self.n - 1)  
                 for g in range(0, self.m_c):
                     gbest[g] = p[g]
                     pbest[n, g] = p[g]
