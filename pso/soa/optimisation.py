@@ -1320,10 +1320,10 @@ class PSO:
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100                   
 
-
+                
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
-
-                print(np.gradient(gbest_cost_history)[-1])
+                if curr_iter > 10:
+                    print(np.gradient(gbest_cost_history)[-1])
                 if flag >= 4:
                     print('Chaotic Search Started')
                     self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
