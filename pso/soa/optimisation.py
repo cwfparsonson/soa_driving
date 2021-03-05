@@ -359,7 +359,9 @@ class PSO:
                 self.gbest[g] = self.pbest[self.min_cost_index, g] 
             self.gbest_cost = self.pbest_value[self.min_cost_index] 
             self.gbest_cost_history = np.append([self.gbest_cost_history], 
-                                                [self.gbest_cost]) 
+                                                [self.gbest_cost])
+            
+            self.chaotic_search( self.x, self.pbest, self.pbest_value, self.gbest, self.gbest_cost, self.gbest_cost_history, curr_iter) 
 
             print('Costs: ' + str(self.pbest_value))
             print('Best cost: ' + str(self.gbest_cost))
@@ -1008,7 +1010,7 @@ class PSO:
             # self.r = self.r * np.exp(1)
             print('Chaotic Mapping Performed')
     
-    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter):
+    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = 0):
         '''
         This method performs chaotic search for C times in case premature convergence is detected
 
