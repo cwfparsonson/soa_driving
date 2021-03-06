@@ -1042,7 +1042,7 @@ class PSO:
         g = 0.2
         
         # Chaotic Search Using Tent Mapping
-        for i in range(0, self.c):
+        for i in range(0, 20):
             
             # Criterion that new gbest was found
             achieved = False
@@ -1113,8 +1113,6 @@ class PSO:
                 s_min = max(s_min, max(tmp) - min(tmp) - g * (s_max - s_min))
                 s_max = min(s_max, max(tmp) - min(tmp) + g * (s_max - s_min))
 
-            
-            print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
 
             # Condition for better gbest/Break if found
             if fitness[i] < gbest_cost:
@@ -1140,8 +1138,6 @@ class PSO:
                 
                 print('----------------------------------------------------------')
                 
-                if i > 50:
-                    break
         
         # If gbest is not found then update one particle randomly and one using the best found particle (N/5)
         if not achieved:
@@ -1254,11 +1250,10 @@ class PSO:
             pc_marker = int(0.05*self.iter_max) # for plotting/saving
             if pc_marker == 0:
                 pc_marker = 1 
+            
+            (x, pbest, gbest, gbest_cost, gbest_cost_history)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
-            flag = 0
-
-
-            while curr_iter <= self.iter_max or gbest_cost < 1.25e-12:
+            while curr_iter <= self.iter_max or gbest_cost < 1.3e-12:
 
 
                 if self.adapt_accel == True:
@@ -1338,20 +1333,13 @@ class PSO:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
                 
-                else:
-                    flag += 1
+
            
 
                 
-                if curr_iter > 10:
-                    print(np.gradient(gbest_cost_history)[-1])
-                
-                if flag >= 4 or np.gradient(gbest_cost_history)[-1] < - 4.0e-11:
-                    print('Chaotic Search Started')
+                if curr_iter % 10 == 0:
                     (x, pbest, gbest, gbest_cost, gbest_cost_history)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
-                    flag = 0
-                    print('Chaotic Mapping Performed')
-    
+        
                 
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100 
