@@ -1126,6 +1126,7 @@ class PSO:
                     
                 gbest_cost = fitness[i]
                 gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
+                iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
                 
@@ -1147,7 +1148,7 @@ class PSO:
 
                 x[idx[1], g] = dummy[idx[1], g]
         
-        return (x, pbest, gbest, gbest_cost, gbest_cost_history)
+        return (x, pbest, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached)
         
                 
         
@@ -1248,9 +1249,9 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-            (x, pbest, gbest, gbest_cost, gbest_cost_history)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+            (x, pbest, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
-            while curr_iter <= self.iter_max and gbest_cost < 1.3e-12:
+            while curr_iter <= self.iter_max and gbest_cost < 1.25e-12:
 
 
                 if self.adapt_accel == True:
@@ -1335,7 +1336,7 @@ class PSO:
 
                 
                 if curr_iter % 10 == 0:
-                    (x, pbest, gbest, gbest_cost, gbest_cost_history)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+                    (x, pbest, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
         
                 
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
