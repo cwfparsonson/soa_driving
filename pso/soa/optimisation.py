@@ -1105,7 +1105,7 @@ class PSO:
             print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
 
             # Keep Track of best Particle in case gbest is not updated
-            if fit == min(fitness):
+            if fitness[i] == min(fitness):
                 
                 for g in range(0, self.m_c):
                     
@@ -1118,7 +1118,7 @@ class PSO:
 
             
             # Condition for better gbest/Break if found
-            if fit < gbest_cost:
+            if fitness < gbest_cost:
                 
                 achieved = True
 
@@ -1130,7 +1130,7 @@ class PSO:
                     pbest[n, g] = p[g]
                     x[n, g] = p[g]
                     
-                gbest_cost = fit
+                gbest_cost = fitness[i]
                 gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
@@ -1140,7 +1140,8 @@ class PSO:
                 print(f'Chaos Search Reduced by {cost_reduction} %')
                 
                 print('----------------------------------------------------------')
-                break
+                
+                return (x, gbest, gbest_cost_history) 
         
         # If gbest is not found then update one particle randomly and one using the best found particle (N/5)
         if not achieved:
@@ -1153,7 +1154,7 @@ class PSO:
 
                 x[idx[1], g] = dummy[idx[1], g]
         
-        return x, gbest, gbest_cost_history 
+        return (x, gbest, gbest_cost_history) 
         
                 
         
@@ -1345,9 +1346,9 @@ class PSO:
                 if curr_iter > 10:
                     print(np.gradient(gbest_cost_history)[-1])
                 
-                if flag >= 1:
+                if flag >= 1 or curr_iter > 3:
                     print('Chaotic Search Started')
-                    x, gbest_cost, gbest_cost_history = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+                    (x, gbest, gbest_cost_history)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
                     flag = 0
                     print('Chaotic Mapping Performed')
     
