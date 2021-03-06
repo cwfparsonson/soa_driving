@@ -1253,7 +1253,7 @@ class PSO:
             
             (x, pbest, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached, curr_iter)
 
-            while curr_iter <= self.iter_max and gbest_cost < 1.25e-12:
+            while curr_iter <= self.iter_max:
 
 
                 if self.adapt_accel == True:
