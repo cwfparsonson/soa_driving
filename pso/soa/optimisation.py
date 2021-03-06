@@ -1067,8 +1067,6 @@ class PSO:
             # Map to accepted interval
             b = np.interp(z, [0, 1], [self.min_val, self.max_val])
 
-
-
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
                     p[g] = b[g]
@@ -1135,7 +1133,7 @@ class PSO:
                 
         
         # Update N/2 particles
-        idx = random.sample(range(0, self.n), self.n // 2)
+        idx = random.sample(range(0, self.n), 4* self.n // 5)
         if not achieved:
             for g in range(0, self.m_c):
             
@@ -1149,12 +1147,12 @@ class PSO:
 
                         x[idx[i], g] = dummy[idx[i], g]
 
-            else:
+        else:
+            for i in range(0, len(idx)):
+                
                 for g in range(0, self.m_c):
 
-                    for i in range(0, len(idx)):
-
-                        x[idx[i], g] = dummy[idx[i], g]
+                    x[idx[i], g] = dummy[idx[i], g]
 
         return (x, pbest, gbest, gbest_cost,achieved)
         
