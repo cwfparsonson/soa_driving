@@ -1082,11 +1082,13 @@ class PSO:
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP).costEval 
- 
+
+            fit = fitness[i]
+
             for j in range(0, self.n):
                 
                 # Consider if generated particle has better fitness than existing
-                if fitness[i] < dummy_value[j]:
+                if fit < dummy_value[j]:
                     
                     for g in range(0, self.m_c):
                         
@@ -1100,10 +1102,10 @@ class PSO:
                     break
 
 
-            print(f'{i}/{self.c}, Fitness={fitness[i]}, Gbest_Cost = {gbest_cost}')
+            print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
 
             # Keep Track of best Particle in case gbest is not updated
-            if fitness[i] == min(fitness):
+            if fit == min(fitness):
                 
                 for g in range(0, self.m_c):
                     
@@ -1115,7 +1117,7 @@ class PSO:
                 s_max = min(s_max, max(tmp) - min(tmp) + g * (s_max - s_min))
 
             # Condition for better gbest/Break if found
-            if fitness[i] < gbest_cost_history[-1]:
+            if fit < gbest_cost_history[-1]:
                 
                 achieved = True
 
@@ -1129,10 +1131,10 @@ class PSO:
                     
                     x[n, g] = p[g]
                     
-                gbest_cost = fitness[i]
+                gbest_cost = fit
                 # Remove Last Appended Value
                 # gbest_cost_history = np.delete(gbest_cost_history, [-1])
-                gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
+                gbest_cost_history = np.append([gbest_cost_history], [fit])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
                 
@@ -1255,7 +1257,6 @@ class PSO:
 
             flag = 0
 
-            self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
 
             while curr_iter <= self.iter_max:
 
@@ -1339,9 +1340,7 @@ class PSO:
                 
                 else:
                     flag += 1
-
-                cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
-                    / gbest_cost_history[0])*100                   
+           
 
                 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
@@ -1355,7 +1354,9 @@ class PSO:
                     flag = 0
                     print('Chaotic Mapping Performed')
     
-
+                
+                cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
+                    / gbest_cost_history[0])*100        
                 
                 self.__savePsoData(x, 
                                    x_value, 
