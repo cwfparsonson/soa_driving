@@ -1135,16 +1135,16 @@ class PSO:
                 print('----------------------------------------------------------')
                 
         
-        # If gbest is not found then update one particle randomly and one using the best found particle (N/5)
-        if not achieved:
+        # If gbest is not found then update one particle randomly and one using the best found particle (N/2)
+        idx = random.sample(range(0, self.n), self.n // 2)
+        
+        for g in range(0, self.m_c):
+        
+            x[idx[0], g] = tmp[g]
 
-            idx = random.sample(range(0, self.n), 2)
-            
-            for g in range(0, self.m_c):
-            
-                x[idx[0], g] = tmp[g]
+            for i in range(1, len(idx)):
 
-                x[idx[1], g] = dummy[idx[1], g]
+                x[idx[i], g] = dummy[idx[i], g]
         
         return (x, pbest, gbest, gbest_cost,achieved)
         
