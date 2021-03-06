@@ -1118,7 +1118,7 @@ class PSO:
 
             
             # Condition for better gbest/Break if found
-            if fitness < gbest_cost:
+            if fitness[i] < gbest_cost:
                 
                 achieved = True
 
