@@ -1025,7 +1025,7 @@ class PSO:
         
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
-        dummy = np.copy(x)
+        dummy = np.copy(pbest)
 
         dummy_value = np.copy(pbest_value)
 
@@ -1035,9 +1035,6 @@ class PSO:
 
         tmp = np.copy(x[0])
 
-        s_min = self.min_val
-
-        s_max = self.max_val
 
         g = 0.2
         
@@ -1068,7 +1065,7 @@ class PSO:
                     z[g] = 4 * (1 - z[g])
             
             # Map to original interval
-            b = np.interp(z, [0, 1], [s_min, s_max])
+            b = np.interp(z, [0, 1], [self.min_val, self.max_val])
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
@@ -1110,8 +1107,8 @@ class PSO:
 
                 # Use value to update search space
 
-                s_min = max(s_min, max(tmp) - min(tmp) - g * (s_max - s_min))
-                s_max = min(s_max, max(tmp) - min(tmp) + g * (s_max - s_min))
+                self.min_val = max(self.min_val, max(tmp) - min(tmp) - g * (self.max_val - self.min_val))
+                self.max_val = min(self.max_val, max(tmp) - min(tmp) + g * (self.max_val - self.min_val))
 
 
             # Condition for better gbest/Break if found
@@ -1253,7 +1250,7 @@ class PSO:
             
             (x, pbest, gbest, gbest_cost, gbest_cost_history)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
-            while curr_iter <= self.iter_max or gbest_cost < 1.3e-12:
+            while curr_iter <= self.iter_max and gbest_cost < 1.3e-12:
 
 
                 if self.adapt_accel == True:
