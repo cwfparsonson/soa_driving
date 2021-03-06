@@ -1116,8 +1116,9 @@ class PSO:
                 s_min = max(s_min, max(tmp) - min(tmp) - g * (s_max - s_min))
                 s_max = min(s_max, max(tmp) - min(tmp) + g * (s_max - s_min))
 
+            
             # Condition for better gbest/Break if found
-            if fit < gbest_cost_history[-1]:
+            if fit < gbest_cost:
                 
                 achieved = True
 
@@ -1130,7 +1131,7 @@ class PSO:
                     x[n, g] = p[g]
                     
                 gbest_cost = fit
-                gbest_cost_history = np.append([gbest_cost_history], [fit])
+                gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
                 
@@ -1324,7 +1325,7 @@ class PSO:
                 
                 # update global best particle positions & history
                 min_cost_index = np.argmin(pbest_value)
-                if pbest_value[min_cost_index] < gbest_cost_history[-1]:
+                if pbest_value[min_cost_index] < gbest_cost:
                     for g in range(0, self.m_c):
                         gbest[g] = pbest[min_cost_index, g]
                     rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
@@ -1339,8 +1340,6 @@ class PSO:
            
 
                 
-                
-                
                 if curr_iter > 10:
                     print(np.gradient(gbest_cost_history)[-1])
                 
@@ -1351,7 +1350,7 @@ class PSO:
                     print('Chaotic Mapping Performed')
     
                 
-                cost_reduction = ((gbest_cost_history[0] - gbest_cost_history[-1]) \
+                cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100 
                 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
