@@ -64,7 +64,6 @@ class PSO:
                  SP=None):
         """
         Initialise pso parameters
-
         Args:
         - t (list of floats): time array for signals
         - init_OP (array of floats): start OP from which to begin optimisation
@@ -360,7 +359,6 @@ class PSO:
             self.gbest_cost = self.pbest_value[self.min_cost_index] 
             self.gbest_cost_history = np.append([self.gbest_cost_history], 
                                                 [self.gbest_cost])
-            
 
             print('Costs: ' + str(self.pbest_value))
             print('Best cost: ' + str(self.gbest_cost))
@@ -386,11 +384,9 @@ class PSO:
         """
         This method analyses a signal to get its rise time, settling time and 
         overshoot. Will also save input and output data
-
         Args:
         - OP = driving signal whose resultant output we want to analyse
         - curr_iter = current iteration. Use this for saving.
-
         Returns:
         - [rt, st, os] = table with rise time, settling time and overshoot of 
         output signal
@@ -429,10 +425,8 @@ class PSO:
         This method loads a previously defined csv with the driving signal that 
         we want to use as our initial guess to embed amongst the initialised 
         particle positions
-
         Args:
         - path_to_sig = path to signal that want to use 
-
         Returns:
         - init_sig = initial guess for signal to embed amongst particles
         '''
@@ -454,7 +448,6 @@ class PSO:
                       rt_st_os_analysis):
         """
         This method is for saving pso progress so it can later be loaded
-
         Args:
         - x = particle positions to save
         - x_value = fitness values for current positions
@@ -464,7 +457,6 @@ class PSO:
         - iter_gbest_reached = corresponding iteration new gbest was found
         - rt_st_os_analysis = hsitory of rise time, settling time and overshoot
         throughout pso algoithm
-
         Returns:
         - 
         """
@@ -509,10 +501,8 @@ class PSO:
     def __loadPsoData(self):
         """
         This method loads previously saved pso data
-
         Args:
         - 
-
         Returns:
         - iter_max = max number of pso iterations
         - path_to_pso_data = path to where pso data will now be stored
@@ -607,10 +597,8 @@ class PSO:
         This method calculates the state-vector from a long -1 drive signal. 
         Must call before sending / receiving signals to / from transfer function 
         model
-
         Args:
         - tf = transfer function
-
         Returns:
         - X0 = system's state-vector result for steady state
         """
@@ -626,14 +614,12 @@ class PSO:
         """
         This method sends a drive signal to a transfer function model and gets 
         the output
-
         Args:
         - tf = transfer function
         - U = signal to drive transfer function with
         - T = array of time values
         - X0 = initial value
         - atol = scipy ode func parameter
-
         Returns:
         - PV = resultant output signal of transfer function
         """
@@ -670,11 +656,9 @@ class PSO:
     def __getSoaOutput(self, OP, channel=1):
         """
         This method sends a drive signal to the SOA and gets an soa output
-
         Args:
         - OP = signal to send to AWG which will be used to drive SOA
         - channel = channel osc reads soa output on
-
         Returns:
         - PV = soa output
         """
@@ -695,10 +679,8 @@ class PSO:
     def __getSectionToOptimise(self):
         """
         This method sets the section of the signal that we want to optimise
-
         Args:
         - 
-
         Returns:
         - K_index = column vector of particle indices
         - K = column vector of particle values
@@ -726,10 +708,8 @@ class PSO:
         tises a drive signal/particle positions so that they 
         can be read by awg. This also reduces the size of the pso algorithm
         search space of particle positions, which will speed up convergence
-
         Args:
         - part_pos = drive signal / particle position
-
         Returns: 
         - discretised particle position
         """
@@ -745,10 +725,8 @@ class PSO:
         """
         This method suppresses (or doesn't) various areas of the drive signal 
         from being able to take certain values depending on what user has specified
-
         Args:
         - part_pos = drive signal / particle position
-
         Returns:
         - suppressed (or not suppressed) particle position
         """
@@ -851,13 +829,11 @@ class PSO:
     def __evaluateParticlePositions(self, particles,curr_iter=None, plot=False, is_first = False):
         """
         This method evaluates the positions of each particle in an array
-
         Args:
         - particles = array of particles to evaluate
         - plot = set whether want to plot (and save) the resultant PV and OP when 
         each particle is used to drive SOA
         - curr_iter = current iteration pso is on (only needed if plot == True)
-
         Returns:
         - x_value = array of fitness values for each particle position
         """
@@ -967,10 +943,8 @@ class PSO:
     def cascade(self, x):
         """
         This methods returns cascaded inputs for SOA
-
         Args:
         Parameters to be cascaded
-
         Returns
         Cascaded Parameter
         """
@@ -989,7 +963,6 @@ class PSO:
         - Particle Positions
         - Global Best Position
         - Current Iteration
-
         Returns
         - True if Regrouping is required
         """
@@ -1012,13 +985,11 @@ class PSO:
     def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = 20):
         '''
         This method performs chaotic search for C times in case premature convergence is detected
-
         Args:
         - Particle Positions
         - Global Best Position
         - Global Best Value
         - Current Iteration
-
         Returns:
         -
         '''
@@ -1027,33 +998,23 @@ class PSO:
         
         dummy = np.copy(x)
 
-        dummy_value = np.copy(pbest_value)
-
-        z = np.interp(np.copy(random.choice(x)), [self.min_val, self.max_val], [0, 1])
+        z = np.interp(np.copy(random.choice(x)), [-2.5, 2.5], [0, 1])
 
         fitness = np.zeros(self.c)
 
         tmp = np.copy(x[0])
-
-        s_min = self.min_val
-
-        s_max = self.max_val
-
-        g = 0.2
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.c):
             
-            # Criterion that new gbest was found
             achieved = False
 
-            # Get a random particle
             p = np.copy(random.choice(dummy))
             
-            # Random Cascaded SOA
             r = np.random.randint(self.q)
             
             # Tent Mapping
+
             for g in range(0, self.m_c):
 
                 if z[g] == 0 or z[g] == 2/3:
@@ -1062,63 +1023,53 @@ class PSO:
                 
                 elif z[g] < 0.5:
                     
-                    z[g] = 4 * z[g]
+                    z[g] = 2 * z[g]
                 
                 else:
-                    z[g] = 4 * (1 - z[g])
+                    z[g] = 2 * (1 - z[g])
             
             # Map to original interval
-            b = np.interp(z, [0, 1], [s_min, s_max])
+            b = np.interp(z, [0, 1], [-2.5, 2.5])
 
-            # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
                 
                     p[g] = b[g]
 
-            # Get and Evaluate Output
+ 
+
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
+
             fitness[i] = signalprocessing.cost(self.t2, 
                                                PV_chaos, 
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP).costEval 
-
-            fit = fitness[i]
-
+ 
             for j in range(0, self.n):
                 
-                # Consider if generated particle has better fitness than existing
-                if fit < dummy_value[j]:
+                if fitness[i] < pbest_value[j]:
                     
                     for g in range(0, self.m_c):
-                        
-                        # Encourage exploration based on iteration
+
                         if prob > random.uniform(0, 1):
                         
                             dummy[j, g] = p[g]
-
-                            dummy_value[j] == fitness[i]
                     
                     break
 
 
+            fit = fitness[i]
+            
             print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
 
-            # Keep Track of best Particle in case gbest is not updated
             if fit == min(fitness):
                 
                 for g in range(0, self.m_c):
                     
                     tmp[g] == p[g]
 
-                # Use value to update search space
-
-                s_min = max(s_min, max(tmp) - min(tmp) - g * (s_max - s_min))
-                s_max = min(s_max, max(tmp) - min(tmp) + g * (s_max - s_min))
-
             
-            # Condition for better gbest/Break if found
-            if fit < gbest_cost:
+            if fit < gbest_cost_history[-1]:
                 
                 achieved = True
 
@@ -1127,7 +1078,9 @@ class PSO:
                 for g in range(0, self.m_c):
                     
                     gbest[g] = p[g]
+                    
                     pbest[n, g] = p[g]
+                    
                     x[n, g] = p[g]
                     
                 gbest_cost = fit
@@ -1142,7 +1095,6 @@ class PSO:
                 print('----------------------------------------------------------')
                 break
         
-        # If gbest is not found then update one particle randomly and one using the best found particle (N/5)
         if not achieved:
 
             idx = random.sample(range(0, self.n), 2)
@@ -1159,11 +1111,9 @@ class PSO:
     def regroup(self, x, gbest, v):
         """
         This method regroups the data if premature convergence is found and updates boundaries
-
         Args:
         - Particle Positions
         - Global Best Positions
-
         Returns:
         -
         """
@@ -1193,10 +1143,8 @@ class PSO:
     def __runPsoAlgorithm(self):
         """
         This method runs the pso algorithm
-
         Args:
         - 
-
         Returns:
         - 
         """
@@ -1253,7 +1201,6 @@ class PSO:
                 pc_marker = 1 
 
             flag = 0
-
 
             while curr_iter <= self.iter_max:
 
@@ -1325,7 +1272,7 @@ class PSO:
                 
                 # update global best particle positions & history
                 min_cost_index = np.argmin(pbest_value)
-                if pbest_value[min_cost_index] < gbest_cost:
+                if pbest_value[min_cost_index] < gbest_cost_history[-1]:
                     for g in range(0, self.m_c):
                         gbest[g] = pbest[min_cost_index, g]
                     rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
@@ -1337,24 +1284,29 @@ class PSO:
                 
                 else:
                     flag += 1
-           
 
-                
+
                 if curr_iter > 10:
                     print(np.gradient(gbest_cost_history)[-1])
-                
-                if flag >= 4:
+                if flag >= 2:
                     print('Chaotic Search Started')
                     self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
                     flag = 0
                     print('Chaotic Mapping Performed')
-    
                 
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
-                    / gbest_cost_history[0])*100 
+                    / gbest_cost_history[0])*100                   
+
                 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
-                
+    
+
+                '''
+                if curr_iter > 50 and curr_iter % 10 == 0:
+                    self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+                '''
+
+
                 self.__savePsoData(x, 
                                    x_value, 
                                    curr_iter, 
@@ -1405,12 +1357,10 @@ class PSO:
                             rt_st_os_analysis):
         """
         This method analyses, plots and saves the pso algorithm's performance
-
         Args:
         - gbest = best global particle position
         - iter_gbest_reached = array of iterations at which a new gbest was found
         - gbest_cost_history = array of the history of gbest values that were found
-
         Returns:
         - 
         """
@@ -1632,20 +1582,16 @@ if __name__ == '__main__':
     '''
     Below is an example implementation of the above PSO code. Note that there 
     are 2 main modes of using this PSO implementation:
-
     1) Simulation (using a transfer function that simulates SOAs)
     2) Experimental 
-
     To use the experimental setup, you will need all the same equipment, modules,
     specific GPIB addresses etc. that were used in the Connet lab in UCL's
     EEE Robert's building (contact the Optical Networks Group for more info).
     Users outside of ONG will need to write code to interface with their
     own equipment.
-
     To use the simulation (i.e. the transfer function), the user should not need
     to write any code themselves. Simply changing the below 'directory' variable
     to point this programme to where to store data should be sufficient. 
-
     The below code runs a PSO simulation, where PSO is optimising 10 different
     SOA transfer functions in parallel. Users can play around with the PSO
     hyperparameters to control PSO performance, convergence properties, 
@@ -1653,12 +1599,10 @@ if __name__ == '__main__':
     the distortion coefficients or even implement their own transfer functions
     to simulate their custom SOAs. By optimising different transfer functions,
     users will be able to see how well PSO is generalising to different SOAs.
-
     While this code is not the 'cleanest', we have tried to insert clear comments
     so that a user wishing to delve deeper into the use of this PSO implementation 
     (beyond running simple transfer function simulations) can follow the logic 
     and implement the same functionality in their own programmes. 
-
     As a general rule-of-thumb, increasing n (the number of particles) is a 
     reliable way to improve PSO performance and find more optimal solutions.
     '''
