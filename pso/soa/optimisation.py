@@ -1339,7 +1339,7 @@ class PSO:
            
 
                 
-                print('Reduced cost by ' + str(cost_reduction) + '% so far')
+                
                 
                 if curr_iter > 10:
                     print(np.gradient(gbest_cost_history)[-1])
@@ -1351,8 +1351,10 @@ class PSO:
                     print('Chaotic Mapping Performed')
     
                 
-                cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
-                    / gbest_cost_history[0])*100        
+                cost_reduction = ((gbest_cost_history[0] - gbest_cost_history[-1]) \
+                    / gbest_cost_history[0])*100 
+                
+                print('Reduced cost by ' + str(cost_reduction) + '% so far')
                 
                 self.__savePsoData(x, 
                                    x_value, 
