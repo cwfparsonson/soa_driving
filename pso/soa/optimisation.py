@@ -360,6 +360,7 @@ class PSO:
             self.gbest_cost = self.pbest_value[self.min_cost_index] 
             self.gbest_cost_history = np.append([self.gbest_cost_history], 
                                                 [self.gbest_cost])
+            
 
             print('Costs: ' + str(self.pbest_value))
             print('Best cost: ' + str(self.gbest_cost))
@@ -1026,23 +1027,33 @@ class PSO:
         
         dummy = np.copy(x)
 
-        z = np.interp(np.copy(random.choice(x)), [-2.5, 2.5], [0, 1])
+        dummy_value = np.copy(pbest_value)
+
+        z = np.interp(np.copy(random.choice(x)), [self.min_val, self.max_val], [0, 1])
 
         fitness = np.zeros(self.c)
 
         tmp = np.copy(x[0])
+
+        s_min = self.min_val
+
+        s_max = self.max_val
+
+        g = 0.2
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.c):
             
+            # Criterion that new gbest was found
             achieved = False
 
+            # Get a random particle
             p = np.copy(random.choice(dummy))
             
+            # Random Cascaded SOA
             r = np.random.randint(self.q)
             
             # Tent Mapping
-
             for g in range(0, self.m_c):
 
                 if z[g] == 0 or z[g] == 2/3:
@@ -1051,22 +1062,21 @@ class PSO:
                 
                 elif z[g] < 0.5:
                     
-                    z[g] = 2 * z[g]
+                    z[g] = 4 * z[g]
                 
                 else:
-                    z[g] = 2 * (1 - z[g])
+                    z[g] = 4 * (1 - z[g])
             
             # Map to original interval
-            b = np.interp(z, [0, 1], [-2.5, 2.5])
+            b = np.interp(z, [0, 1], [s_min, s_max])
 
+            # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
                 
                     p[g] = b[g]
 
- 
-
+            # Get and Evaluate Output
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
-
             fitness[i] = signalprocessing.cost(self.t2, 
                                                PV_chaos, 
                                                cost_function_label=self.cost_f, 
@@ -1075,29 +1085,37 @@ class PSO:
  
             for j in range(0, self.n):
                 
-                if fitness[i] < pbest_value[j]:
+                # Consider if generated particle has better fitness than existing
+                if fitness[i] < dummy_value[j]:
                     
                     for g in range(0, self.m_c):
-
+                        
+                        # Encourage exploration based on iteration
                         if prob > random.uniform(0, 1):
                         
                             dummy[j, g] = p[g]
+
+                            dummy_value[j] == fitness[i]
                     
                     break
 
 
-            fit = fitness[i]
-            
-            print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
+            print(f'{i}/{self.c}, Fitness={fitness[i]}, Gbest_Cost = {gbest_cost}')
 
-            if fit == min(fitness):
+            # Keep Track of best Particle in case gbest is not updated
+            if fitness[i] == min(fitness):
                 
                 for g in range(0, self.m_c):
                     
                     tmp[g] == p[g]
 
-            
-            if fit < gbest_cost_history[-1]:
+                # Use value to update search space
+
+                s_min = max(s_min, max(tmp) - min(tmp) - g * (s_max - s_min))
+                s_max = min(s_max, max(tmp) - min(tmp) + g * (s_max - s_min))
+
+            # Condition for better gbest/Break if found
+            if fitness[i] < gbest_cost_history[-1]:
                 
                 achieved = True
 
@@ -1111,7 +1129,9 @@ class PSO:
                     
                     x[n, g] = p[g]
                     
-                gbest_cost = fit
+                gbest_cost = fitness[i]
+                # Remove Last Appended Value
+                # gbest_cost_history = np.delete(gbest_cost_history, [-1])
                 gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
@@ -1123,6 +1143,7 @@ class PSO:
                 print('----------------------------------------------------------')
                 break
         
+        # If gbest is not found then update one particle randomly and one using the best found particle (N/5)
         if not achieved:
 
             idx = random.sample(range(0, self.n), 2)
@@ -1234,6 +1255,8 @@ class PSO:
 
             flag = 0
 
+            self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+
             while curr_iter <= self.iter_max:
 
 
@@ -1322,8 +1345,10 @@ class PSO:
 
                 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
+                
                 if curr_iter > 10:
                     print(np.gradient(gbest_cost_history)[-1])
+                
                 if flag >= 4:
                     print('Chaotic Search Started')
                     self.chaotic_search( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
@@ -1331,12 +1356,7 @@ class PSO:
                     print('Chaotic Mapping Performed')
     
 
-                '''
-                if curr_iter > 50 and curr_iter % 10 == 0:
-                    self.detect_regroup( x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
-                '''
-
-
+                
                 self.__savePsoData(x, 
                                    x_value, 
                                    curr_iter, 
