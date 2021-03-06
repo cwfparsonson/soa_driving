@@ -1140,7 +1140,8 @@ class PSO:
                 
                 print('----------------------------------------------------------')
                 
-                break
+                if i > 50:
+                    break
         
         # If gbest is not found then update one particle randomly and one using the best found particle (N/5)
         if not achieved:
@@ -1257,7 +1258,7 @@ class PSO:
             flag = 0
 
 
-            while curr_iter <= self.iter_max:
+            while curr_iter <= self.iter_max or gbest_cost < 1.25e-12:
 
 
                 if self.adapt_accel == True:
@@ -1345,7 +1346,7 @@ class PSO:
                 if curr_iter > 10:
                     print(np.gradient(gbest_cost_history)[-1])
                 
-                if flag >= 4:
+                if flag >= 4 or np.gradient(gbest_cost_history)[-1] < - 4.0e-11:
                     print('Chaotic Search Started')
                     (x, pbest, gbest, gbest_cost, gbest_cost_history)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
                     flag = 0
