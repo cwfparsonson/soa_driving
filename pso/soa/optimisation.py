@@ -1067,9 +1067,6 @@ class PSO:
             # Map to accepted interval
             b = np.interp(z, [0, 1], [self.min_val, self.max_val])
 
-            for g in range(0, self.m_c):
-                
-                b[g] = self.LB[g] + (z[g] * (self.UB[g] - self.LB[g]))
 
 
             # Randomize part of particle using chaotic mapping
@@ -1109,10 +1106,10 @@ class PSO:
                     
                     tmp[g] == p[g]
 
-                    # Use value to update search space
+                # Use value to update search space
 
-                    self.LB[g] = max(self.LB[g], min(p) - g * (self.UB[g] - self.LB[g]))
-                    self.UB[g] = min(self.UB[g], max(p) + g * (self.UB[g] - self.UB[g]))
+                self.min_val = max(self.min_val, min(tmp) - g * (self.max_val - self.min_val))
+                self.max_val = min(self.max_val, max(tmp) + g * (self.max_val - self.min_val))
 
 
             # Condition for better gbest/Break if found
