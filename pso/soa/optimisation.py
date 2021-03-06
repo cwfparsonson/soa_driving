@@ -1099,10 +1099,7 @@ class PSO:
 
                             dummy_value[j] == fitness[i]
                     
-                    break
-
-
-            print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
+                    break     
 
             # Keep Track of best Particle in case gbest is not updated
             if fitness[i] == min(fitness):
@@ -1117,6 +1114,8 @@ class PSO:
                 s_max = min(s_max, max(tmp) - min(tmp) + g * (s_max - s_min))
 
             
+            print(f'{i}/{self.c}, Fitness={fit}, Gbest_Cost = {gbest_cost}')
+
             # Condition for better gbest/Break if found
             if fitness[i] < gbest_cost:
                 
@@ -1141,7 +1140,7 @@ class PSO:
                 
                 print('----------------------------------------------------------')
                 
-                return (x, pbest, gbest, gbest_cost, gbest_cost_history) 
+                break
         
         # If gbest is not found then update one particle randomly and one using the best found particle (N/5)
         if not achieved:
@@ -1346,7 +1345,7 @@ class PSO:
                 if curr_iter > 10:
                     print(np.gradient(gbest_cost_history)[-1])
                 
-                if flag >= 1 or curr_iter > 3:
+                if flag >= 4:
                     print('Chaotic Search Started')
                     (x, pbest, gbest, gbest_cost, gbest_cost_history)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
                     flag = 0
