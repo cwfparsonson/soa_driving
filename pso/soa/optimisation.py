@@ -1009,7 +1009,7 @@ class PSO:
             # self.r = self.r * np.exp(1)
             print('Chaotic Mapping Performed')
     
-    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached, curr_iter = 20):
+    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = 20):
         '''
         This method performs chaotic search for C times in case premature convergence is detected
 
@@ -1125,10 +1125,6 @@ class PSO:
                     x[n, g] = p[g]
                     
                 gbest_cost = fitness[i]
-                gbest_cost_history = gbest_cost_history[:-1]
-                gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
-                iter_gbest_reached = iter_gbest_reached[:-1]
-                iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
                 
@@ -1150,7 +1146,7 @@ class PSO:
 
                 x[idx[1], g] = dummy[idx[1], g]
         
-        return (x, pbest, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached)
+        return (x, pbest, gbest, gbest_cost,achieved)
         
                 
         
@@ -1251,9 +1247,11 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-            (x, pbest, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached, curr_iter)
+            (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached, curr_iter)
 
             while curr_iter <= self.iter_max:
+
+                achieved = False
 
 
                 if self.adapt_accel == True:
@@ -1330,16 +1328,18 @@ class PSO:
                                                    self.__analyseSignal(gbest, 
                                                                         curr_iter)))
                     gbest_cost = pbest_value[min_cost_index]
-                    gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
-                    iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
+                    achieved = True
                 
 
            
 
                 
                 if curr_iter % 10 == 0:
-                    (x, pbest, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached, curr_iter)
-        
+                    (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+
+                if achieved:
+                    gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
+                    iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
                 
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100 
