@@ -1035,7 +1035,7 @@ class PSO:
 
         tmp = np.copy(x[0])
 
-
+        # Factor which indicates weight of previous range
         g = 0.2
         
         # Chaotic Search Using Tent Mapping
@@ -1064,12 +1064,16 @@ class PSO:
                 else:
                     z[g] = 4 * (1 - z[g])
             
-            # Map to original interval
+            # Map to accepted interval
             b = np.interp(z, [0, 1], [self.min_val, self.max_val])
+
+            for g in range(0, self.m_c):
+                
+                b[g] = self.LB[g] + (z[g] * (self.UB[g] - self.LB[g]))
+
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
-                
                     p[g] = b[g]
 
             # Get and Evaluate Output
@@ -1105,10 +1109,10 @@ class PSO:
                     
                     tmp[g] == p[g]
 
-                # Use value to update search space
+                    # Use value to update search space
 
-                self.min_val = max(self.min_val, max(tmp) - min(tmp) - g * (self.max_val - self.min_val))
-                self.max_val = min(self.max_val, max(tmp) - min(tmp) + g * (self.max_val - self.min_val))
+                    self.LB[g] = max(self.LB[g], min(p) - g * (self.UB[g] - self.LB[g]))
+                    self.UB[g] = min(self.UB[g], max(p) + g * (self.UB[g] - self.UB[g]))
 
 
             # Condition for better gbest/Break if found
@@ -1128,24 +1132,33 @@ class PSO:
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
                 
-                print('----------------------------------------------------------')
-                
+                print('----------------------------------------------------------')               
                 print(f'Chaos Search Reduced by {cost_reduction} %')
-                
                 print('----------------------------------------------------------')
                 
         
-        # If gbest is not found then update one particle randomly and one using the best found particle (N/2)
+        # Update N/2 particles
         idx = random.sample(range(0, self.n), self.n // 2)
-        
-        for g in range(0, self.m_c):
-        
-            x[idx[0], g] = tmp[g]
+        if not achieved:
+            for g in range(0, self.m_c):
+            
+                    x[idx[0], g] = tmp[g]
 
-            for i in range(1, len(idx)):
+                    if pbest_value[idx[0]] < min(fitness):
+                        
+                        pbest[idx[0], g] = tmp[g]
 
-                x[idx[i], g] = dummy[idx[i], g]
-        
+                    for i in range(1, len(idx)):
+
+                        x[idx[i], g] = dummy[idx[i], g]
+
+            else:
+                for g in range(0, self.m_c):
+
+                    for i in range(0, len(idx)):
+
+                        x[idx[i], g] = dummy[idx[i], g]
+
         return (x, pbest, gbest, gbest_cost,achieved)
         
                 
@@ -1324,23 +1337,20 @@ class PSO:
                 if pbest_value[min_cost_index] < gbest_cost:
                     for g in range(0, self.m_c):
                         gbest[g] = pbest[min_cost_index, g]
-                    rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
-                                                   self.__analyseSignal(gbest, 
-                                                                        curr_iter)))
+
                     gbest_cost = pbest_value[min_cost_index]
                     achieved = True
-                
 
-           
-
-                
                 if curr_iter % 10 == 0:
                     (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
                 if achieved:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
-                
+                    rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
+                                self.__analyseSignal(gbest, 
+                                                    curr_iter)))
+
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100 
                 
