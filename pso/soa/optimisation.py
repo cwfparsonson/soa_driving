@@ -1247,7 +1247,7 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-            (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached, curr_iter)
+            (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
 
             while curr_iter <= self.iter_max:
 
