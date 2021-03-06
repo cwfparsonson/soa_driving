@@ -1009,7 +1009,7 @@ class PSO:
             # self.r = self.r * np.exp(1)
             print('Chaotic Mapping Performed')
     
-    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = 20):
+    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached, curr_iter = 20):
         '''
         This method performs chaotic search for C times in case premature convergence is detected
 
@@ -1249,7 +1249,7 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-            (x, pbest, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+            (x, pbest, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached, curr_iter)
 
             while curr_iter <= self.iter_max and gbest_cost < 1.25e-12:
 
@@ -1336,7 +1336,7 @@ class PSO:
 
                 
                 if curr_iter % 10 == 0:
-                    (x, pbest, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+                    (x, pbest, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, iter_gbest_reached, curr_iter)
         
                 
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
