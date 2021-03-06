@@ -1114,14 +1114,12 @@ class PSO:
             if fitness[i] < gbest_cost:
                 
                 achieved = True
-
-                n = np.random.randint(self.n)  
                 
                 for g in range(0, self.m_c):
                     
                     gbest[g] = p[g]
-                    pbest[n, g] = p[g]
-                    x[n, g] = p[g]
+                    pbest[0, g] = p[g]
+                    x[0, g] = p[g]
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
@@ -1133,7 +1131,7 @@ class PSO:
                 
         
         # Update N/2 particles
-        idx = random.sample(range(0, self.n), 4* self.n // 5)
+        idx = random.sample(range(1, self.n), 4 * self.n // 5 - 1)
         if not achieved:
             for g in range(0, self.m_c):
             
