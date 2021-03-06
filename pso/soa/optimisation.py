@@ -1141,7 +1141,7 @@ class PSO:
                 
                 print('----------------------------------------------------------')
                 
-                return (x, gbest, gbest_cost_history) 
+                return (x, pbest, gbest, gbest_cost, gbest_cost_history) 
         
         # If gbest is not found then update one particle randomly and one using the best found particle (N/5)
         if not achieved:
@@ -1154,7 +1154,7 @@ class PSO:
 
                 x[idx[1], g] = dummy[idx[1], g]
         
-        return (x, gbest, gbest_cost_history) 
+        return (x, pbest, gbest, gbest_cost, gbest_cost_history)
         
                 
         
@@ -1348,7 +1348,7 @@ class PSO:
                 
                 if flag >= 1 or curr_iter > 3:
                     print('Chaotic Search Started')
-                    (x, gbest, gbest_cost_history)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+                    (x, pbest, gbest, gbest_cost, gbest_cost_history)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
                     flag = 0
                     print('Chaotic Mapping Performed')
     
