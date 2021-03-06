@@ -1126,14 +1126,10 @@ class PSO:
                 for g in range(0, self.m_c):
                     
                     gbest[g] = p[g]
-                    
                     pbest[n, g] = p[g]
-                    
                     x[n, g] = p[g]
                     
                 gbest_cost = fit
-                # Remove Last Appended Value
-                # gbest_cost_history = np.delete(gbest_cost_history, [-1])
                 gbest_cost_history = np.append([gbest_cost_history], [fit])
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
