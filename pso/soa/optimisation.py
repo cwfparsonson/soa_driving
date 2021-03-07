@@ -1036,7 +1036,7 @@ class PSO:
         tmp = np.copy(x[0])
 
         # Factor which indicates weight of previous range
-        gamma = 0.6
+        g = 0.3
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, rep):
@@ -1064,13 +1064,12 @@ class PSO:
                 else:
                     z[g] = 4 * (1 - z[g])
             
-            
-            # b = np.interp(z, [0, 1], [self.min_val, self.max_val])
+            # Map to accepted interval
+            b = np.interp(z, [0, 1], [self.min_val, self.max_val])
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
-                    # Map to accepted interval
-                    p[g] = self.LB[g] + z[g] * (self.UB[g] - self.LB[g])
+                    p[g] = b[g]
 
             # Get and Evaluate Output
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
@@ -1089,13 +1088,10 @@ class PSO:
                     
                     for g in range(0, self.m_c):
                         
-                        # Encourage exploration based on iteration
-                        if prob > random.uniform(0, 1):
-                        
-                            dummy[j, g] = p[g]
+                        dummy[j, g] = p[g]
 
-                            dummy_value[j] = fitness[i]
-                    
+                        dummy_value[j] = fitness[i]
+                
                     break     
 
             # Keep Track of best Particle in case gbest is not updated
@@ -1105,11 +1101,10 @@ class PSO:
                     
                     tmp[g] == p[g]
 
-                    # Use value to update search space
-                    self.LB[g] =  p[g] - gamma * (self.UB[g] - self.LB[g])
-                    self.UB[g] =  p[g] + gamma * (self.UB[g] - self.LB[g])
+                # Use value to update search space
 
-
+                self.min_val = max(self.min_val, min(tmp) - g * (self.max_val - self.min_val))
+                self.max_val = min(self.max_val, max(tmp) + g * (self.max_val - self.min_val))
 
 
             # Condition for better gbest/Break if found
@@ -1126,8 +1121,6 @@ class PSO:
                     
                     pbest[1, g] = p[g]
                     x[1, g] = p[g]
-                    
-
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
@@ -1164,7 +1157,7 @@ class PSO:
 
                     pbest_value[idx[i]] = dummy_value[idx[i]]
 
-        return (x, pbest, gbest, gbest_cost,achieved)
+        return (x, pbest, pbest_value, gbest, gbest_cost,achieved)
         
                 
         
@@ -1265,7 +1258,7 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-            (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, rep = 100)
+             (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, rep = 100)
 
             while curr_iter <= self.iter_max:
 
@@ -1347,7 +1340,7 @@ class PSO:
                     achieved = True
 
                 if curr_iter % 5 == 0:
-                    (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+                     (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
                 if achieved:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
