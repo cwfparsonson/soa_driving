@@ -1040,7 +1040,7 @@ class PSO:
         tmp = np.copy(x[0])
 
         # Factor which indicates weight of previous range
-        g = 0.3
+        gamma = 0.3
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, rep):
@@ -1069,12 +1069,12 @@ class PSO:
                     z[g] = 5 * (1 - z[g])
             
             # Map to accepted interval
-            b = np.interp(z, [0, 1], [self.min_val, self.max_val])
+            # b = np.interp(z, [0, 1], [self.min_val, self.max_val])
 
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
-                p[g] = b[g]
+                p[g] = self.LB[g] + z[g] * (self.UB[g] - self.LB[g])
 
             # Get and Evaluate Output
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
@@ -1152,6 +1152,12 @@ class PSO:
                         x[idx[i], g] = dummy[idx[i], g]
 
                         pbest_value[idx[i]] = dummy_value[idx[i]]
+            
+            # Use value to update search space    
+            for g in range(0, self.m_c):
+                
+                self.LB[g] = max(self.LB[g], x[idx[0], g] - gamma * (self.UB[g] - self.LB[g]))
+                self.UB[g] = min(self.UB[g], x[idx[0], g] + gamma * (self.UB[g] - self.LB[g]))   
 
         else:
             idx = random.sample(range(2, self.n), 4 * self.n // 5)
@@ -1161,16 +1167,14 @@ class PSO:
 
                     x[idx[i], g] = dummy[idx[i], g]
 
-                    pbest_value[idx[i]] = dummy_value[idx[i]]
-        
-        # Use value to update search space
-        self.min_val = max(self.min_val, min(tmp) - g * (self.max_val - self.min_val))
-        self.max_val = min(self.max_val, max(tmp) + g * (self.max_val - self.min_val))     
+                    pbest_value[idx[i]] = dummy_value[idx[i]] 
 
-        for g in range(0, self.m_c):
-            
-            self.LB[g] = self.min_val
-            self.UB[g] = self.max_val
+            # Use value to update search space    
+            for g in range(0, self.m_c):
+                
+                self.LB[g] = max(self.LB[g], x[0, g] - gamma * (self.UB[g] - self.LB[g]))
+                self.UB[g] = min(self.UB[g], x[0, g] + gamma * (self.UB[g] - self.LB[g]))   
+
 
         return (x, pbest, pbest_value, gbest, gbest_cost,achieved)
         
