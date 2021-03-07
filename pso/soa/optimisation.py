@@ -1025,7 +1025,11 @@ class PSO:
         
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
-        dummy = np.copy(np.tile(np.copy(gbest) , (self.n, 1)))
+        if prob > random.uniform(0,1):
+            dummy = np.copy(np.tile(np.copy(gbest) , (self.n, 1)))
+        
+        else:
+            dummy = np.copy(pbest)
 
         dummy_value = np.copy(pbest_value)
 
@@ -1048,7 +1052,7 @@ class PSO:
             p = np.copy(random.choice(dummy))
             
             # Random Cascaded SOAs
-            r = np.random.randint(self.q - 1)
+            r = np.random.randint(self.q)
             
             # Tent Mapping
             for g in range(0, self.m_c):
@@ -1069,9 +1073,8 @@ class PSO:
 
 
             # Randomize part of particle using chaotic mapping
-            for g in range(r * self.m, (r + 2) * self.m):
-                if random.uniform(0,1) < prob:
-                    p[g] = b[g]
+            for g in range(r * self.m, (r + 1) * self.m):
+                p[g] = b[g]
 
             # Get and Evaluate Output
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
@@ -1101,7 +1104,7 @@ class PSO:
                 
                 for g in range(0, self.m_c):
                     
-                    tmp[g] == p[g]
+                    tmp[g] = p[g]
            
 
 
