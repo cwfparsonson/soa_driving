@@ -1026,7 +1026,7 @@ class PSO:
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
 
-        dummy = np.copy(pbest)
+        dummy = np.copy(gbest)
 
         dummy_value = np.copy(pbest_value)
 
@@ -1083,18 +1083,6 @@ class PSO:
 
             fit = fitness[i]
 
-            for j in range(0, self.n):
-                
-                # Consider if generated particle has better fitness than existing
-                if fit < dummy_value[j]:
-                    
-                    for g in range(0, self.m_c):
-                        
-                        dummy[j, g] = p[g]
-
-                        dummy_value[j] = fitness[i]
-                
-                    break     
 
             # Keep Track of best Particle in case gbest is not updated
             if fitness[i] == min(fitness):
@@ -1141,37 +1129,66 @@ class PSO:
         # Update N/2 particles
         
         if not achieved:
-            idx = random.sample(range(1, self.n), 4 * self.n // 5)
-            for g in range(0, self.m_c):
-            
+            idx = random.sample(range(1, self.n), 3 * self.n // 5)
+                            
+            if pbest_value[idx[0]] < min(fitness):
+                for g in range(0, self.m_c):
                     x[idx[0], g] = tmp[g]
-
-                    if pbest_value[idx[0]] < min(fitness):
-                        
-                        pbest[idx[0], g] = tmp[g]
-
-                    for i in range(1, len(idx)):
-
-                        x[idx[i], g] = dummy[idx[i], g]
-
-                        pbest_value[idx[i]] = dummy_value[idx[i]]
-            
-            # Use value to update search space    
-            for g in range(0, self.m_c):
+                    pbest[idx[0], g] = tmp[g]
+                    pbest_value[idx[0]] = min(fitness)
                 
-                self.LB[g] = max(self.LB[g], x[idx[0], g] - gamma * (self.UB[g] - self.LB[g]))
-                self.UB[g] = min(self.UB[g], x[idx[0], g] + gamma * (self.UB[g] - self.LB[g]))   
+            for i in range(1, len(idx)):
+                    
+                    for g in range(0, self.m_c):
+                        x[idx[0], g] = tmp[g]
+
+                        if pbest_value[idx[0]] < min(fitness):
+                            
+                            pbest[idx[0], g] = tmp[g]
+                            pbest_value[idx[0]] = min(fitness)
+                        
+                        x[idx[i], g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
+                                # Get and Evaluate Output
+                    
+                    PV_chaos = self.__getTransferFunctionOutput(self.sim_model, x[idx[i]], self.t2, self.X0)
+                    
+                    value = signalprocessing.cost(self.t2, 
+                                               PV_chaos, 
+                                               cost_function_label=self.cost_f, 
+                                               st_importance_factor=self.st_importance_factor, 
+                                               SP=self.SP).costEval
+
+                    if value > pbest_value[idx[i]]:
+                        
+                        pbest_value[idx[i]]
+                        for g in range(0, self.m_c):
+
+                            pbest[idx[i], g] = x[idx[i], g]
 
         else:
-            idx = random.sample(range(2, self.n), 4 * self.n // 5)
+            idx = random.sample(range(2, self.n), 3 * self.n // 5)
             for i in range(0, len(idx)):
                 
                 for g in range(0, self.m_c):
 
-                    x[idx[i], g] = dummy[idx[i], g]
+                    x[idx[i], g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
 
                     pbest_value[idx[i]] = dummy_value[idx[i]] 
 
+                PV_chaos = self.__getTransferFunctionOutput(self.sim_model, x[idx[i]], self.t2, self.X0)
+                
+                value = signalprocessing.cost(self.t2, 
+                                            PV_chaos, 
+                                            cost_function_label=self.cost_f, 
+                                            st_importance_factor=self.st_importance_factor, 
+                                            SP=self.SP).costEval
+
+                if value > pbest_value[idx[i]]:
+                    
+                    pbest_value[idx[i]]
+                    for g in range(0, self.m_c):
+
+                        pbest[idx[i], g] = x[idx[i], g]                
 
 
         return (x, pbest, pbest_value, gbest, gbest_cost,achieved)
