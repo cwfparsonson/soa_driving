@@ -1093,7 +1093,7 @@ class PSO:
                         
                             dummy[j, g] = p[g]
 
-                            dummy_value[j] == fitness[i]
+                            dummy_value[j] = fitness[i]
                     
                     break     
 
