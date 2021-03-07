@@ -1125,8 +1125,13 @@ class PSO:
                     pbest[1, g] = p[g]
                     x[1, g] = p[g]
                     pbest_value[0] = fitness[i]
+                
+                # Use value to update search space    
+                for g in range(0, self.m_c):
                     
-                    
+                    self.LB[g] = max(self.LB[g], x[0, g] - gamma * (self.UB[g] - self.LB[g]))
+                    self.UB[g] = min(self.UB[g], x[0, g] + gamma * (self.UB[g] - self.LB[g]))   
+     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
@@ -1170,11 +1175,6 @@ class PSO:
 
                     pbest_value[idx[i]] = dummy_value[idx[i]] 
 
-            # Use value to update search space    
-            for g in range(0, self.m_c):
-                
-                self.LB[g] = max(self.LB[g], x[0, g] - gamma * (self.UB[g] - self.LB[g]))
-                self.UB[g] = min(self.UB[g], x[0, g] + gamma * (self.UB[g] - self.LB[g]))   
 
 
         return (x, pbest, pbest_value, gbest, gbest_cost,achieved)
@@ -1360,7 +1360,7 @@ class PSO:
                     achieved = True
 
                 if curr_iter % 5 == 0:
-                    (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+                    (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
 
                 if achieved:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
