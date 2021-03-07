@@ -1046,14 +1046,14 @@ class PSO:
             p = np.copy(random.choice(dummy))
             
             # Random Cascaded SOAs
-            r = np.random.randint(self.q)
+            r = np.random.randint(self.q - 1)
             
             # Logistic Mapping
             z = 4 * z * (1 - z)
             
 
             # Randomize part of particle using chaotic mapping
-            for g in range(r * self.m, (r + 1) * self.m):
+            for g in range(r * self.m, (r + 2) * self.m):
                 p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
             # Get and Evaluate Output
