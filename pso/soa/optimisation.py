@@ -1098,8 +1098,6 @@ class PSO:
                     pbest[0, g] = p[g]
                     x[0, g] = p[g]
                     
-                    pbest[1, g] = p[g]
-                    x[1, g] = p[g]
 
                     self.LB[g] = max(self.LB[g], p[g] - gamma * (self.UB[g] - self.LB[g]))
                     self.UB[g] = min(self.UB[g], p[g] + gamma * (self.UB[g] - self.LB[g]))
@@ -1114,7 +1112,7 @@ class PSO:
                 
         
         # Update N/2 particles
-        idx = random.sample(range(2, self.n), 4 * self.n // 5)
+        idx = random.sample(range(1, self.n), 3 * self.n // 5)
         if not achieved:
             for g in range(0, self.m_c):
             
@@ -1307,7 +1305,7 @@ class PSO:
                 
                 # update local best particle positions & fitness vals
                 for j in range(0, self.n):
-                    if x_value[j] < pbest_value[j] and self.epsilon * random.uniform(0,10) > 0.2:
+                    if x_value[j] < pbest_value[j]:
                         pbest_value[j] = x_value[j] 
                         for g in range(0, self.m_c):
                             pbest[j, g] = x[j, g] 
