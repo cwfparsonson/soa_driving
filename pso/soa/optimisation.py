@@ -1048,7 +1048,7 @@ class PSO:
             p = np.copy(random.choice(dummy))
             
             # Random Cascaded SOAs
-            r = np.random.randint(self.q - 1)
+            r = np.random.randint(self.q)
             
             # Tent Mapping
             for g in range(0, self.m_c):
@@ -1064,12 +1064,13 @@ class PSO:
                 else:
                     z[g] = 4 * (1 - z[g])
             
-            # Map to accepted interval
-            b = np.interp(z, [0, 1], [self.min_val, self.max_val])
+            
+            # b = np.interp(z, [0, 1], [self.min_val, self.max_val])
 
             # Randomize part of particle using chaotic mapping
-            for g in range(r * self.m, (r + 2) * self.m):
-                    p[g] = b[g]
+            for g in range(r * self.m, (r + 1) * self.m):
+                    # Map to accepted interval
+                    p[g] = self.LB[g] + z[g] * (self.UB[g] - self.LB[g])
 
             # Get and Evaluate Output
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
@@ -1104,10 +1105,10 @@ class PSO:
                     
                     tmp[g] == p[g]
 
-                # Use value to update search space
+                    # Use value to update search space
 
-                self.min_val = max(self.min_val, min(tmp) - g * (self.max_val - self.min_val))
-                self.max_val = min(self.max_val, max(tmp) + g * (self.max_val - self.min_val))
+                    self.LB[g] = max(self.LB[g], tmp[g] - g * (self.max_val - self.LB[g]))
+                    self.UB[g] = min(self.UB[g], tmp[g] + g * (self.max_val - self.LB[g]))
 
 
             # Condition for better gbest/Break if found
