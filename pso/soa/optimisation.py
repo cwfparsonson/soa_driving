@@ -1128,7 +1128,11 @@ class PSO:
 
                         x[idx[i], g] = dummy[idx[i], g]
 
-                        pbest_value[idx[i]] = dummy_value[idx[i]]
+                        if pbest_value[idx[i]] > dummy_value[idx[i]]:
+
+                            pbest[idx[i], g] = dummy[idx[i], g]
+
+                            pbest_value[idx[i]] = dummy_value[idx[i]]
 
         else:
             for i in range(0, len(idx)):
@@ -1137,12 +1141,13 @@ class PSO:
 
                     x[idx[i], g] = dummy[idx[i], g]
 
-                    pbest_value[idx[i]] = dummy_value[idx[i]]
+                    if pbest_value[idx[i]] > dummy_value[idx[i]]:
 
-        return (x, pbest, pbest_value, gbest, gbest_cost,achieved)
-        
-                
-        
+                        pbest[idx[i], g] = dummy[idx[i], g]
+
+                        pbest_value[idx[i]] = dummy_value[idx[i]]
+
+        return (x, pbest, pbest_value, gbest, gbest_cost,achieved)      
 
     def regroup(self, x, gbest, v):
         """
@@ -1321,8 +1326,26 @@ class PSO:
                     gbest_cost = pbest_value[min_cost_index]
                     achieved = True
 
-                #if curr_iter % 5 == 0:
-                    #(x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
+                if curr_iter % 5 == 0:
+                    (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
+                    
+                    for j in range(0, self.n):
+                        # update particle vals
+                        rel_improv[j] = (pbest_value[j] - x_value[j]) \
+                            / (pbest_value[j] + x_value[j]) 
+                        w[j] = self.w_init + ( (self.w_final - self.w_init) * \
+                            ((math.exp(rel_improv[j]) - 1) / (math.exp(rel_improv[j]) + 1)) ) 
+                        c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
+                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
+                        c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
+                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
+                
+                    # update particle velocities
+                    for j in range(0, self.n):
+                        for g in range(0, self.m_c):
+                            v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
+                                * (pbest[j, g] - x[j, g]) + (c2[j] * \
+                                    random.uniform(0, 1) * (gbest[g] - x[j,g])))                   
 
                 if achieved:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
