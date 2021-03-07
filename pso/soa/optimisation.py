@@ -1112,7 +1112,7 @@ class PSO:
                 
         
         # Update N/2 particles
-        idx = random.sample(range(1, self.n), 3 * self.n // 5)
+        idx = random.sample(range(1, self.n), 4 * self.n // 5)
         if not achieved:
             for g in range(0, self.m_c):
             
