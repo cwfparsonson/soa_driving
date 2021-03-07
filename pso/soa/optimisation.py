@@ -1048,7 +1048,13 @@ class PSO:
             p = np.copy(random.choice(dummy))
             
             # Random Cascaded SOA
-            r = np.random.randint(self.q)
+            if i < rep // 2:
+                a = 2  
+                b = - 1
+            else:
+                a = 1
+                b = 0
+            r = np.random.randint(self.q + b)
             
             # Tent Mapping
             for g in range(0, self.m_c):
@@ -1068,7 +1074,7 @@ class PSO:
             b = np.interp(z, [0, 1], [self.min_val, self.max_val])
 
             # Randomize part of particle using chaotic mapping
-            for g in range(r * self.m, (r + 1) * self.m):
+            for g in range(r * self.m, (r + a) * self.m):
                     p[g] = b[g]
 
             # Get and Evaluate Output
@@ -1149,12 +1155,16 @@ class PSO:
 
                         x[idx[i], g] = dummy[idx[i], g]
 
+                        pbest_value[idx[i]] = dummy_value[idx[i]]
+
         else:
             for i in range(0, len(idx)):
                 
                 for g in range(0, self.m_c):
 
                     x[idx[i], g] = dummy[idx[i], g]
+
+                    pbest_value[idx[i]] = dummy_value[idx[i]]
 
         return (x, pbest, gbest, gbest_cost,achieved)
         
