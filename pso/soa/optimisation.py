@@ -1074,7 +1074,7 @@ class PSO:
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
-                p[g] = self.LB[g] + z[g] * (self.UB[g] - self.LB[g])
+                p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
 
             # Get and Evaluate Output
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
@@ -1109,7 +1109,7 @@ class PSO:
 
 
             # Condition for better gbest
-            print('evaluating')
+            print(f'evaluating: gbest = {gbest_cost}, current = {fit}')
             if fitness[i] < gbest_cost:
                 
                 achieved = True
@@ -1278,7 +1278,7 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-            (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, rep = 100)
+            (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
 
             while curr_iter <= self.iter_max:
 
