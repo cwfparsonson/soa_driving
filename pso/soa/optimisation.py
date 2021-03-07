@@ -1106,6 +1106,8 @@ class PSO:
                     tmp[g] == p[g]
 
                     # Use value to update search space
+                    self.LB[g] =  p[g] - gamma * (self.UB[g] - self.LB[g])
+                    self.UB[g] =  p[g] + gamma * (self.UB[g] - self.LB[g])
 
 
 
@@ -1125,8 +1127,7 @@ class PSO:
                     pbest[1, g] = p[g]
                     x[1, g] = p[g]
                     
-                    self.LB[g] =  p[g] - gamma * (self.UB[g] - self.LB[g])
-                    self.UB[g] =  p[g] + gamma * (self.UB[g] - self.LB[g])
+
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
