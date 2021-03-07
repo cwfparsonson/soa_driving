@@ -1039,7 +1039,7 @@ class PSO:
         g = 0.2
         
         # Chaotic Search Using Tent Mapping
-        for i in range(0, 10):
+        for i in range(0, 20):
             
             # Criterion that new gbest was found
             achieved = False
@@ -1135,7 +1135,7 @@ class PSO:
                 
         
         # Update N/2 particles
-        idx = random.sample(range(2, self.n), 4 * self.n // 5 - 1)
+        idx = random.sample(range(2, self.n), 4 * self.n // 5)
         if not achieved:
             for g in range(0, self.m_c):
             
@@ -1338,8 +1338,8 @@ class PSO:
                     gbest_cost = pbest_value[min_cost_index]
                     achieved = True
 
-                
-                (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+                if curr_iter % 5 == 0:
+                    (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
                 if achieved:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
