@@ -1174,7 +1174,7 @@ class PSO:
                         pbest[idx[i], g] = x[idx[i], g]                
 
 
-        return (x, pbest, pbest_value, gbest, gbest_cost,achieved)
+        return (x, pbest, pbest_value, gbest, gbest_cost, achieved)
         
                 
         
