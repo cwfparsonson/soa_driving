@@ -1034,7 +1034,7 @@ class PSO:
         tmp = np.copy(x[0])
 
         # Factor which indicates weight of previous range
-        g = 0.3
+        gamma = 0.7
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, rep):
@@ -1048,11 +1048,9 @@ class PSO:
             # Random Cascaded SOAs
             r = np.random.randint(self.q)
             
-            # Tent Mapping
+            # Logistic Mapping
             z = 4 * z * (1 - z)
             
-            # Map to accepted interval
-            b = np.interp(z, [0, 1], [self.min_val, self.max_val])
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
@@ -1087,11 +1085,6 @@ class PSO:
                     
                     tmp[g] == p[g]
 
-                # Use value to update search space
-
-                self.min_val = max(self.min_val, min(tmp) - g * (self.max_val - self.min_val))
-                self.max_val = min(self.max_val, max(tmp) + g * (self.max_val - self.min_val))
-
 
             # Condition for better gbest/Break if found
             if fitness[i] < gbest_cost:
@@ -1107,6 +1100,9 @@ class PSO:
                     
                     pbest[1, g] = p[g]
                     x[1, g] = p[g]
+
+                    self.LB[g] = max(self.LB[g], p[g] - gamma * (self.UB[g] - self.LB[g]))
+                    self.UB[g] = min(self.UB[g], p[g] + gamma * (self.UB[g] - self.LB[g]))
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
