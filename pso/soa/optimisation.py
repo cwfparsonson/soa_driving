@@ -1101,10 +1101,9 @@ class PSO:
                     
                     tmp[g] == p[g]
 
-                # Use value to update search space
+                
 
-                self.min_val = max(self.min_val, min(tmp) - g * (self.max_val - self.min_val))
-                self.max_val = min(self.max_val, max(tmp) + g * (self.max_val - self.min_val))
+
 
 
             # Condition for better gbest/Break if found
@@ -1121,6 +1120,11 @@ class PSO:
                     
                     pbest[1, g] = p[g]
                     x[1, g] = p[g]
+                    
+
+                    # Use value to update search space
+                    self.min_val = max(self.min_val, min(tmp) - g * (self.max_val - self.min_val))
+                    self.max_val = min(self.max_val, max(tmp) + g * (self.max_val - self.min_val))
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
@@ -1156,6 +1160,11 @@ class PSO:
                     x[idx[i], g] = dummy[idx[i], g]
 
                     pbest_value[idx[i]] = dummy_value[idx[i]]
+        
+        for g in range(0, self.m_c):
+            
+            self.LB[g] = self.min_val
+            self.UB[g] = self.max_val
 
         return (x, pbest, pbest_value, gbest, gbest_cost,achieved)
         
