@@ -1025,7 +1025,7 @@ class PSO:
         
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
-        dummy = np.copy(x)
+        dummy = np.copy(np.tile(np.copy(gbest) , (self.n, 1)))
 
         dummy_value = np.copy(pbest_value)
 
@@ -1039,7 +1039,7 @@ class PSO:
         g = 0.2
         
         # Chaotic Search Using Tent Mapping
-        for i in range(0, 20):
+        for i in range(0, 10):
             
             # Criterion that new gbest was found
             achieved = False
@@ -1118,8 +1118,12 @@ class PSO:
                 for g in range(0, self.m_c):
                     
                     gbest[g] = p[g]
+                    
                     pbest[0, g] = p[g]
                     x[0, g] = p[g]
+                    
+                    pbest[1, g] = p[g]
+                    x[1, g] = p[g]
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
@@ -1131,7 +1135,7 @@ class PSO:
                 
         
         # Update N/2 particles
-        idx = random.sample(range(1, self.n), 4 * self.n // 5 - 1)
+        idx = random.sample(range(2, self.n), 4 * self.n // 5 - 1)
         if not achieved:
             for g in range(0, self.m_c):
             
@@ -1334,8 +1338,8 @@ class PSO:
                     gbest_cost = pbest_value[min_cost_index]
                     achieved = True
 
-                if curr_iter % 10 == 0:
-                    (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
+                
+                (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter)
 
                 if achieved:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
