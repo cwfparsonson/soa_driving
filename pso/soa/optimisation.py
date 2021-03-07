@@ -1065,7 +1065,10 @@ class PSO:
                     z[g] = 4 * (1 - z[g])
             
             # Map to accepted interval
-            b = np.interp(z, [0, 1], [self.min_val, self.max_val])
+            if random.uniform(0,1) < prob:
+                b = np.interp(z, [0, 1], [self.min_val, self.max_val])
+            else:
+                b = np.interp(z, [0, 1], [-2.5, 2.5])
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
@@ -1100,13 +1103,12 @@ class PSO:
                 for g in range(0, self.m_c):
                     
                     tmp[g] == p[g]
+                # Use value to update search space
+                self.min_val = max(self.min_val, min(tmp) - g * (self.max_val - self.min_val))
+                self.max_val = min(self.max_val, max(tmp) + g * (self.max_val - self.min_val))                
 
-                
 
-
-
-
-            # Condition for better gbest/Break if found
+            # Condition for better gbest
             if fitness[i] < gbest_cost:
                 
                 achieved = True
@@ -1117,14 +1119,12 @@ class PSO:
                     
                     pbest[0, g] = p[g]
                     x[0, g] = p[g]
+                    pbest_value[0] = fitness[i]
                     
                     pbest[1, g] = p[g]
                     x[1, g] = p[g]
+                    pbest_value[0] = fitness[i]
                     
-
-                    # Use value to update search space
-                    self.min_val = max(self.min_val, min(tmp) - g * (self.max_val - self.min_val))
-                    self.max_val = min(self.max_val, max(tmp) + g * (self.max_val - self.min_val))
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
@@ -1136,8 +1136,9 @@ class PSO:
                 
         
         # Update N/2 particles
-        idx = random.sample(range(2, self.n), 4 * self.n // 5)
+        
         if not achieved:
+            idx = random.sample(range(1, self.n), 4 * self.n // 5)
             for g in range(0, self.m_c):
             
                     x[idx[0], g] = tmp[g]
@@ -1153,6 +1154,7 @@ class PSO:
                         pbest_value[idx[i]] = dummy_value[idx[i]]
 
         else:
+            idx = random.sample(range(2, self.n), 4 * self.n // 5)
             for i in range(0, len(idx)):
                 
                 for g in range(0, self.m_c):
