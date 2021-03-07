@@ -1100,7 +1100,7 @@ class PSO:
                     
                     self.LB[g] = max(self.LB[g], gbest[g] - gamma * (self.UB[g] - self.LB[g]))
                     self.UB[g] = min(self.UB[g], gbest[g] + gamma * (self.UB[g] - self.LB[g]))
-                    gamma = gamma / 2
+                    gamma = gamma / 1.2
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
