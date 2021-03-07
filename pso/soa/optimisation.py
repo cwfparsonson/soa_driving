@@ -1025,11 +1025,8 @@ class PSO:
         
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
-        if prob > random.uniform(0,1):
-            dummy = np.copy(np.tile(np.copy(gbest) , (self.n, 1)))
-        
-        else:
-            dummy = np.copy(pbest)
+
+        dummy = np.copy(pbest)
 
         dummy_value = np.copy(pbest_value)
 
