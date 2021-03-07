@@ -1026,7 +1026,7 @@ class PSO:
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
 
-        dummy = np.copy(gbest)
+        dummy = np.tile(np.copy(gbest),(self.n, 1))
 
         dummy_value = np.copy(pbest_value)
 
