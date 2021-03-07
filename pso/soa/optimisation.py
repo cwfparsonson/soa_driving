@@ -1037,7 +1037,7 @@ class PSO:
         tmp = np.copy(x[0])
 
         # Factor which indicates weight of previous range
-        gamma = 0.3
+        gamma = 0.6
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, rep):
@@ -1052,22 +1052,7 @@ class PSO:
             r = np.random.randint(self.q)
             
             # Tent Mapping
-            for g in range(0, self.m_c):
-
-                if z[g] == 0 or z[g] == 2/3:
-                    
-                    z[g] = random.uniform(0,1)
-                
-                elif z[g] < 0.5:
-                    
-                    z[g] = 5 * z[g]
-                
-                else:
-                    z[g] = 5 * (1 - z[g])
-            
-            # Map to accepted interval
-            # b = np.interp(z, [0, 1], [self.min_val, self.max_val])
-
+            z = 4 * z * (1 - z)
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
@@ -1107,9 +1092,6 @@ class PSO:
                     x[0, g] = p[g]
                     pbest_value[0] = fitness[i]
                     
-                    pbest[1, g] = p[g]
-                    x[1, g] = p[g]
-                    pbest_value[0] = fitness[i]
                 
                 # Use value to update search space    
                 for g in range(0, self.m_c):
@@ -1126,8 +1108,7 @@ class PSO:
                 print('----------------------------------------------------------')
                 
         
-        # Update N/2 particles
-        
+        # Update particles (1st optimally and 3N // 5 randomly)
         if not achieved:
             idx = random.sample(range(1, self.n), 3 * self.n // 5)
                             
@@ -1145,10 +1126,12 @@ class PSO:
                         if pbest_value[idx[0]] < min(fitness):
                             
                             pbest[idx[0], g] = tmp[g]
-                            pbest_value[idx[0]] = min(fitness)
+                        
+                        pbest_value[idx[0]] = min(fitness)
                         
                         x[idx[i], g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
-                                # Get and Evaluate Output
+                    
+                    # Get and Evaluate Output
                     
                     PV_chaos = self.__getTransferFunctionOutput(self.sim_model, x[idx[i]], self.t2, self.X0)
                     
@@ -1158,7 +1141,7 @@ class PSO:
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP).costEval
 
-                    if value > pbest_value[idx[i]]:
+                    if value < pbest_value[idx[i]]:
                         
                         pbest_value[idx[i]]
                         for g in range(0, self.m_c):
@@ -1166,7 +1149,7 @@ class PSO:
                             pbest[idx[i], g] = x[idx[i], g]
 
         else:
-            idx = random.sample(range(2, self.n), 3 * self.n // 5)
+            idx = random.sample(range(1, self.n), 3 * self.n // 5)
             for i in range(0, len(idx)):
                 
                 for g in range(0, self.m_c):
@@ -1183,7 +1166,7 @@ class PSO:
                                             st_importance_factor=self.st_importance_factor, 
                                             SP=self.SP).costEval
 
-                if value > pbest_value[idx[i]]:
+                if value < pbest_value[idx[i]]:
                     
                     pbest_value[idx[i]]
                     for g in range(0, self.m_c):
