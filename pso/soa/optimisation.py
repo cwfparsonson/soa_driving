@@ -1036,7 +1036,7 @@ class PSO:
         tmp = np.copy(x[0])
 
         # Factor which indicates weight of previous range
-        gamma = 0.3
+        gamma = 0.5
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, rep):
@@ -1146,6 +1146,10 @@ class PSO:
                         pbest[idx[i], g] = dummy[idx[i], g]
 
                         pbest_value[idx[i]] = dummy_value[idx[i]]
+        
+        self.LB.fill(self.min_val)
+
+        self.UB.fill(self.max_val)
 
         return (x, pbest, pbest_value, gbest, gbest_cost,achieved)      
 
