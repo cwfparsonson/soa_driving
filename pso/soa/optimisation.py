@@ -1009,7 +1009,7 @@ class PSO:
             # self.r = self.r * np.exp(1)
             print('Chaotic Mapping Performed')
     
-    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, rep = 20, curr_iter = 20):
+    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, rep = 30, curr_iter = 20):
         '''
         This method performs chaotic search for C times in case premature convergence is detected
         Args:
@@ -1023,7 +1023,9 @@ class PSO:
         
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
-        dummy = np.copy(np.tile(np.copy(gbest) , (self.n, 1)))
+        # dummy = np.copy(np.tile(np.copy(gbest) , (self.n, 1)))
+
+        dummy = np.copy(pbest)
 
         dummy_value = np.copy(pbest_value)
 
@@ -1034,7 +1036,7 @@ class PSO:
         tmp = np.copy(x[0])
 
         # Factor which indicates weight of previous range
-        gamma = 0.7
+        gamma = 0.3
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, rep):
@@ -1055,6 +1057,7 @@ class PSO:
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 1) * self.m):
                 p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
+            
             # Get and Evaluate Output
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
             fitness[i] = signalprocessing.cost(self.t2, 
@@ -1063,12 +1066,11 @@ class PSO:
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP).costEval 
 
-            fit = fitness[i]
 
             for j in range(0, self.n):
                 
                 # Consider if generated particle has better fitness than existing
-                if fit < dummy_value[j]:
+                if fitness[i] < dummy_value[j]:
                     
                     for g in range(0, self.m_c):
                         
@@ -1083,7 +1085,7 @@ class PSO:
                 
                 for g in range(0, self.m_c):
                     
-                    tmp[g] == p[g]
+                    tmp[g] = p[g]
 
 
             # Condition for better gbest/Break if found
@@ -1094,13 +1096,11 @@ class PSO:
                 for g in range(0, self.m_c):
                     
                     gbest[g] = p[g]
-                    
                     pbest[0, g] = p[g]
                     x[0, g] = p[g]
                     
-
-                    self.LB[g] = max(self.LB[g], p[g] - gamma * (self.UB[g] - self.LB[g]))
-                    self.UB[g] = min(self.UB[g], p[g] + gamma * (self.UB[g] - self.LB[g]))
+                    self.LB[g] = max(self.LB[g], gbest[g] - gamma * (self.UB[g] - self.LB[g]))
+                    self.UB[g] = min(self.UB[g], gbest[g] + gamma * (self.UB[g] - self.LB[g]))
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
@@ -1112,7 +1112,9 @@ class PSO:
                 
         
         # Update N/2 particles
+        
         idx = random.sample(range(1, self.n), 4 * self.n // 5)
+        
         if not achieved:
             for g in range(0, self.m_c):
             
@@ -1238,7 +1240,7 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-            (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+            # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
 
             while curr_iter <= self.iter_max:
 
