@@ -1036,7 +1036,7 @@ class PSO:
         tmp = np.copy(x[0])
 
         # Factor which indicates weight of previous range
-        g = 0.6
+        gamma = 0.6
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, rep):
@@ -1107,8 +1107,7 @@ class PSO:
 
                     # Use value to update search space
 
-                    self.LB[g] = max(self.LB[g], tmp[g] - g * (self.max_val - self.LB[g]))
-                    self.UB[g] = min(self.UB[g], tmp[g] + g * (self.max_val - self.LB[g]))
+
 
 
             # Condition for better gbest/Break if found
@@ -1125,6 +1124,9 @@ class PSO:
                     
                     pbest[1, g] = p[g]
                     x[1, g] = p[g]
+                    
+                    self.LB[g] = max(self.LB[g], p[g] - gamma * (self.UB[g] - self.LB[g]))
+                    self.UB[g] = min(self.UB[g], p[g] + gamma * (self.UB[g] - self.LB[g]))
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
