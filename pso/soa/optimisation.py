@@ -1009,7 +1009,7 @@ class PSO:
             # self.r = self.r * np.exp(1)
             print('Chaotic Mapping Performed')
     
-    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = 20):
+    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, rep = 20, curr_iter = 20):
         '''
         This method performs chaotic search for C times in case premature convergence is detected
 
@@ -1036,10 +1036,10 @@ class PSO:
         tmp = np.copy(x[0])
 
         # Factor which indicates weight of previous range
-        g = 0.2
+        g = 0.6
         
         # Chaotic Search Using Tent Mapping
-        for i in range(0, 20):
+        for i in range(0, rep):
             
             # Criterion that new gbest was found
             achieved = False
@@ -1257,7 +1257,7 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-            (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+            (x, pbest, gbest, gbest_cost, achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, rep = 100)
 
             while curr_iter <= self.iter_max:
 
