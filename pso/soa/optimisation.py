@@ -1048,7 +1048,7 @@ class PSO:
             p = np.copy(random.choice(dummy))
             
             # Random Cascaded SOAs
-            r = np.random.randint(self.q)
+            r = np.random.randint(self.q - 1)
             
             # Tent Mapping
             for g in range(0, self.m_c):
@@ -1059,19 +1059,18 @@ class PSO:
                 
                 elif z[g] < 0.5:
                     
-                    z[g] = 4 * z[g]
+                    z[g] = 5 * z[g]
                 
                 else:
-                    z[g] = 4 * (1 - z[g])
+                    z[g] = 5 * (1 - z[g])
             
             # Map to accepted interval
-            if random.uniform(0,1) < prob:
-                b = np.interp(z, [0, 1], [self.min_val, self.max_val])
-            else:
-                b = np.interp(z, [0, 1], [-2.5, 2.5])
+            b = np.interp(z, [0, 1], [self.min_val, self.max_val])
+
 
             # Randomize part of particle using chaotic mapping
-            for g in range(r * self.m, (r + 1) * self.m):
+            for g in range(r * self.m, (r + 2) * self.m):
+                if random.uniform(0,1) < prob:
                     p[g] = b[g]
 
             # Get and Evaluate Output
@@ -1103,9 +1102,7 @@ class PSO:
                 for g in range(0, self.m_c):
                     
                     tmp[g] == p[g]
-                # Use value to update search space
-                self.min_val = max(self.min_val, min(tmp) - g * (self.max_val - self.min_val))
-                self.max_val = min(self.max_val, max(tmp) + g * (self.max_val - self.min_val))                
+           
 
 
             # Condition for better gbest
@@ -1163,6 +1160,10 @@ class PSO:
 
                     pbest_value[idx[i]] = dummy_value[idx[i]]
         
+        # Use value to update search space
+        self.min_val = max(self.min_val, min(tmp) - g * (self.max_val - self.min_val))
+        self.max_val = min(self.max_val, max(tmp) + g * (self.max_val - self.min_val))     
+
         for g in range(0, self.m_c):
             
             self.LB[g] = self.min_val
