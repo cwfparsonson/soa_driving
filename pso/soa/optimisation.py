@@ -1009,7 +1009,7 @@ class PSO:
             # self.r = self.r * np.exp(1)
             print('Chaotic Mapping Performed')
     
-    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, rep = 30, curr_iter = 20):
+    def chaotic_search(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, rep = 50, curr_iter = 20):
         '''
         This method performs chaotic search for C times in case premature convergence is detected
         Args:
@@ -1023,9 +1023,7 @@ class PSO:
         
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
-        # dummy = np.copy(np.tile(np.copy(gbest) , (self.n, 1)))
-
-        dummy = np.copy(pbest)
+        dummy = np.copy(np.tile(np.copy(gbest) , (self.n, 1)))
 
         dummy_value = np.copy(pbest_value)
 
@@ -1036,7 +1034,7 @@ class PSO:
         tmp = np.copy(x[0])
 
         # Factor which indicates weight of previous range
-        gamma = 0.5
+        gamma = 1.0
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, rep):
@@ -1098,9 +1096,11 @@ class PSO:
                     gbest[g] = p[g]
                     pbest[0, g] = p[g]
                     x[0, g] = p[g]
+
                     
                     self.LB[g] = max(self.LB[g], gbest[g] - gamma * (self.UB[g] - self.LB[g]))
                     self.UB[g] = min(self.UB[g], gbest[g] + gamma * (self.UB[g] - self.LB[g]))
+                    gamma = gamma / 2
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
@@ -1116,15 +1116,17 @@ class PSO:
         idx = random.sample(range(1, self.n), 4 * self.n // 5)
         
         if not achieved:
+
             for g in range(0, self.m_c):
-            
-                    x[idx[0], g] = tmp[g]
+                x[idx[0], g] = tmp[g]
 
-                    if pbest_value[idx[0]] < min(fitness):
+                if pbest_value[idx[0]] < min(fitness):
                         
-                        pbest[idx[0], g] = tmp[g]
+                    pbest[idx[0], g] = tmp[g]
 
-                    for i in range(1, len(idx)):
+            for i in range(1, len(idx)):
+                
+                for g in range(0, self.m_c):
 
                         x[idx[i], g] = dummy[idx[i], g]
 
@@ -1151,7 +1153,7 @@ class PSO:
 
         self.UB.fill(self.max_val)
 
-        return (x, pbest, pbest_value, gbest, gbest_cost,achieved)      
+        return (x, pbest, pbest_value, gbest, gbest_cost, achieved)      
 
     def regroup(self, x, gbest, v):
         """
