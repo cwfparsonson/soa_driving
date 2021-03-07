@@ -1109,6 +1109,7 @@ class PSO:
 
 
             # Condition for better gbest
+            print('evaluating')
             if fitness[i] < gbest_cost:
                 
                 achieved = True
