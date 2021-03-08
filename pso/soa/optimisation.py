@@ -1023,13 +1023,13 @@ class PSO:
         
         prob = 1 - (1 / 1 + np.log(curr_iter))
         
-        dummy = np.copy(np.tile(np.copy(gbest) , (self.n, 1)))
+        dummy = np.tile(np.copy(gbest) , (self.n, 1))
 
         dummy_value = np.copy(pbest_value)
 
         z = np.interp(np.copy(random.choice(x)), [self.min_val, self.max_val], [0, 1])
 
-        fitness = np.zeros(self.c)
+        fitness = np.zeros(rep)
 
         tmp = np.copy(x[0])
 
@@ -1054,7 +1054,8 @@ class PSO:
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 2) * self.m):
-                p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
+                if prob > random.uniform(0,1):
+                    p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
             # Get and Evaluate Output
             PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
@@ -1123,6 +1124,7 @@ class PSO:
                 if pbest_value[idx[0]] < min(fitness):
                         
                     pbest[idx[0], g] = tmp[g]
+                    pbest_value[idx[0]] = min(fitness)
 
             for i in range(1, len(idx)):
                 
