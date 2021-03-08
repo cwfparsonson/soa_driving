@@ -1020,9 +1020,7 @@ class PSO:
         Returns:
         -
         '''
-        
-        prob = 1 - (1 / 1 + np.log(curr_iter))
-        
+           
         dummy = np.tile(np.copy(gbest) , (self.n, 1))
 
         dummy_value = np.copy(pbest_value)
@@ -1035,6 +1033,9 @@ class PSO:
 
         # Factor which indicates weight of previous range
         gamma = 1.0
+
+        min_range = np.copy(self.LB)
+        max_range = np.copy(self.UB)
         
         # Chaotic Search Using Tent Mapping
         for i in range(0, rep):
@@ -1097,10 +1098,11 @@ class PSO:
                     pbest[0, g] = p[g]
                     x[0, g] = p[g]
 
-                    
-                    self.LB[g] = max(self.LB[g], gbest[g] - gamma * (self.UB[g] - self.LB[g]))
-                    self.UB[g] = min(self.UB[g], gbest[g] + gamma * (self.UB[g] - self.LB[g]))
+                    '''
+                    min_range[g] = max(min_range[g], gbest[g] - gamma * (max_range[g] - min_range[g]))
+                    max_range[g] = min(max_range[g], gbest[g] + gamma * (max_range[g] - min_range[g]))
                     gamma = gamma / 1.2
+                    '''
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
@@ -1150,9 +1152,7 @@ class PSO:
 
                         pbest_value[idx[i]] = dummy_value[idx[i]]
         
-        self.LB.fill(self.min_val)
 
-        self.UB.fill(self.max_val)
 
         return (x, pbest, pbest_value, gbest, gbest_cost, achieved)      
 
