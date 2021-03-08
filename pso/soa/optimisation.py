@@ -1054,7 +1054,6 @@ class PSO:
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 2) * self.m):
-                if prob > random.uniform(0,1):
                     p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
             # Get and Evaluate Output
