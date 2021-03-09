@@ -152,9 +152,9 @@ class chaos:
                 print(f'Chaos Search Reduced by {cost_reduction} %')
                 print('----------------------------------------------------------')
             
-            (x, pbest, pbest_value) = self.update(x, tmp, pbest, pbest_value, fitness, dummy, dummy_value, achieved)
+        (x, pbest, pbest_value) = self.update(x, tmp, pbest, pbest_value, fitness, dummy, dummy_value, achieved)
 
-            return (x, pbest, pbest_value, gbest, gbest_cost, achieved)    
+        return (x, pbest, pbest_value, gbest, gbest_cost, achieved)    
 
     
     def update(self, x ,tmp, pbest, pbest_value, fitness, dummy, dummy_value, achieved = False):
