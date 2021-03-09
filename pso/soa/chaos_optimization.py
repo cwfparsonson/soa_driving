@@ -70,7 +70,7 @@ class chaos:
         gamma = 1.0
 
         # Chaotic Search Using Tent Mapping
-        for i in range(0, self.rep):
+        for i in range(0, 50):
 
             print('reached')
             
@@ -116,7 +116,8 @@ class chaos:
                         dummy[j, g] = p[g]
 
                         dummy_value[j] = fitness[i]
-    
+                
+                    break     
 
             # Keep Track of best Particle in case gbest is not updated
             if fitness[i] == min(fitness):
