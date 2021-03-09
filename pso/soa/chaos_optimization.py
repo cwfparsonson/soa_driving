@@ -54,7 +54,9 @@ class chaos:
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
         
-        dummy = np.tile(np.copy(gbest) , (self.n, 1))
+        # dummy = np.tile(np.copy(gbest) , (self.n, 1))
+
+        dummy = np.copy(pbest)
 
         dummy_value = np.copy(pbest_value)
 
@@ -103,7 +105,7 @@ class chaos:
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP).costEval 
 
-            d_idx = random.sample(range(1, self.n), self.n - 1)
+            d_idx = random.sample(range(1, self.n), self.n // 2)
             for j in range(0, len(d_idx)):
                 # Consider if generated particle has better fitness than existing
                 if fitness[i] < dummy_value[d_idx[j]]:
@@ -174,19 +176,19 @@ class chaos:
                             pbest_value[idx[i]] = dummy_value[idx[i]]
 
         else:
-            j = 0
+            
             for i in range(0, len(idx)):
                 
                 for g in range(0, self.m_c):
 
-                    x[idx[i], g] = dummy[j, g]
+                    x[idx[i], g] = dummy[idx[i], g]
 
-                    if pbest_value[idx[i]] > dummy_value[j]:
+                    if pbest_value[idx[i]] > dummy_value[idx[i]]:
 
-                        pbest[idx[i], g] = dummy[j, g]
+                        pbest[idx[i], g] = dummy[idx[i], g]
 
-                        pbest_value[idx[i]] = dummy_value[j]
-                j += 1
+                        pbest_value[idx[i]] = dummy_value[idx[i]]
+
         
 
         return (x, pbest, pbest_value, gbest, gbest_cost, achieved)    
