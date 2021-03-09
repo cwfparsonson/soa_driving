@@ -71,6 +71,8 @@ class chaos:
 
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.rep):
+
+            print('reached')
             
             # Criterion that new gbest was found
             achieved = False
