@@ -103,7 +103,7 @@ class chaos:
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP).costEval 
 
-            d_idx = random.sample(range(1, self.n), self.n)
+            d_idx = random.sample(range(1, self.n), self.n - 1)
             for j in range(0, len(d_idx)):
                 # Consider if generated particle has better fitness than existing
                 if fitness[i] < dummy_value[d_idx[j]]:
