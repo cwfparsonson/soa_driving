@@ -103,16 +103,16 @@ class chaos:
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP).costEval 
 
-
-            for j in range(0, self.n):
+            d_idx = random.sample(range(1, self.n), self.n // 2)
+            for j in range(0, len(d_idx)):
                 # Consider if generated particle has better fitness than existing
-                if fitness[i] < dummy_value[j]:
+                if fitness[i] < dummy_value[d_idx[j]]:
                     
-                    dummy_value[j] = fitness[i]
+                    dummy_value[d_idx[j]] = fitness[i]
                     
                     for g in range(0, self.m_c):
                         
-                        dummy[j, g] = p[g]
+                        dummy[d_idx[j], g] = p[g]
 
                     break     
 
@@ -149,7 +149,7 @@ class chaos:
                 print(f'Chaos Search Reduced by {cost_reduction} %')
                 print('----------------------------------------------------------')
             
-                idx = random.sample(range(1, self.n), 4 * self.n // 5)
+        idx = random.sample(range(1, self.n), 4 * self.n // 5)
         
         if not achieved:
 
@@ -174,17 +174,19 @@ class chaos:
                             pbest_value[idx[i]] = dummy_value[idx[i]]
 
         else:
+            j = 0
             for i in range(0, len(idx)):
                 
                 for g in range(0, self.m_c):
 
-                    x[idx[i], g] = dummy[idx[i], g]
+                    x[idx[i], g] = dummy[j, g]
 
-                    if pbest_value[idx[i]] > dummy_value[idx[i]]:
+                    if pbest_value[idx[i]] > dummy_value[j]:
 
-                        pbest[idx[i], g] = dummy[idx[i], g]
+                        pbest[idx[i], g] = dummy[j, g]
 
-                        pbest_value[idx[i]] = dummy_value[idx[i]]
+                        pbest_value[idx[i]] = dummy_value[j]
+                j += 1
         
 
         return (x, pbest, pbest_value, gbest, gbest_cost, achieved)    
