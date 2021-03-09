@@ -87,7 +87,7 @@ class chaos:
             
             elif self.map_type == 'tent':
                 conds = [z < 0.5, z >= 0.5, z == 0]
-                funcs = [lambda z: 2*z, lambda z: 2*(1-z), lambda z: z + random.uniform(0,1)]
+                funcs = [lambda z: 2 * z, lambda z: 2 * (1 - z), lambda z: z + random.uniform(0,1)]
                 z = np.piecewise(z, conds, funcs)
 
 
