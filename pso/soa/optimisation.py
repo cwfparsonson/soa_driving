@@ -20,6 +20,8 @@ from scipy import signal
 
 from soa import upsampling
 
+from soa import chaos_optimization
+
 from collections import defaultdict
 # from tqdm import tqdm
 
@@ -1049,9 +1051,13 @@ class PSO:
             # Random Cascaded SOAs
             r = np.random.randint(self.q - 1)
             
-            # Logistic Mapping
+            # Logistic Mapping/Tent Mapping
             z = 4 * z * (1 - z)
-            
+            '''
+            conds = [z < 0.5, z >= 0.5, z == 0]
+            funcs = [lambda z: 2*z, lambda z: 2*(1-z), lambda z: z + random.uniform(0,1)]
+            z = np.piecewise(z, conds, funcs)
+            '''
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 2) * self.m):
@@ -1227,6 +1233,8 @@ class PSO:
         iter_gbest_reached = np.copy(self.iter_gbest_reached)
         meta_path_to_pso_data = self.path_to_pso_data
 
+        cpso = chaos_optimization.chaos(self.n, self.m, self. q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP)
+
 
         # # run thru pso multiple times
         curr_rep = 1 
@@ -1252,8 +1260,8 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-            (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-
+            # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+            (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             while curr_iter <= self.iter_max:
 
                 achieved = False
@@ -1334,7 +1342,8 @@ class PSO:
                     achieved = True
 
                 if curr_iter % 5 == 0:
-                    (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
+                    # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
+                    (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
                     
                     for j in range(0, self.n):
                         # update particle vals
