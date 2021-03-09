@@ -116,8 +116,7 @@ class chaos:
                         dummy[j, g] = p[g]
 
                         dummy_value[j] = fitness[i]
-                
-                    break     
+    
 
             # Keep Track of best Particle in case gbest is not updated
             if fitness[i] == min(fitness):
