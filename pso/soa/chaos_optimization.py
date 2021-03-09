@@ -58,7 +58,7 @@ class chaos:
 
         dummy_value = np.copy(pbest_value)
 
-        z = np.interp(np.copy(gbest), [self.min_val, self.max_val], [0, 1])
+        z = np.interp(np.copy(random.choice(x)), [self.min_val, self.max_val], [0, 1])
 
         fitness = np.zeros(self.rep)
 
@@ -149,23 +149,14 @@ class chaos:
                 print(f'Chaos Search Reduced by {cost_reduction} %')
                 print('----------------------------------------------------------')
             
-        (x, pbest, pbest_value) = self.update(x, tmp, pbest, pbest_value, fitness, dummy, dummy_value, achieved)
-
-        return (x, pbest, pbest_value, gbest, gbest_cost, achieved)    
-
-    
-    def update(self, x ,tmp, pbest, pbest_value, fitness, dummy, dummy_value, achieved):
+                idx = random.sample(range(1, self.n), 4 * self.n // 5)
         
-        idx = random.sample(range(1, self.n), 4 * self.n // 5)
-
         if not achieved:
 
-            d_idx = 0
-    
             for g in range(0, self.m_c):
                 x[idx[0], g] = tmp[g]
 
-                if pbest_value[idx[0]] > min(fitness):
+                if pbest_value[idx[0]] < min(fitness):
                         
                     pbest[idx[0], g] = tmp[g]
                     pbest_value[idx[0]] = min(fitness)
@@ -174,37 +165,31 @@ class chaos:
                 
                 for g in range(0, self.m_c):
 
-                        x[idx[i], g] = dummy[d_idx, g]
+                        x[idx[i], g] = dummy[idx[i], g]
 
-                        if pbest_value[idx[i]] > dummy_value[d_idx]:
+                        if pbest_value[idx[i]] > dummy_value[idx[i]]:
 
-                            pbest[idx[i], g] = dummy[d_idx, g]
+                            pbest[idx[i], g] = dummy[idx[i], g]
 
-                            pbest_value[idx[i]] = dummy_value[d_idx]
-                
-                d_idx += 1
+                            pbest_value[idx[i]] = dummy_value[idx[i]]
 
         else:
-            
-            d_idx = 0
-            
             for i in range(0, len(idx)):
                 
                 for g in range(0, self.m_c):
 
-                    x[idx[i], g] = dummy[d_idx, g]
+                    x[idx[i], g] = dummy[idx[i], g]
 
-                    if pbest_value[idx[i]] > dummy_value[d_idx]:
+                    if pbest_value[idx[i]] > dummy_value[idx[i]]:
 
-                        pbest[idx[i], g] = dummy[d_idx, g]
+                        pbest[idx[i], g] = dummy[idx[i], g]
 
-                        pbest_value[idx[i]] = dummy_value[d_idx]
-                
-                d_idx += 1
-
+                        pbest_value[idx[i]] = dummy_value[idx[i]]
         
-        return (x, pbest, pbest_value)
 
+        return (x, pbest, pbest_value, gbest, gbest_cost, achieved)    
+
+    
 
 
     def __getTransferFunctionOutput(self, tf, U, T, X0, atol=1e-12):
