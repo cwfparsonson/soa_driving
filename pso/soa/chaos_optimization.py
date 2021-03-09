@@ -70,7 +70,7 @@ class chaos:
         gamma = 1.0
 
         # Chaotic Search Using Tent Mapping
-        for i in range(0, 50):
+        for i in range(0, self.rep):
 
             print('reached')
             
