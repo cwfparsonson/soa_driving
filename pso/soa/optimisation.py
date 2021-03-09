@@ -1309,7 +1309,8 @@ class PSO:
                     achieved = True
 
                 if curr_iter % 5 == 0:
-                    (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
+                    # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
+                    (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
                     
                     for j in range(0, self.n):
                         # update particle vals
