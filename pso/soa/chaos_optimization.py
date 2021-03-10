@@ -23,7 +23,7 @@ class chaos:
                 change_range = False,
                 min_val = -2.5,
                 max_val = 2.5, 
-                rep = 50):
+                rep = 20):
         
         self.n = n
         self.m = m
@@ -58,7 +58,7 @@ class chaos:
 
         dummy_value = np.copy(pbest_value)
 
-        z = np.interp(np.copy(random.choice(x)), [self.min_val, self.max_val], [0, 1])
+        z = np.interp(np.copy(random.choice(pbest)), [self.min_val, self.max_val], [0, 1])
 
         fitness = np.zeros(self.rep)
 
@@ -92,7 +92,7 @@ class chaos:
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
 
-            d_idx = random.sample(range(1, self.n), self.n // 2)
+            d_idx = np.random.shuffle(np.arange(self.n - 1))
             for j in range(0, len(d_idx)):
                 # Consider if generated particle has better fitness than existing
                 if fitness[i] < dummy_value[d_idx[j]]:
@@ -118,17 +118,27 @@ class chaos:
                 
                 achieved = True
                 
+                pbest_value[0] = fitness[i]
+                
                 for g in range(0, self.m_c):
                     
                     gbest[g] = p[g]
                     pbest[0, g] = p[g]
                     x[0, g] = p[g]
+                    
+                
 
                     if self.change_range:
                         min_range[g] = max(min_range[g], gbest[g] - gamma * (max_range[g] - min_range[g]))
                         max_range[g] = min(max_range[g], gbest[g] + gamma * (max_range[g] - min_range[g]))
                         gamma = gamma / 1.2
+                
+                for j in range(0 , len(dummy) // 2):
                     
+                    dummy_value[j] = fitness[i]
+                    
+                    for g in range(0, self.m_c):
+                        dummy[j, g] = p[g]
                     
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
@@ -173,12 +183,14 @@ class chaos:
         
         if not achieved:
 
-            for g in range(0, self.m_c):
-                x[idx[0], g] = tmp[g]
-
-                if pbest_value[idx[0]] < min(fitness):
-                        
+            if pbest_value[idx[0]] < min(fitness):
+                
+                for g in range(0, self.m_c):
+                    
+                    x[idx[0], g] = tmp[g]                   
+                    
                     pbest[idx[0], g] = tmp[g]
+                    
                     pbest_value[idx[0]] = min(fitness)
 
             for i in range(1, len(idx)):
