@@ -54,9 +54,7 @@ class chaos:
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
         
-        # dummy = np.tile(np.copy(gbest) , (self.n, 1))
-
-        dummy = np.copy(pbest)
+        dummy = np.tile(np.copy(gbest) , (self.n, 1))
 
         dummy_value = np.copy(pbest_value)
 
