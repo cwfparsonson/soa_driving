@@ -87,12 +87,13 @@ class chaos:
 
             # Randomize part of particle using chaotic mapping
             for g in range(r * self.m, (r + 2) * self.m):
-                    p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
+                
+                p[g] = np.interp(z[g], [0, 1], [min_range[g], max_range[g]])
             
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
 
-            d_idx = random.sample(range(0, self.n), 4 * self.n // 5)
+            d_idx = random.sample(range(0, self.n), self.n - 1)
             for j in range(0, len(d_idx)):
                 # Consider if generated particle has better fitness than existing
                 if fitness[i] < dummy_value[d_idx[j]]:
@@ -127,7 +128,7 @@ class chaos:
                     if self.change_range:
                         min_range[g] = max(min_range[g], gbest[g] - gamma * (max_range[g] - min_range[g]))
                         max_range[g] = min(max_range[g], gbest[g] + gamma * (max_range[g] - min_range[g]))
-                        gamma = gamma / 1.2
+                        gamma = gamma / 1.1
 
                 pbest_value[0] = fitness[i]  
                 gbest_cost = fitness[i]
