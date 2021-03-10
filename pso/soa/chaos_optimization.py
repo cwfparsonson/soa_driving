@@ -23,7 +23,7 @@ class chaos:
                 change_range = False,
                 min_val = -2.5,
                 max_val = 2.5, 
-                rep = 50):
+                rep = 500):
         
         self.n = n
         self.m = m
@@ -84,13 +84,7 @@ class chaos:
             r = np.random.randint(self.q - 1)
             
             # Logistic Mapping/Tent Mapping
-            if self.map_type == 'logistic':
-                z = 4 * z * (1 - z)
-            
-            elif self.map_type == 'tent':
-                conds = [z < 0.5, z >= 0.5, z == 0]
-                funcs = [lambda z: 2 * z, lambda z: 2 * (1 - z), lambda z: z + random.uniform(0,1)]
-                z = np.piecewise(z, conds, funcs)
+            z = self.mapping(z)
 
 
             # Randomize part of particle using chaotic mapping
@@ -98,12 +92,7 @@ class chaos:
                     p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
             # Get and Evaluate Output
-            PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
-            fitness[i] = signalprocessing.cost(self.t2, 
-                                               PV_chaos, 
-                                               cost_function_label=self.cost_f, 
-                                               st_importance_factor=self.st_importance_factor, 
-                                               SP=self.SP).costEval 
+            fitness[i] = self.get_cost(p)
 
             d_idx = random.sample(range(1, self.n), self.n // 2)
             for j in range(0, len(d_idx)):
@@ -151,6 +140,37 @@ class chaos:
                 print(f'Chaos Search Reduced by {cost_reduction} %')
                 print('----------------------------------------------------------')
             
+        (x,pbest,pbest_value) = self.update(x, pbest, pbest_value, dummy, dummy_value, fitness, tmp, achieved)
+     
+        return (x, pbest, pbest_value, gbest, gbest_cost, achieved)    
+
+
+    def mapping(self, z):
+        
+        if self.map_type == 'logistic':
+            z = 4 * z * (1 - z)
+        
+        elif self.map_type == 'tent':
+            conds = [z < 0.5, z >= 0.5, z == 0]
+            funcs = [lambda z: 2 * z, lambda z: 2 * (1 - z), lambda z: z + random.uniform(0,1)]
+            z = np.piecewise(z, conds, funcs)
+
+        return z      
+    
+    
+    def get_cost(self, p):
+        
+        PV_chaos = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
+        fitness = signalprocessing.cost(self.t2, 
+                                            PV_chaos, 
+                                            cost_function_label=self.cost_f, 
+                                            st_importance_factor=self.st_importance_factor, 
+                                            SP=self.SP).costEval
+
+        return fitness
+
+    
+    def update(self, x, pbest, pbest_value, dummy, dummy_value, fitness, tmp, achieved):
         idx = random.sample(range(1, self.n), 4 * self.n // 5)
         
         if not achieved:
@@ -188,14 +208,10 @@ class chaos:
                         pbest[idx[i], g] = dummy[idx[i], g]
 
                         pbest_value[idx[i]] = dummy_value[idx[i]]
-
         
-
-        return (x, pbest, pbest_value, gbest, gbest_cost, achieved)    
-
+        return (x,pbest,pbest_value)
     
-
-
+    
     def __getTransferFunctionOutput(self, tf, U, T, X0, atol=1e-12):
         """
         This method sends a drive signal to a transfer function model and gets 
