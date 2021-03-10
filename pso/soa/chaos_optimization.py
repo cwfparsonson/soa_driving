@@ -118,28 +118,18 @@ class chaos:
                 
                 achieved = True
                 
-                pbest_value[0] = fitness[i]
-                
                 for g in range(0, self.m_c):
                     
                     gbest[g] = p[g]
                     pbest[0, g] = p[g]
                     x[0, g] = p[g]
                     
-                
-
                     if self.change_range:
                         min_range[g] = max(min_range[g], gbest[g] - gamma * (max_range[g] - min_range[g]))
                         max_range[g] = min(max_range[g], gbest[g] + gamma * (max_range[g] - min_range[g]))
                         gamma = gamma / 1.2
-                
-                for j in range(0 , len(dummy) // 2):
-                    
-                    dummy_value[j] = fitness[i]
-                    
-                    for g in range(0, self.m_c):
-                        dummy[j, g] = p[g]
-                    
+
+                pbest_value[0] = fitness[i]  
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
