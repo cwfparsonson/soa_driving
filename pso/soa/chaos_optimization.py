@@ -92,7 +92,7 @@ class chaos:
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
 
-            d_idx = np.random.shuffle(np.arange(self.n - 1))
+            d_idx = random.sample(range(0, self.n), 4 * self.n // 5)
             for j in range(0, len(d_idx)):
                 # Consider if generated particle has better fitness than existing
                 if fitness[i] < dummy_value[d_idx[j]]:
