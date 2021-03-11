@@ -81,7 +81,7 @@ class chaos:
             p = np.copy(dummy[dummy_value.argsort()[0]])
             
             # Random Cascaded SOAs
-            r = np.random.randint(self.q - 1)
+            r = np.random.randint(self.q)
             
             # Logistic Mapping/Tent Mapping
             z = self.mapping(z)
