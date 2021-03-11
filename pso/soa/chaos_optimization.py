@@ -78,7 +78,7 @@ class chaos:
             achieved = False
 
             # Get a random particle
-            p = np.copy(random.choice(dummy))
+            p = np.copy(dummy[dummy_value.argsort()[0]])
             
             # Random Cascaded SOAs
             r = np.random.randint(self.q - 1)
@@ -95,12 +95,16 @@ class chaos:
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
 
-            idx = dummy_value.argsort()[-1]
-            if fitness[i] < dummy_value[idx]:
-                
-                dummy_value[idx] = fitness[i]
-            
-                dummy[idx, :] = p[:]    
+            d_idx = random.sample(range(0, self.n), self.n - 1)
+            for j in range(0, len(d_idx)):
+                # Consider if generated particle has better fitness than existing
+                if fitness[i] < dummy_value[d_idx[j]]:
+                    
+                    dummy_value[d_idx[j]] = fitness[i]
+             
+                    dummy[d_idx[j], :] = p[:]
+
+                    break     
 
             # Keep Track of best Particle in case gbest is not updated
             if fitness[i] == min(fitness):     
@@ -122,7 +126,6 @@ class chaos:
                     if self.change_range:
                         min_range[g] = max(min_range[g], gbest[g] - a * (max_range[g] - min_range[g]))
                         max_range[g] = min(max_range[g], gbest[g] + a * (max_range[g] - min_range[g]))
-                        a = a / 1.1
 
                 pbest_value[0] = fitness[i]  
                 gbest_cost = fitness[i]
