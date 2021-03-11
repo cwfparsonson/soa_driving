@@ -122,7 +122,7 @@ class chaos:
                     if self.change_range:
                         min_range[g] = max(min_range[g], gbest[g] - a * (max_range[g] - min_range[g]))
                         max_range[g] = min(max_range[g], gbest[g] + a * (max_range[g] - min_range[g]))
-                        gamma = gamma / 1.1
+                        a = a / 1.1
 
                 pbest_value[0] = fitness[i]  
                 gbest_cost = fitness[i]
