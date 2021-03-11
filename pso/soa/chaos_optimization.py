@@ -23,7 +23,7 @@ class chaos:
                 change_range = False,
                 min_val = -2.5,
                 max_val = 2.5, 
-                rep = 20):
+                rep = 50):
         
         self.n = n
         self.m = m
