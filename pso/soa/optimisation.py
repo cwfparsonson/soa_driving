@@ -152,7 +152,7 @@ class PSO:
         self.awg_res = awg_res
         self.min_val = min_val
         self.max_val = max_val
-        self.SP = SP
+        # self.SP = SP
         self.record_extra_info = record_extra_info
         self.num_points = len(self.init_OP)
         if sim_model == None and awg == None or \
@@ -180,7 +180,7 @@ class PSO:
         else:
             self.init_PV = self.__getSoaOutput(self.init_OP) 
 
-
+        self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp
         self.curr_iter = 0 
         self.x = self.cascade(np.zeros((self.n, self.m))) # current pop position array
         self.x_value = np.zeros(self.n) # fitness vals of positions
@@ -1225,10 +1225,12 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-
+            start_time = time.time()
             (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+            end_time = time.time()
             # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-
+            t = end_time - start_time
+            print(f'Time Required for 1 CLS = {t}')
             while curr_iter <= self.iter_max:
 
                 achieved = False
@@ -1311,24 +1313,7 @@ class PSO:
                 if curr_iter % 5 == 0:
                     # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
                     (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-                    
-                    for j in range(0, self.n):
-                        # update particle vals
-                        rel_improv[j] = (pbest_value[j] - x_value[j]) \
-                            / (pbest_value[j] + x_value[j]) 
-                        w[j] = self.w_init + ( (self.w_final - self.w_init) * \
-                            ((math.exp(rel_improv[j]) - 1) / (math.exp(rel_improv[j]) + 1)) ) 
-                        c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
-                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
-                        c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
-                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
-                
-                    # update particle velocities
-                    for j in range(0, self.n):
-                        for g in range(0, self.m_c):
-                            v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
-                                * (pbest[j, g] - x[j, g]) + (c2[j] * \
-                                    random.uniform(0, 1) * (gbest[g] - x[j,g])))                   
+                                      
 
                 if achieved:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])

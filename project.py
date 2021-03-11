@@ -30,12 +30,12 @@ if __name__ == '__main__':
     time_stop = 20e-9
 
     # set PSO params
-    n = 16
-    iter_max = 109
+    n = 10
+    iter_max = 110
     rep_max = 1 
     max_v_f = 0.05 
     init_v_f = max_v_f 
-    cost_f = 's_mse+st' 
+    cost_f = 'mSE' 
     w_init = 0.9
     w_final = 0.5
     on_suppress_f = 2.0

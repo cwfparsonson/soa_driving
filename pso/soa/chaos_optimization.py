@@ -170,11 +170,12 @@ class chaos:
 
     
     def update(self, x, pbest, pbest_value, dummy, dummy_value, fitness, tmp, achieved):
+        
         idx = random.sample(range(1, self.n), 4 * self.n // 5)
         
         if not achieved:
 
-            if pbest_value[idx[0]] < min(fitness):
+            if pbest_value[idx[0]] > min(fitness):
                 
                 for g in range(0, self.m_c):
                     
