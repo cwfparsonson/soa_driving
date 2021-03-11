@@ -69,7 +69,7 @@ class chaos:
         min_range = np.copy(self.LB)
         max_range = np.copy(self.UB)
 
-        gamma = 1.0
+        a = 0.7
 
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.rep):
@@ -95,20 +95,17 @@ class chaos:
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
 
-            d_idx = random.sample(range(0, self.n), self.n - 1)
-            for j in range(0, len(d_idx)):
-                # Consider if generated particle has better fitness than existing
-                if fitness[i] < dummy_value[d_idx[j]]:
-                    
-                    dummy_value[d_idx[j]] = fitness[i]
-             
-                    dummy[d_idx[j], :] = p[:]
-
-                    break     
+            idx = dummy_value.argsort()[-1]
+            if fitness[i] < dummy_value[idx]:
+                
+                dummy_value[idx] = fitness[i]
+            
+                dummy[idx, :] = p[:]    
 
             # Keep Track of best Particle in case gbest is not updated
             if fitness[i] == min(fitness):     
-                    tmp[:] = p[:]
+                
+                tmp[:] = p[:]
 
 
             # Condition for better gbest/Break if found
@@ -119,12 +116,12 @@ class chaos:
                 for g in range(0, self.m_c):
                     
                     gbest[g] = p[g]
-                    pbest[0, g] = p[g]
-                    x[0, g] = p[g]
+                    pbest[-1, g] = p[g]
+                    x[-1, g] = p[g]
                     
                     if self.change_range:
-                        min_range[g] = max(min_range[g], gbest[g] - gamma * (max_range[g] - min_range[g]))
-                        max_range[g] = min(max_range[g], gbest[g] + gamma * (max_range[g] - min_range[g]))
+                        min_range[g] = max(min_range[g], gbest[g] - a * (max_range[g] - min_range[g]))
+                        max_range[g] = min(max_range[g], gbest[g] + a * (max_range[g] - min_range[g]))
                         gamma = gamma / 1.1
 
                 pbest_value[0] = fitness[i]  
@@ -211,15 +208,15 @@ class chaos:
 
         if not achieved:
 
-            x[0, :] = tmp[:]
+            x[-1, :] = tmp[:]
 
-            pbest_value[0] = min(fitness)
+            pbest_value[-1] = min(fitness)
 
-            pbest[0, :] = tmp[:]
+            pbest[-1, :] = tmp[:]
 
-        elite_idxs = dummy_value.argsort()[-3 * self.n // 5:]
+        elite_idxs = dummy_value.argsort()[:4 * self.n // 5]
 
-        for idx,j in zip(elite_idxs, range(2 * self.n // 5, self.n)):
+        for idx,j in zip(elite_idxs, range(0, 4 * self.n // 5)):
 
             x[j, :] = dummy[idx]
 
