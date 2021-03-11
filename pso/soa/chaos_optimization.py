@@ -223,7 +223,7 @@ class chaos:
 
             x[j, :] = dummy[idx]
 
-            if dummy_value[idx] < pbest[j]:
+            if dummy_value[idx] < pbest_value[j]:
 
                 pbest_value[j] = dummy_value[idx]
 
