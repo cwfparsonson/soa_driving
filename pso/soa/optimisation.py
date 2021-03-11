@@ -1230,7 +1230,7 @@ class PSO:
             end_time = time.time()
             # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             t = end_time - start_time
-            print(f'Time Required for 1 CLS = {t}')
+            print(f'Time Required for 1 CLS = {t} s')
             while curr_iter <= self.iter_max:
 
                 achieved = False

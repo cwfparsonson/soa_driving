@@ -54,7 +54,9 @@ class chaos:
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
         
-        dummy = np.tile(np.copy(gbest) , (self.n, 1))
+        # dummy = np.tile(np.copy(gbest) , (self.n, 1))
+
+        dummy = np.copy(pbest)
 
         dummy_value = np.copy(pbest_value)
 
@@ -99,19 +101,14 @@ class chaos:
                 if fitness[i] < dummy_value[d_idx[j]]:
                     
                     dummy_value[d_idx[j]] = fitness[i]
-                    
-                    for g in range(0, self.m_c):
-                        
-                        dummy[d_idx[j], g] = p[g]
+             
+                    dummy[d_idx[j], :] = p[:]
 
                     break     
 
             # Keep Track of best Particle in case gbest is not updated
-            if fitness[i] == min(fitness):
-                
-                for g in range(0, self.m_c):
-                    
-                    tmp[g] = p[g]
+            if fitness[i] == min(fitness):     
+                    tmp[:] = p[:]
 
 
             # Condition for better gbest/Break if found
@@ -170,8 +167,8 @@ class chaos:
 
     
     def update(self, x, pbest, pbest_value, dummy, dummy_value, fitness, tmp, achieved):
-        
-        idx = random.sample(range(1, self.n), 4 * self.n // 5)
+        '''
+        idx = random.sample(range(1, self.n), 3 * self.n // 5)
         
         if not achieved:
 
@@ -210,6 +207,27 @@ class chaos:
                         pbest[idx[i], g] = dummy[idx[i], g]
 
                         pbest_value[idx[i]] = dummy_value[idx[i]]
+        '''
+
+        if not achieved:
+
+            x[0, :] = tmp[:]
+
+            pbest_value[0] = min(fitness)
+
+            pbest[0, :] = tmp[:]
+
+        elite_idxs = dummy_value.argsort()[-3 * self.n // 5:]
+
+        for idx,j in zip(elite_idxs, range(2 * self.n // 5, self.n)):
+
+            x[j, :] = dummy[idx]
+
+            if dummy_value[idx] < pbest[j]:
+
+                pbest_value[j] = dummy_value[idx]
+
+                pbest[j, :] = dummy[j, :]
         
         return (x,pbest,pbest_value)
     
