@@ -65,7 +65,7 @@ class chaos:
         min_range = np.copy(self.LB)
         max_range = np.copy(self.UB)
 
-        a = 0.7
+        a = 0.5
 
         # Criterion that new gbest was found
         achieved = False

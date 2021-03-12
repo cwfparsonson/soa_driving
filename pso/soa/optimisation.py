@@ -1313,7 +1313,7 @@ class PSO:
 
                 if curr_iter % 5 == 0:
                     # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
-                    (x, pbest, pbest_value, gbest, gbest_cost, achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+                    (x, pbest, pbest_value, gbest, gbest_cost, achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, change_range = True)
                                       
 
                 if achieved or achieved_main:
