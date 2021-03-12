@@ -86,7 +86,7 @@ class chaos:
             UB = np.copy(self.UB)
 
             # Randomize part of particle using chaotic mapping
-            for g in range(c * self.m, (c + 2) * self.m):
+            for g in range(c[0] * self.m, (c[0] + 2) * self.m):
                 
                 p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
