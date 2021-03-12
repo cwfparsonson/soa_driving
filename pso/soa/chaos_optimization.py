@@ -21,8 +21,8 @@ class chaos:
                 SP,
                 map_type  = 'logistic',
                 change_range = False,
-                min_val = -1.5,
-                max_val = 2.0, 
+                min_val = -2.5,
+                max_val = 2.5, 
                 rep = 40):
         
         self.n = n
@@ -50,6 +50,8 @@ class chaos:
         
         self.map_type = map_type
         self.rep = rep
+
+        self.a = a
 
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
@@ -83,12 +85,10 @@ class chaos:
             LB = np.copy(self.LB)
             UB = np.copy(self.UB)
 
-            a = 0.5
-
             # Randomize part of particle using chaotic mapping
-            for g in range(c * self.m, (c + 1) * self.m):
+            for g in range(c * self.m, (c + 2) * self.m):
                 
-                p[g] = np.interp(z[g], [0, 1], [LB[g], UB[g]])
+                p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
@@ -116,8 +116,9 @@ class chaos:
                 
                 if self.change_range:
                     for g in range(0, self.m_c):
-                        LB[g] = max(LB[g], gbest[g] - a * (UB[g] - LB[g]))
-                        UB[g] = min(UB[g], gbest[g] + a * (UB[g] - LB[g]))
+                        self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
+                        self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
+                    self.a = self.a / 1.1
                     
 
                 pbest_value[-1] = fitness[i]  
