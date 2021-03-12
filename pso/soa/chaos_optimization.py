@@ -21,8 +21,8 @@ class chaos:
                 SP,
                 map_type  = 'logistic',
                 change_range = False,
-                min_val = -2.5,
-                max_val = 2.5, 
+                min_val = -1.2,
+                max_val = 2.0, 
                 rep = 40):
         
         self.n = n
