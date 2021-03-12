@@ -23,7 +23,7 @@ class chaos:
                 change_range = False,
                 min_val = -2.5,
                 max_val = 2.5, 
-                rep = 20):
+                rep = 40):
         
         self.n = n
         self.m = m
@@ -65,7 +65,7 @@ class chaos:
         min_range = np.copy(self.LB)
         max_range = np.copy(self.UB)
 
-        a = 0.5
+        a = 1.0
 
         # Criterion that new gbest was found
         achieved = False
@@ -115,6 +115,8 @@ class chaos:
                     for g in range(0, self.m_c):
                         min_range[g] = max(min_range[g], gbest[g] - a * (max_range[g] - min_range[g]))
                         max_range[g] = min(max_range[g], gbest[g] + a * (max_range[g] - min_range[g]))
+                    
+                    a = a / 1.1
 
                 pbest_value[-1] = fitness[i]  
                 gbest_cost = fitness[i]

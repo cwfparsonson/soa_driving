@@ -1251,7 +1251,7 @@ class PSO:
                 
                 # update particle velocities
                 for j in range(0, self.n):
-                    for g in range((self.q - 1) * self.m,self.m_c):
+                    for g in range((self.q - 2) * self.m, self.m_c):
                         v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
                             * (pbest[j, g] - x[j, g]) + (c2[j] * \
                                 random.uniform(0, 1) * (gbest[g] - x[j,g])))
