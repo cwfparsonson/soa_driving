@@ -158,7 +158,7 @@ class chaos:
 
         elite_idxs = np.argsort(dummy_value)[:4 * self.n // 5]
 
-        for idx,j in enumerate(elite_idxs):
+        for j,idx in enumerate(elite_idxs):
 
             x[j, :] = dummy[idx]
 
