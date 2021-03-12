@@ -54,7 +54,9 @@ class chaos:
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
         
-        dummy = np.tile(np.copy(gbest) , (self.n, 1))
+        # dummy = np.tile(np.copy(gbest) , (self.n, 1))
+
+        dummy = np.copy(pbest)
 
         dummy_value = np.copy(pbest_value)
 
@@ -62,30 +64,28 @@ class chaos:
 
         fitness = np.zeros(self.rep)
 
-        tmp = np.copy(x[0])
-
         min_range = np.copy(self.LB)
         max_range = np.copy(self.UB)
 
         a = 0.7
 
+        # Criterion that new gbest was found
+        achieved = False
+
         # Chaotic Search Using Tent Mapping
         for i in range(0, self.rep):
             
-            # Criterion that new gbest was found
-            achieved = False
-
             # Get the best particle
-            p = np.copy(dummy[dummy_value.argsort()[0]])
+            p = np.copy(dummy[np.array(dummy_value).argsort()[0]])
             
             # Random Cascaded SOAs
-            r = np.random.randint(self.q - 3)
+            c = np.random.randint(self.q - 1)
             
             # Logistic Mapping/Tent Mapping
             z = self.mapping(z)
 
             # Randomize part of particle using chaotic mapping
-            for g in range(r * self.m, (r + 2) * self.m):
+            for g in range(c * self.m, (c + 2) * self.m):
                 
                 p[g] = np.interp(z[g], [0, 1], [min_range[g], max_range[g]])
             
@@ -94,13 +94,13 @@ class chaos:
 
             d_idx = np.arange(self.n)
             np.random.shuffle(d_idx)
-            for j in range(0, len(d_idx)):
+            for j in d_idx:
                 # Consider if generated particle has better fitness than existing
-                if fitness[i] < dummy_value[d_idx[j]]:
+                if fitness[i] < dummy_value[j]:
                     
-                    dummy_value[d_idx[j]] = fitness[i]
+                    dummy_value[j] = fitness[i]
              
-                    dummy[d_idx[j], :] = p[:]
+                    dummy[j, :] = p[:]
 
                     break     
 
@@ -118,7 +118,7 @@ class chaos:
                         min_range[g] = max(min_range[g], gbest[g] - a * (max_range[g] - min_range[g]))
                         max_range[g] = min(max_range[g], gbest[g] + a * (max_range[g] - min_range[g]))
 
-                pbest_value[0] = fitness[i]  
+                pbest_value[-1] = fitness[i]  
                 gbest_cost = fitness[i]
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
                     / gbest_cost_history[0])*100
@@ -127,7 +127,7 @@ class chaos:
                 print(f'Chaos Search Reduced by {cost_reduction} %')
                 print('----------------------------------------------------------')
             
-        (x,pbest,pbest_value) = self.update(x, pbest, pbest_value, dummy, dummy_value, fitness, tmp, achieved)
+        (x,pbest,pbest_value) = self.update(x, pbest, pbest_value, dummy, dummy_value)
      
         return (x, pbest, pbest_value, gbest, gbest_cost, achieved)    
 
@@ -157,9 +157,9 @@ class chaos:
         return fitness
 
     
-    def update(self, x, pbest, pbest_value, dummy, dummy_value, fitness, tmp, achieved):
+    def update(self, x, pbest, pbest_value, dummy, dummy_value):
 
-        elite_idxs = dummy_value.argsort()[:4 * self.n // 5]
+        elite_idxs = np.array(dummy_value).argsort()[:4 * self.n // 5]
 
         for idx,j in zip(elite_idxs, range(0, 4 * self.n // 5)):
 
