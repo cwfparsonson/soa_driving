@@ -63,7 +63,7 @@ class chaos:
         fitness = np.zeros(self.rep)
 
 
-        a = 1.0
+        a = 0.7
 
         # Criterion that new gbest was found
         achieved = False
@@ -81,7 +81,7 @@ class chaos:
             z = self.mapping(z)
 
             # Randomize part of particle using chaotic mapping
-            for g in range(c * self.m, (c + 2) * self.m):
+            for g in range((self.q - 2) * self.m):
                 
                 p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
@@ -114,7 +114,6 @@ class chaos:
                         self.LB[g] = max(self.LB[g], gbest[g] - a * (self.UB[g] - self.LB[g]))
                         self.UB[g] = min(self.UB[g], gbest[g] + a * (self.UB[g] - self.LB[g]))
                     
-                    a = a / 1.1
 
                 pbest_value[-1] = fitness[i]  
                 gbest_cost = fitness[i]
@@ -159,7 +158,7 @@ class chaos:
 
         elite_idxs = np.argsort(dummy_value)[:4 * self.n // 5]
 
-        for idx,j in zip(elite_idxs, range(0, 4 * self.n // 5)):
+        for idx,j in enumerate(elite_idxs):
 
             x[j, :] = dummy[idx]
 

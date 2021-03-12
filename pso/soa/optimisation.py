@@ -1236,7 +1236,7 @@ class PSO:
                 pc_marker = 1 
             
             start_time = time.time()
-            #(x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+            (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             end_time = time.time()
             # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             t = end_time - start_time
@@ -1281,7 +1281,7 @@ class PSO:
                 
                 # handle position boundary violations
                 for j in range(0, self.n):
-                    for g in range((self.q - 2) * self.m, self.m_c):
+                    for g in range(0, self.m_c):
                         if x[j, g] < self.LB[g]:
                             x[j, g] = self.LB[g]
                         elif x[j, g] > self.UB[g]:
@@ -1322,9 +1322,9 @@ class PSO:
                     gbest_cost = pbest_value[min_cost_index]
                     achieved_main = True
                 
-                #if curr_iter % 5 == 0:
+                if curr_iter % 5 == 0:
                     # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
-                    #(x, pbest, pbest_value, gbest, gbest_cost, achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+                    (x, pbest, pbest_value, gbest, gbest_cost, achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
                                    
 
                 if achieved or achieved_main:
