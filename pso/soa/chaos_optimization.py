@@ -23,7 +23,7 @@ class chaos:
                 change_range = False,
                 min_val = -2.5,
                 max_val = 2.5, 
-                rep = 50):
+                rep = 20):
         
         self.n = n
         self.m = m
@@ -54,7 +54,7 @@ class chaos:
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
         
-        dummy = np.tile(np.copy(gbest) , (self.n, 1))
+        dummy = np.copy(pbest)
 
         dummy_value = np.copy(pbest_value)
 
