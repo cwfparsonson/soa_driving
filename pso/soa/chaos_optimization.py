@@ -77,7 +77,7 @@ class chaos:
             p = np.copy(dummy[np.argsort(dummy_value)[0]])
             
             # Random Cascaded SOAs
-            c = np.random.randint(self.q - 2)
+            c = np.random.randint(self.q - 3)
             
             # Logistic Mapping/Tent Mapping
             z = self.mapping(z)
@@ -118,7 +118,7 @@ class chaos:
                     for g in range(0, self.m_c):
                         self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
                         self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
-                    self.a = self.a / 1.1
+                    self.a = self.a / ((gbest_cost_history[-1] - gbest_cost) / gbest_cost_history[-1] + 1) 
                     
 
                 pbest_value[-1] = fitness[i]  
