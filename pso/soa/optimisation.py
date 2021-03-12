@@ -33,6 +33,7 @@ class PSO:
 
     def __init__(self, 
                  t, 
+                 run,
                  init_OP, 
                  n, 
                  iter_max, 
@@ -120,7 +121,7 @@ class PSO:
             self.slash = '/'
         else:
             self.slash = '\\'
-
+        self.run = run
         self.t = t
         self.t2 = np.linspace(t[0], t[-1], 240)
         p = upsampling.ups(240)
@@ -266,6 +267,7 @@ class PSO:
         # set up dirs and load data if needed
         self.path_to_data = self.directory + self.slash + 'data' + self.slash # path to save data
         self.pso_dir_name = "n_" + str(self.n) + \
+                            "_RUN_" + str(self.run) + \
                             "_mxvl_" + str(self.max_val) + \
                             "_mnvl_" + str(self.min_val) + \
                             "_ivf_" + str(self.init_v_f) + \
@@ -404,13 +406,17 @@ class PSO:
             PV = self.__getSoaOutput(OP) 
 
         OP_df = pd.DataFrame(OP)
+        '''
         OP_df.to_csv(self.path_to_pso_data + "OP_itr" + str(curr_iter) + ".csv", 
                      index=None, 
                      header=False)
+                     '''
         PV_df = pd.DataFrame(PV)
+        '''
         PV_df.to_csv(self.path_to_pso_data + "PV_itr" + str(curr_iter) + ".csv", 
                      index=None, 
                      header=False)
+                     '''
 
         responseMeasurementsObject = analyse.ResponseMeasurements(PV, self.t2) 
 
@@ -467,13 +473,16 @@ class PSO:
         gbest_cost_history_df = pd.DataFrame(gbest_cost_history)
         rt_st_os_analysis_df = pd.DataFrame(rt_st_os_analysis)
         curr_pos_df = pd.DataFrame(x)
+        '''
         curr_pos_df.to_csv(self.path_to_pso_data + 'curr_pos.csv', 
                            index=None, 
                            header=False)
+                           
         curr_pos_val_df = pd.DataFrame(x_value)
         curr_pos_val_df.to_csv(self.path_to_pso_data + 'curr_pos_values.csv', 
                                index=None, 
                                header=False)
+        '''
         iter_gbest_reached_df.to_csv(self.path_to_pso_data + "iter_gbest_reached.csv", 
                                      index=None, 
                                      header=False)
@@ -483,6 +492,7 @@ class PSO:
         rt_st_os_analysis_df.to_csv(self.path_to_pso_data + 'rt_st_os_analysis.csv', 
                                     index=None, 
                                     header=False)
+        '''
         f = open(self.path_to_pso_data + 'curr_iter.csv', 'w')
         f.write(str(curr_iter))
 
@@ -499,7 +509,7 @@ class PSO:
                              index=None, 
                              header=False)
 
-
+        '''
     def __loadPsoData(self):
         """
         This method loads previously saved pso data
@@ -1515,7 +1525,8 @@ class PSO:
 
 def run_test(directory_for_run, 
              tf_for_run, 
-             t, 
+             t,
+             run, 
              init_OP, 
              n, 
              iter_max, 
@@ -1543,7 +1554,8 @@ def run_test(directory_for_run,
     parallel and therefore significantly speed up your experiments.
     '''
 
-    psoObject = PSO(t, 
+    psoObject = PSO(t,
+                    run, 
                     init_OP, 
                     n, 
                     iter_max, 

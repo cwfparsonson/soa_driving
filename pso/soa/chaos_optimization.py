@@ -21,7 +21,7 @@ class chaos:
                 SP,
                 map_type  = 'logistic',
                 change_range = False,
-                min_val = -1.2,
+                min_val = -1.5,
                 max_val = 2.0, 
                 rep = 40):
         
@@ -62,8 +62,6 @@ class chaos:
 
         fitness = np.zeros(self.rep)
 
-        min_range = np.copy(self.LB)
-        max_range = np.copy(self.UB)
 
         a = 1.0
 
@@ -85,7 +83,7 @@ class chaos:
             # Randomize part of particle using chaotic mapping
             for g in range(c * self.m, (c + 2) * self.m):
                 
-                p[g] = np.interp(z[g], [0, 1], [min_range[g], max_range[g]])
+                p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
@@ -113,8 +111,8 @@ class chaos:
                 
                 if self.change_range:
                     for g in range(0, self.m_c):
-                        min_range[g] = max(min_range[g], gbest[g] - a * (max_range[g] - min_range[g]))
-                        max_range[g] = min(max_range[g], gbest[g] + a * (max_range[g] - min_range[g]))
+                        self.LB[g] = max(self.LB[g], gbest[g] - a * (self.UB[g] - self.LB[g]))
+                        self.UB[g] = min(self.UB[g], gbest[g] + a * (self.UB[g] - self.LB[g]))
                     
                     a = a / 1.1
 
