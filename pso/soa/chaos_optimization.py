@@ -74,10 +74,10 @@ class chaos:
         for i in range(0, self.rep):
             
             # Get the best particle
-            p = np.copy(dummy[np.array(dummy_value).argsort()[0]])
+            p = np.copy(dummy[np.argsort(dummy_value)[0]])
             
             # Random Cascaded SOAs
-            c = np.random.randint(self.q - 1)
+            c = np.random.randint(self.q - 2)
             
             # Logistic Mapping/Tent Mapping
             z = self.mapping(z)
@@ -157,7 +157,7 @@ class chaos:
     
     def update(self, x, pbest, pbest_value, dummy, dummy_value):
 
-        elite_idxs = np.array(dummy_value).argsort()[:4 * self.n // 5]
+        elite_idxs = np.argsort(dummy_value)[:4 * self.n // 5]
 
         for idx,j in zip(elite_idxs, range(0, 4 * self.n // 5)):
 

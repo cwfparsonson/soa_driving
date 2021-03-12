@@ -1250,7 +1250,7 @@ class PSO:
                 
                 # update particle velocities
                 for j in range(0, self.n):
-                    for g in range(0, self.m_c):
+                    for g in range((self.q - 1) * self.m,self.m_c):
                         v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
                             * (pbest[j, g] - x[j, g]) + (c2[j] * \
                                 random.uniform(0, 1) * (gbest[g] - x[j,g])))
@@ -1269,7 +1269,7 @@ class PSO:
                 
                 # handle position boundary violations
                 for j in range(0, self.n):
-                    for g in range(0, self.m_c):
+                    for g in range((self.q - 1) * self.m, self.m_c):
                         if x[j, g] < self.LB[g]:
                             x[j, g] = self.LB[g]
                         elif x[j, g] > self.UB[g]:
