@@ -77,7 +77,7 @@ class chaos:
             p = np.copy(dummy[np.argsort(dummy_value)[0]])
             
             # Random Cascaded SOAs
-            c = np.random.choice(self.q - 2, 1)
+            c = random.choice([0, 1, 2])
             
             # Logistic Mapping/Tent Mapping
             z = self.mapping(z)
@@ -86,7 +86,7 @@ class chaos:
             UB = np.copy(self.UB)
 
             # Randomize part of particle using chaotic mapping
-            for g in range(0, self.m * 3):
+            for g in range(c * self.m, (c + 1) *self.m):
                 
                 p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
@@ -118,7 +118,7 @@ class chaos:
                     for g in range(0, self.m_c):
                         self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
                         self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
-                    self.a = self.a / ((gbest_cost_history[0] - gbest_cost) / gbest_cost_history[0] + 1) 
+                    self.a = self.a / ((gbest_cost_history[0] - gbest_cost) / gbest_cost_history[0] * 2 + 1) 
                     
 
                 pbest_value[-1] = fitness[i]  
