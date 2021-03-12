@@ -1276,11 +1276,12 @@ class PSO:
                 
                 # update particle positions
                 for j in range(0, self.n):
-                    x[j, :] = x[j, :] + v[j, :]
+                    for g in range((self.q - 2) * self.m, self.m_c):
+                        x[j, g] = x[j, g] + v[j, g]
                 
                 # handle position boundary violations
                 for j in range(0, self.n):
-                    for g in range((self.q - 1) * self.m, self.m_c):
+                    for g in range((self.q - 2) * self.m, self.m_c):
                         if x[j, g] < self.LB[g]:
                             x[j, g] = self.LB[g]
                         elif x[j, g] > self.UB[g]:

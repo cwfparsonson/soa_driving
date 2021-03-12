@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 10
-    run = 2
+    run = 3
     iter_max = 80
     rep_max = 1 
     max_v_f = 0.05 
@@ -100,7 +100,7 @@ if __name__ == '__main__':
                                         None, 
                                         cost_f, 
                                         None, 
-                                        True, 
+                                        False, 
                                         linux,
                                         sp, 
                                         pso_objs,))
