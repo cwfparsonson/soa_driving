@@ -74,7 +74,7 @@ class chaos:
         for i in range(0, self.rep):
             
             # Get the best particle
-            p = np.copy(dummy[np.argsort(dummy_value)[-1]])
+            p = np.copy(dummy[np.argsort(dummy_value)[0]])
             
             # Random Cascaded SOAs
             c = np.random.randint(self.q - 3)
