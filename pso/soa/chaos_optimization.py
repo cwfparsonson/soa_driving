@@ -54,9 +54,7 @@ class chaos:
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
         
-        # dummy = np.tile(np.copy(gbest) , (self.n, 1))
-
-        dummy = np.copy(pbest)
+        dummy = np.tile(np.copy(gbest) , (self.n, 1))
 
         dummy_value = np.copy(pbest_value)
 
@@ -77,26 +75,25 @@ class chaos:
             # Criterion that new gbest was found
             achieved = False
 
-            # Get a random particle
+            # Get the best particle
             p = np.copy(dummy[dummy_value.argsort()[0]])
             
             # Random Cascaded SOAs
-            # r = np.random.randint(self.q - 1)
-            r = self.q - 1
+            r = np.random.randint(self.q - 3)
             
             # Logistic Mapping/Tent Mapping
             z = self.mapping(z)
 
-
             # Randomize part of particle using chaotic mapping
-            for g in range(r * self.m, (r + 1) * self.m):
+            for g in range(r * self.m, (r + 2) * self.m):
                 
                 p[g] = np.interp(z[g], [0, 1], [min_range[g], max_range[g]])
             
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
 
-            d_idx = random.sample(range(0, self.n), self.n - 1)
+            d_idx = np.arange(self.n)
+            np.random.shuffle(d_idx)
             for j in range(0, len(d_idx)):
                 # Consider if generated particle has better fitness than existing
                 if fitness[i] < dummy_value[d_idx[j]]:
@@ -107,24 +104,17 @@ class chaos:
 
                     break     
 
-            # Keep Track of best Particle in case gbest is not updated
-            if fitness[i] == min(fitness):     
-                
-                tmp[:] = p[:]
-
-
             # Condition for better gbest/Break if found
             if fitness[i] < gbest_cost:
                 
                 achieved = True
+            
+                gbest[:] = p[:]
+                pbest[-1, :] = p[:]
+                x[-1, :] = p[:]
                 
-                for g in range(0, self.m_c):
-                    
-                    gbest[g] = p[g]
-                    pbest[-1, g] = p[g]
-                    x[-1, g] = p[g]
-                    
-                    if self.change_range:
+                if self.change_range:
+                    for g in range(0, self.m_c):
                         min_range[g] = max(min_range[g], gbest[g] - a * (max_range[g] - min_range[g]))
                         max_range[g] = min(max_range[g], gbest[g] + a * (max_range[g] - min_range[g]))
 
@@ -168,7 +158,23 @@ class chaos:
 
     
     def update(self, x, pbest, pbest_value, dummy, dummy_value, fitness, tmp, achieved):
-        '''
+
+        elite_idxs = dummy_value.argsort()[:4 * self.n // 5]
+
+        for idx,j in zip(elite_idxs, range(0, 4 * self.n // 5)):
+
+            x[j, :] = dummy[idx]
+
+            if dummy_value[idx] < pbest_value[j]:
+
+                pbest_value[j] = dummy_value[idx]
+
+                pbest[j, :] = dummy[j, :]
+        
+        return (x,pbest,pbest_value)
+
+    def update2(self, x, pbest, pbest_value, dummy, dummy_value, fitness, tmp, achieved):   
+        
         idx = random.sample(range(1, self.n), 3 * self.n // 5)
         
         if not achieved:
@@ -208,31 +214,8 @@ class chaos:
                         pbest[idx[i], g] = dummy[idx[i], g]
 
                         pbest_value[idx[i]] = dummy_value[idx[i]]
-        '''
+       
 
-        if not achieved:
-
-            x[-1, :] = tmp[:]
-
-            pbest_value[-1] = min(fitness)
-
-            pbest[-1, :] = tmp[:]
-
-        elite_idxs = dummy_value.argsort()[:4 * self.n // 5]
-
-        for idx,j in zip(elite_idxs, range(0, 4 * self.n // 5)):
-
-            x[j, :] = dummy[idx]
-
-            if dummy_value[idx] < pbest_value[j]:
-
-                pbest_value[j] = dummy_value[idx]
-
-                pbest[j, :] = dummy[j, :]
-        
-        return (x,pbest,pbest_value)
-    
-    
     def __getTransferFunctionOutput(self, tf, U, T, X0, atol=1e-12):
         """
         This method sends a drive signal to a transfer function model and gets 
