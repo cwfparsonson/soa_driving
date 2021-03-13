@@ -153,7 +153,7 @@ class PSO:
         self.awg_res = awg_res
         self.min_val = min_val
         self.max_val = max_val
-        # self.SP = SP
+        self.SP = SP
         self.record_extra_info = record_extra_info
         self.num_points = len(self.init_OP)
         if sim_model == None and awg == None or \
@@ -191,7 +191,7 @@ class PSO:
         self.gbest = self.cascade(np.copy(self.K)) # global best positions
         self.gbest_cost = self.pbest_value[self.min_cost_index] # global best val
         self.awg_step_size = (self.max_val - self.min_val) / (2**self.awg_res)
-        self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp 
+        # self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp 
 
         # set particle position and velocity boundaries
         self.LB = np.zeros(self.m) # lower bound on particle positions
@@ -1233,7 +1233,7 @@ class PSO:
                 pc_marker = 1 
             
             start_time = time.time()
-            # (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+            (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             end_time = time.time()
             # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             t = end_time - start_time

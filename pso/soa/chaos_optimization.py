@@ -96,7 +96,7 @@ class chaos:
 
                 for g in range(0, self.m_c):
 
-                    dummy[idx, :] = p[:]
+                    dummy[idx, g] = p[g]
 
 
 
