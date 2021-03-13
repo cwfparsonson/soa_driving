@@ -1405,6 +1405,7 @@ class PSO:
                 curr_iter += 1 
 
             # ensure cost and analysis table has final gbest val
+            print(gbest_cost_history)
             gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
             self.rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
                                                 self.__analyseSignal(gbest, 
