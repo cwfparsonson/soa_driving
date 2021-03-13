@@ -1378,7 +1378,7 @@ class PSO:
                 print((tmp == x).all())  '''                   
 
                 if achieved or achieved_main:
-                    gbest_cost_history = np.append([gbest_cost_history], [gbest_cost], axis = 0)
+                    gbest_cost_history = np.vstack([gbest_cost_history], [gbest_cost])
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
                     rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
                                 self.__analyseSignal(gbest, 
