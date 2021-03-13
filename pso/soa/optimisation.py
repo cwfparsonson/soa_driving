@@ -191,7 +191,7 @@ class PSO:
         self.gbest = self.cascade(np.copy(self.K)) # global best positions
         self.gbest_cost = np.zeros(self.q)
         for i in range(self.q):
-            self.gbest_cost = self.pbest_value[i][self.min_cost_index[i]] # global best val
+            self.gbest_cost[i] = self.pbest_value[i][self.min_cost_index[i]] # global best val
         self.awg_step_size = (self.max_val - self.min_val) / (2**self.awg_res)
         if self.SP is None:
             self.SP = np.zeros((self.q, len(self.t2)))
@@ -369,7 +369,7 @@ class PSO:
             for g in range(2 * self.m, 3 * self.m):
                 self.gbest[g] = self.pbest[self.min_cost_index[2], g]
             for i in range(self.q):
-                self.gbest_cost = self.pbest_value[i][self.min_cost_index[i]] # global best val
+                self.gbest_cost[i] = self.pbest_value[i][self.min_cost_index[i]] # global best val
             self.gbest_cost_history = np.append([self.gbest_cost_history], 
                                                 [self.gbest_cost])
             
