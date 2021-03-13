@@ -118,7 +118,7 @@ class chaos:
                     for g in range(0, self.m_c):
                         self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
                         self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
-                    self.a = self.a / ((gbest_cost_history[0] - gbest_cost) / gbest_cost_history[0] * 2 + 1) 
+                    self.a = self.a / (np.sqrt((gbest_cost_history[0] - gbest_cost) / gbest_cost_history[0])  + 1) 
                     
 
                 pbest_value[-1] = fitness[i]  
