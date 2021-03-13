@@ -65,8 +65,6 @@ class chaos:
         fitness = np.zeros(self.rep)
 
 
-        a = 0.7
-
         # Criterion that new gbest was found
         achieved = False
 
@@ -77,7 +75,7 @@ class chaos:
             p = np.copy(dummy[np.argsort(dummy_value)[0]])
             
             # Random Cascaded SOAs
-            c = random.choice([0, 1, 2])
+            c = random.choice([0, 1])
             
             # Logistic Mapping/Tent Mapping
             z = self.mapping(z)
@@ -115,7 +113,7 @@ class chaos:
                     for g in range(0, self.m_c):
                         self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
                         self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
-                    self.a = self.a / (np.sqrt((gbest_cost_history[0] - gbest_cost) / gbest_cost_history[0])  + 1) 
+                    self.a = self.a / 1.2 
                     
 
                 pbest_value[-1] = fitness[i]  
