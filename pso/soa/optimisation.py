@@ -192,7 +192,9 @@ class PSO:
         self.gbest_cost = self.pbest_value[self.min_cost_index] # global best val
         self.awg_step_size = (self.max_val - self.min_val) / (2**self.awg_res)
         if self.SP is None:
-            self.SP = analyse.ResponseMeasurements(self.init_PV[-1], self.t2).sp.sp 
+            self.SP = np.zeros((self.q, len(self.t2)))
+            for i in range(self.q):
+                self.SP[i] = analyse.ResponseMeasurements(self.init_PV[i], self.t2).sp.sp 
         else:
             self.SP = SP
 
@@ -869,13 +871,15 @@ class PSO:
                 PV = self.__getSoaOutput(OP)
             
             cost = 0
+
+            weights = [0.3, 0.3, 0.6]
             
             for i in range(self.q):
-                cost += signalprocessing.cost(self.t2, 
+                cost += weights[i]*signalprocessing.cost(self.t2, 
                                                PV[i], 
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
-                                               SP=self.SP).costEval 
+                                               SP=self.SP[i]).costEval 
 
 
             x_value[j] = cost
@@ -904,7 +908,7 @@ class PSO:
         
             # finalise and save plot
             plt.figure(1)
-            plt.plot(self.t2, self.SP, c='g', label='Target SP')
+            plt.plot(self.t2, self.SP[-1], c='g', label='Target SP')
             plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
             plt.plot(self.t2, best_PV[-1], c='c', label='Best fitness')
             st_index = analyse.ResponseMeasurements(best_PV[-1], self.t2).settlingTimeIndex
@@ -1269,7 +1273,8 @@ class PSO:
                 
                 # update particle positions
                 for j in range(0, self.n):
-                    x[j, :] = x[j, :] + v[j, :]
+                    for g in range(0, self.m_c):
+                        x[j, g] = x[j, g] + v[j, g]
                 
                 # handle position boundary violations
                 for j in range(0, self.n):
@@ -1402,7 +1407,7 @@ class PSO:
     
         # plot final output signal
         plt.figure()
-        plt.plot(self.t2, self.SP, c='g', label='Target SP')
+        plt.plot(self.t2, self.SP[-1], c='g', label='Target SP')
         plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
         plt.plot(self.t2, self.gbest_PV[-1], c='c', label='PSO-Optimised Output')
         st_index = int(rt_st_os_analysis[len(rt_st_os_analysis)-1, 3]) 
@@ -1470,7 +1475,7 @@ class PSO:
         t_df = pd.DataFrame(self.t2) 
         init_OP_df = pd.DataFrame(self.init_OP) #
         OP_df = pd.DataFrame(self.gbest) 
-        SP_df = pd.DataFrame(self.SP) 
+        SP_df = pd.DataFrame(self.SP[-1]) 
         init_PV_df = pd.DataFrame(self.init_PV[-1]) 
         PV_df = pd.DataFrame(self.gbest_PV[-1]) 
         iter_gbest_reached_df = pd.DataFrame(iter_gbest_reached) 
