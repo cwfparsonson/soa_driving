@@ -33,7 +33,6 @@ class PSO:
 
     def __init__(self, 
                  t, 
-                 run,
                  init_OP, 
                  n, 
                  iter_max, 
@@ -121,7 +120,7 @@ class PSO:
             self.slash = '/'
         else:
             self.slash = '\\'
-        self.run = run
+
         self.t = t
         self.t2 = np.linspace(t[0], t[-1], 240)
         p = upsampling.ups(240)
@@ -153,7 +152,7 @@ class PSO:
         self.awg_res = awg_res
         self.min_val = min_val
         self.max_val = max_val
-        self.SP = SP
+        # self.SP = SP
         self.record_extra_info = record_extra_info
         self.num_points = len(self.init_OP)
         if sim_model == None and awg == None or \
@@ -181,7 +180,7 @@ class PSO:
         else:
             self.init_PV = self.__getSoaOutput(self.init_OP) 
 
-        
+        self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp
         self.curr_iter = 0 
         self.x = self.cascade(np.zeros((self.n, self.m))) # current pop position array
         self.x_value = np.zeros(self.n) # fitness vals of positions
@@ -191,7 +190,10 @@ class PSO:
         self.gbest = self.cascade(np.copy(self.K)) # global best positions
         self.gbest_cost = self.pbest_value[self.min_cost_index] # global best val
         self.awg_step_size = (self.max_val - self.min_val) / (2**self.awg_res)
-        # self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp 
+        if self.SP is None:
+            self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp 
+        else:
+            self.SP = SP
 
         # set particle position and velocity boundaries
         self.LB = np.zeros(self.m) # lower bound on particle positions
@@ -264,7 +266,6 @@ class PSO:
         # set up dirs and load data if needed
         self.path_to_data = self.directory + self.slash + 'data' + self.slash # path to save data
         self.pso_dir_name = "n_" + str(self.n) + \
-                            "_RUN_" + str(self.run) + \
                             "_mxvl_" + str(self.max_val) + \
                             "_mnvl_" + str(self.min_val) + \
                             "_ivf_" + str(self.init_v_f) + \
@@ -403,17 +404,13 @@ class PSO:
             PV = self.__getSoaOutput(OP) 
 
         OP_df = pd.DataFrame(OP)
-        '''
         OP_df.to_csv(self.path_to_pso_data + "OP_itr" + str(curr_iter) + ".csv", 
                      index=None, 
                      header=False)
-                     '''
         PV_df = pd.DataFrame(PV)
-        '''
         PV_df.to_csv(self.path_to_pso_data + "PV_itr" + str(curr_iter) + ".csv", 
                      index=None, 
                      header=False)
-                     '''
 
         responseMeasurementsObject = analyse.ResponseMeasurements(PV, self.t2) 
 
@@ -470,16 +467,13 @@ class PSO:
         gbest_cost_history_df = pd.DataFrame(gbest_cost_history)
         rt_st_os_analysis_df = pd.DataFrame(rt_st_os_analysis)
         curr_pos_df = pd.DataFrame(x)
-        '''
         curr_pos_df.to_csv(self.path_to_pso_data + 'curr_pos.csv', 
                            index=None, 
                            header=False)
-                           
         curr_pos_val_df = pd.DataFrame(x_value)
         curr_pos_val_df.to_csv(self.path_to_pso_data + 'curr_pos_values.csv', 
                                index=None, 
                                header=False)
-        '''
         iter_gbest_reached_df.to_csv(self.path_to_pso_data + "iter_gbest_reached.csv", 
                                      index=None, 
                                      header=False)
@@ -489,7 +483,6 @@ class PSO:
         rt_st_os_analysis_df.to_csv(self.path_to_pso_data + 'rt_st_os_analysis.csv', 
                                     index=None, 
                                     header=False)
-        '''
         f = open(self.path_to_pso_data + 'curr_iter.csv', 'w')
         f.write(str(curr_iter))
 
@@ -506,7 +499,7 @@ class PSO:
                              index=None, 
                              header=False)
 
-        '''
+
     def __loadPsoData(self):
         """
         This method loads previously saved pso data
@@ -1241,23 +1234,23 @@ class PSO:
             while curr_iter <= self.iter_max:
 
                 achieved = False
-                achieved_main = False
 
 
-                for j in range(0, self.n):
-                    # update particle vals
-                    rel_improv[j] = (pbest_value[j] - x_value[j]) \
-                        / (pbest_value[j] + x_value[j]) 
-                    w[j] = self.w_init + ( (self.w_final - self.w_init) * \
-                        ((math.exp(rel_improv[j]) - 1) / (math.exp(rel_improv[j]) + 1)) ) 
-                    c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
-                        (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
-                    c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
-                        (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
-            
+                if self.adapt_accel == True:
+                    for j in range(0, self.n):
+                        # update particle vals
+                        rel_improv[j] = (pbest_value[j] - x_value[j]) \
+                            / (pbest_value[j] + x_value[j]) 
+                        w[j] = self.w_init + ( (self.w_final - self.w_init) * \
+                            ((math.exp(rel_improv[j]) - 1) / (math.exp(rel_improv[j]) + 1)) ) 
+                        c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
+                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
+                        c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
+                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
+                
                 # update particle velocities
                 for j in range(0, self.n):
-                    for g in range(0, self.m_c):
+                    for g in range((self.q - 1) * self.m,self.m_c):
                         v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
                             * (pbest[j, g] - x[j, g]) + (c2[j] * \
                                 random.uniform(0, 1) * (gbest[g] - x[j,g])))
@@ -1272,12 +1265,11 @@ class PSO:
                 
                 # update particle positions
                 for j in range(0, self.n):
-                    for g in range(0, self.m_c):
-                        x[j, g] = x[j, g] + v[j, g]
+                    x[j, :] = x[j, :] + v[j, :]
                 
                 # handle position boundary violations
                 for j in range(0, self.n):
-                    for g in range(0, self.m_c):
+                    for g in range((self.q - 1) * self.m, self.m_c):
                         if x[j, g] < self.LB[g]:
                             x[j, g] = self.LB[g]
                         elif x[j, g] > self.UB[g]:
@@ -1317,12 +1309,11 @@ class PSO:
 
                     gbest_cost = pbest_value[min_cost_index]
                     achieved_main = True
-                tmp = np.copy(x)
+
                 if curr_iter % 5 == 0:
                     # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
                     (x, pbest, pbest_value, gbest, gbest_cost, achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-
-                print((x == tmp).all())                 
+                                      
 
                 if achieved or achieved_main:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
@@ -1523,8 +1514,7 @@ class PSO:
 
 def run_test(directory_for_run, 
              tf_for_run, 
-             t,
-             run, 
+             t, 
              init_OP, 
              n, 
              iter_max, 
@@ -1552,8 +1542,7 @@ def run_test(directory_for_run,
     parallel and therefore significantly speed up your experiments.
     '''
 
-    psoObject = PSO(t,
-                    run, 
+    psoObject = PSO(t, 
                     init_OP, 
                     n, 
                     iter_max, 
