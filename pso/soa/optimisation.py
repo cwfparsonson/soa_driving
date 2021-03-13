@@ -32,7 +32,8 @@ class PSO:
     """
 
     def __init__(self, 
-                 t, 
+                 t,
+                 run, 
                  init_OP, 
                  n, 
                  iter_max, 
@@ -124,6 +125,7 @@ class PSO:
         self.t = t
         self.t2 = np.linspace(t[0], t[-1], 240)
         p = upsampling.ups(240)
+        self.run = run
         self.n = n
         self.q = q
         self.epsilon = epsilon
@@ -266,6 +268,7 @@ class PSO:
         # set up dirs and load data if needed
         self.path_to_data = self.directory + self.slash + 'data' + self.slash # path to save data
         self.pso_dir_name = "n_" + str(self.n) + \
+                            "_run_" + str(self.run) + \
                             "_mxvl_" + str(self.max_val) + \
                             "_mnvl_" + str(self.min_val) + \
                             "_ivf_" + str(self.init_v_f) + \
@@ -1514,7 +1517,8 @@ class PSO:
 
 def run_test(directory_for_run, 
              tf_for_run, 
-             t, 
+             t,
+             run, 
              init_OP, 
              n, 
              iter_max, 
@@ -1542,7 +1546,8 @@ def run_test(directory_for_run,
     parallel and therefore significantly speed up your experiments.
     '''
 
-    psoObject = PSO(t, 
+    psoObject = PSO(t,
+                    run, 
                     init_OP, 
                     n, 
                     iter_max, 
