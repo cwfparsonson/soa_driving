@@ -64,7 +64,6 @@ class chaos:
 
         fitness = np.zeros(self.rep)
 
-
         # Criterion that new gbest was found
         achieved = False
 
@@ -81,7 +80,7 @@ class chaos:
             z = self.mapping(z)
 
             # Randomize part of particle using chaotic mapping
-            for g in range(c * self.m, (c + 1) *self.m):
+            for g in range(0, self.m):
                 
                 p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
