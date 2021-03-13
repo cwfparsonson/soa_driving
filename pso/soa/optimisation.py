@@ -1237,6 +1237,7 @@ class PSO:
             while curr_iter <= self.iter_max:
 
                 achieved = False
+                achieved_main = False
 
 
                 if self.adapt_accel == True:
