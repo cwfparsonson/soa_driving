@@ -192,7 +192,7 @@ class PSO:
         self.gbest_cost = self.pbest_value[self.min_cost_index] # global best val
         self.awg_step_size = (self.max_val - self.min_val) / (2**self.awg_res)
         if self.SP is None:
-            self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp 
+            self.SP = analyse.ResponseMeasurements(self.init_PV[-1], self.t2).sp.sp 
         else:
             self.SP = SP
 
@@ -409,12 +409,12 @@ class PSO:
         OP_df.to_csv(self.path_to_pso_data + "OP_itr" + str(curr_iter) + ".csv", 
                      index=None, 
                      header=False)
-        PV_df = pd.DataFrame(PV)
+        PV_df = pd.DataFrame(PV[-1])
         PV_df.to_csv(self.path_to_pso_data + "PV_itr" + str(curr_iter) + ".csv", 
                      index=None, 
                      header=False)
 
-        responseMeasurementsObject = analyse.ResponseMeasurements(PV, self.t2) 
+        responseMeasurementsObject = analyse.ResponseMeasurements(PV[-1], self.t2) 
 
         rt = responseMeasurementsObject.riseTime
         st = responseMeasurementsObject.settlingTime
@@ -637,19 +637,20 @@ class PSO:
         p = upsampling.ups(sample)
         input_init = np.copy(U)
         
-
-        for _ in range(self.q):
-            PV = np.array([])
+        PV = np.zeros((self.q, sample))
+        
+        for i in range(self.q):
+            
             input = input_init[:self.m]
             input = p.create(input)
 
             
-            (_, PV, X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
+            (_, PV[i], X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
             X0 = X0_init[-1]
-            min_PV = np.copy(min(PV))
+            min_PV = np.copy(min(PV[i]))
             if min_PV < 0:
-                for i in range(0, len(PV)):
-                    PV[i] = PV[i] + abs(min_PV)
+                for j in range(0, len(PV[i])):
+                    PV[i][j] = PV[i][j] + abs(min_PV)
             
             input_init = input_init[self.m:]
 
@@ -865,13 +866,19 @@ class PSO:
                                                       self.t2, 
                                                       self.X0) 
             else:
-                PV = self.__getSoaOutput(OP) 
-
-            x_value[j] = signalprocessing.cost(self.t2, 
-                                               PV, 
+                PV = self.__getSoaOutput(OP)
+            
+            cost = 0
+            
+            for i in range(self.q):
+                cost += signalprocessing.cost(self.t2, 
+                                               PV[i], 
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP).costEval 
+
+
+            x_value[j] = cost
 
             if self.record_extra_info == True:
                 # store particle output
@@ -898,9 +905,9 @@ class PSO:
             # finalise and save plot
             plt.figure(1)
             plt.plot(self.t2, self.SP, c='g', label='Target SP')
-            plt.plot(self.t2, self.init_PV, c='r', label='Initial Output')
-            plt.plot(self.t2, best_PV, c='c', label='Best fitness')
-            st_index = analyse.ResponseMeasurements(best_PV, self.t2).settlingTimeIndex
+            plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
+            plt.plot(self.t2, best_PV[-1], c='c', label='Best fitness')
+            st_index = analyse.ResponseMeasurements(best_PV[-1], self.t2).settlingTimeIndex
             plt.plot(self.t2[st_index], 
                      best_PV[st_index], 
                      marker='x', 
@@ -1396,11 +1403,11 @@ class PSO:
         # plot final output signal
         plt.figure()
         plt.plot(self.t2, self.SP, c='g', label='Target SP')
-        plt.plot(self.t2, self.init_PV, c='r', label='Initial Output')
-        plt.plot(self.t2, self.gbest_PV, c='c', label='PSO-Optimised Output')
+        plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
+        plt.plot(self.t2, self.gbest_PV[-1], c='c', label='PSO-Optimised Output')
         st_index = int(rt_st_os_analysis[len(rt_st_os_analysis)-1, 3]) 
         plt.plot(self.t2[st_index], 
-                 self.gbest_PV[st_index], 
+                 self.gbest_PV[-1][st_index], 
                  marker='x', 
                  markersize=6, 
                  color="red", 
@@ -1464,8 +1471,8 @@ class PSO:
         init_OP_df = pd.DataFrame(self.init_OP) #
         OP_df = pd.DataFrame(self.gbest) 
         SP_df = pd.DataFrame(self.SP) 
-        init_PV_df = pd.DataFrame(self.init_PV) 
-        PV_df = pd.DataFrame(self.gbest_PV) 
+        init_PV_df = pd.DataFrame(self.init_PV[-1]) 
+        PV_df = pd.DataFrame(self.gbest_PV[-1]) 
         iter_gbest_reached_df = pd.DataFrame(iter_gbest_reached) 
         gbest_cost_history_df = pd.DataFrame(gbest_cost_history) 
         rt_st_os_analysis_df = pd.DataFrame(rt_st_os_analysis) 

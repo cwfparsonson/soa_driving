@@ -30,8 +30,8 @@ if __name__ == '__main__':
     time_stop = 20e-9
 
     # set PSO params
-    n = 50
-    run = 101
+    n = 10
+    run = 150
     iter_max = 120
     rep_max = 1 
     max_v_f = 0.05 
