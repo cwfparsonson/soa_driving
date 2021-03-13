@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 10
-    run = 40
+    run = 42
     iter_max = 120
     rep_max = 1 
     max_v_f = 0.05 
@@ -77,8 +77,7 @@ if __name__ == '__main__':
         # get initial output of initial signal and use to generate a target set point
         t2 = np.linspace(time_start, time_stop, 240)
         init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t2)
-        # sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
-        sp = None
+        sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
 
         p = multiprocessing.Process(target=run_test, 
                                     args=(direc, 
