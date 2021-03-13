@@ -1386,8 +1386,8 @@ class PSO:
                                 self.__analyseSignal(gbest, 
                                                     curr_iter)))
 
-                cost_reduction = ((np.sum(gbest_cost_history[0]) - np.sum(gbest_cost)) \
-                    / np.sum(gbest_cost_history[0]))*100 
+                cost_reduction = ((np.sum(gbest_cost_history[1]) - np.sum(gbest_cost)) \
+                    / np.sum(gbest_cost_history[1]))*100 
                 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
                 
