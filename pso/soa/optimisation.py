@@ -369,7 +369,7 @@ class PSO:
             for g in range(2 * self.m, 3 * self.m):
                 self.gbest[g] = self.pbest[self.min_cost_index[2], g]
             for i in range(self.q):
-                self.gbest_cost[i] = self.pbest_value[i][self.min_cost_index[i]] # global best val
+                self.gbest_cost[i] = self.pbest_value[self.min_cost_index[i], i] # global best val
             
             self.gbest_cost_history = np.vstack((self.gbest_cost_history, 
                                                 self.gbest_cost))
@@ -1348,25 +1348,25 @@ class PSO:
                 
                 min_cost_index = np.argmin(pbest_value, axis = 0) # index best fitness
                 
-                if pbest_value[0, min_cost_index[0]] < gbest_cost[0]:
+                if pbest_value[min_cost_index[0], 0] < gbest_cost[0]:
                     for g in range(0, self.m):
                         gbest[g] = pbest[self.min_cost_index[0], g]
 
-                    gbest_cost[0] = pbest_value[0, min_cost_index[0]]
+                    gbest_cost[0] = pbest_value[min_cost_index[0], 0]
                     achieved_main = True
                 
-                if pbest_value[1, min_cost_index[1]] < gbest_cost[1]:
+                if pbest_value[min_cost_index[1], 1] < gbest_cost[1]:
                     for g in range(self.m, 2 * self.m):
                         gbest[g] = pbest[self.min_cost_index[1], g]
 
-                    gbest_cost[1] = pbest_value[1, min_cost_index[1]]
+                    gbest_cost[1] = pbest_value[min_cost_index[1] , 1]
                     achieved_main = True                    
                  
-                if pbest_value[2, min_cost_index[2]] < gbest_cost[2]:
+                if pbest_value[min_cost_index[2], 2] < gbest_cost[2]:
                     for g in range(2*self.m, 3 * self.m):
                         gbest[g] = pbest[self.min_cost_index[2], g]
 
-                    gbest_cost[2] = pbest_value[2, min_cost_index[2]]
+                    gbest_cost[2] = pbest_value[min_cost_index[2], 2]
                     achieved_main = True                    
                 
                 
@@ -1389,12 +1389,7 @@ class PSO:
                 cost_reduction = ((np.sum(gbest_cost_history[0]) - np.sum(gbest_cost)) \
                     / np.sum(gbest_cost_history[0]))*100 
                 
-                # print('Reduced cost by ' + str(cost_reduction) + '% so far')
-                print('Gbest_cost')
-                print(gbest_cost)
-                print('Original')
-                print(gbest_cost_history[1])
-                print(np.shape(pbest_value))
+                print('Reduced cost by ' + str(cost_reduction) + '% so far')
                 
                 self.__savePsoData(x, 
                                    x_value, 
