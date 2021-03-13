@@ -358,7 +358,7 @@ class PSO:
                 str(((time_all_generations*self.rep_max/60))/60) + " hrs")
             
             # init global cost history for plotting
-            self.gbest_cost_history = np.zeros(self.q)
+            self.gbest_cost_history = np.array([0, 0, 0])
             
             self.min_cost_index = np.argmin(self.pbest_value, axis = 0) # index best fitness
 
@@ -371,8 +371,8 @@ class PSO:
             for i in range(self.q):
                 self.gbest_cost[i] = self.pbest_value[i][self.min_cost_index[i]] # global best val
             
-            self.gbest_cost_history = np.append([self.gbest_cost_history], 
-                                                [self.gbest_cost], axis = 0)
+            self.gbest_cost_history = np.append(self.gbest_cost_history, 
+                                                self.gbest_cost, axis = 0)
             
 
             print('Costs: ' + str(self.pbest_value))
@@ -1378,7 +1378,7 @@ class PSO:
                 print((tmp == x).all())  '''                   
 
                 if achieved or achieved_main:
-                    gbest_cost_history = np.vstack(([gbest_cost_history], [gbest_cost]))
+                    gbest_cost_history = np.vstack((gbest_cost_history, gbest_cost))
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
                     rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
                                 self.__analyseSignal(gbest, 
