@@ -1226,7 +1226,7 @@ class PSO:
             c1_min = 0.1
             c2_min = 0.1
 
-            cpso = chaos_optimization.chaos(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, change_range = True)
+            cpso = chaos_optimization.chaos(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, change_range = False)
 
             pc_marker = int(0.05*self.iter_max) # for plotting/saving
             if pc_marker == 0:
@@ -1244,18 +1244,17 @@ class PSO:
                 achieved_main = False
 
 
-                if self.adapt_accel == True:
-                    for j in range(0, self.n):
-                        # update particle vals
-                        rel_improv[j] = (pbest_value[j] - x_value[j]) \
-                            / (pbest_value[j] + x_value[j]) 
-                        w[j] = self.w_init + ( (self.w_final - self.w_init) * \
-                            ((math.exp(rel_improv[j]) - 1) / (math.exp(rel_improv[j]) + 1)) ) 
-                        c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
-                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
-                        c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
-                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
-                
+                for j in range(0, self.n):
+                    # update particle vals
+                    rel_improv[j] = (pbest_value[j] - x_value[j]) \
+                        / (pbest_value[j] + x_value[j]) 
+                    w[j] = self.w_init + ( (self.w_final - self.w_init) * \
+                        ((math.exp(rel_improv[j]) - 1) / (math.exp(rel_improv[j]) + 1)) ) 
+                    c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
+                        (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
+                    c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
+                        (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
+            
                 # update particle velocities
                 for j in range(0, self.n):
                     for g in range(0, self.m_c):

@@ -88,20 +88,6 @@ class chaos:
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
 
-            '''
-            d_idx = np.arange(self.n)
-            np.random.shuffle(d_idx)
-            for j in d_idx:
-                # Consider if generated particle has better fitness than existing
-                if fitness[i] < dummy_value[j]:
-                    
-                    dummy_value[j] = fitness[i]
-             
-                    dummy[j, :] = p[:]
-
-                    break
-            '''
-
             idx = np.argsort(dummy_value)[-1]
 
             if dummy_value[idx] > fitness[i]:
