@@ -882,11 +882,11 @@ class PSO:
 
             if self.record_extra_info == True:
                 # store particle output
-                curr_outputs[j, :] = PV
+                curr_outputs[j, :] = PV[-1]
             
             if plot == True:
                 plt.figure(1) 
-                plt.plot(self.t2, PV, c='b') 
+                plt.plot(self.t2, PV[-1], c='b') 
                 plt.figure(2)
                 plt.plot(np.linspace(self.t[0],self.t[-1], len(self.t)*self.q), OP, c='r')
 
@@ -909,7 +909,7 @@ class PSO:
             plt.plot(self.t2, best_PV[-1], c='c', label='Best fitness')
             st_index = analyse.ResponseMeasurements(best_PV[-1], self.t2).settlingTimeIndex
             plt.plot(self.t2[st_index], 
-                     best_PV[st_index], 
+                     best_PV[-1][st_index], 
                      marker='x', 
                      markersize=6, 
                      color="red", 
