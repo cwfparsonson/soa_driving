@@ -94,7 +94,9 @@ class chaos:
 
                 dummy_value[idx] = fitness[i]
 
-                dummy[idx, :] = p[:]
+                for g in range(0, self.m_c):
+
+                    dummy[idx, :] = p[:]
 
 
 
@@ -102,10 +104,11 @@ class chaos:
             if fitness[i] < gbest_cost:
                 
                 achieved = True
-            
-                gbest[:] = p[:]
-                pbest[-1, :] = p[:]
-                x[-1, :] = p[:]
+
+                for g in range(self.m_c):
+                    gbest[g] = p[g]
+                    pbest[-1, g] = p[g]
+                    x[-1, g] = p[g]
                 
                 if self.change_range:
                     self.a = self.a / ((gbest_cost_history[-1] - fitness[i]) / gbest_cost_history[-1] + 1) 
@@ -160,13 +163,15 @@ class chaos:
 
         for j,idx in enumerate(elite_idxs):
 
-            x[j, :] = dummy[idx]
+            for g in range(self.m_c):
+                x[j, g] = dummy[idx, g]
 
             if dummy_value[idx] < pbest_value[j]:
 
                 pbest_value[j] = dummy_value[idx]
-
-                pbest[j, :] = dummy[idx, :]
+                
+                for g in range(0, self.m_c):
+                    pbest[j, g] = dummy[idx, g]
         
         return (x,pbest,pbest_value)
 
