@@ -1347,21 +1347,21 @@ class PSO:
                 
                 min_cost_index = np.argmin(pbest_value, axis = 0) # index best fitness
                 
-                if pbest_value[0][min_cost_index[0]] > gbest_cost[0]:
+                if pbest_value[0][min_cost_index[0]] < gbest_cost[0]:
                     for g in range(0, self.m):
                         gbest[g] = pbest[self.min_cost_index[0], g]
 
                     gbest_cost[0] = pbest_value[0][min_cost_index[0]]
                     achieved_main = True
                 
-                if pbest_value[1][min_cost_index[1]] > gbest_cost[1]:
+                if pbest_value[1][min_cost_index[1]] < gbest_cost[1]:
                     for g in range(self.m, 2 * self.m):
                         gbest[g] = pbest[self.min_cost_index[1], g]
 
                     gbest_cost[1] = pbest_value[1][min_cost_index[1]]
                     achieved_main = True                    
                  
-                if pbest_value[2][min_cost_index[2]] > gbest_cost[2]:
+                if pbest_value[2][min_cost_index[2]] < gbest_cost[2]:
                     for g in range(2*self.m, 3 * self.m):
                         gbest[g] = pbest[self.min_cost_index[2], g]
 
