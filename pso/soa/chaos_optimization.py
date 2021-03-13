@@ -88,6 +88,7 @@ class chaos:
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
 
+            '''
             d_idx = np.arange(self.n)
             np.random.shuffle(d_idx)
             for j in d_idx:
@@ -98,7 +99,18 @@ class chaos:
              
                     dummy[j, :] = p[:]
 
-                    break     
+                    break
+            '''
+
+            idx = np.argsort(dummy_value)[-1]
+
+            if dummy_value[idx] > fitness[i]:
+
+                dummy_value[idx] = fitness[i]
+
+                dummy[idx, :] = p[:]
+
+
 
             # Condition for better gbest/Break if found
             if fitness[i] < gbest_cost:
@@ -110,7 +122,7 @@ class chaos:
                 x[-1, :] = p[:]
                 
                 if self.change_range:
-                    self.a = self.a / (np.sqrt((gbest_cost_history[0] - fitness[i]) / gbest_cost_history[0]) + 1) 
+                    self.a = self.a / ((gbest_cost_history[-1] - fitness[i]) / gbest_cost_history[-1] + 1) 
                     for g in range(0, self.m_c):
                         self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
                         self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
