@@ -665,7 +665,7 @@ class PSO:
             
             (_, _, xout) = signal.lsim2(tf, U=PV[i], T=T, X0=None, atol=1e-13)
 
-            X0 = xout[-1]
+            X0 = PV[i][-9:]
             
             input_init = input_init[self.m:]
 
