@@ -657,12 +657,15 @@ class PSO:
 
             
             (_, PV[i], X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
-            X0 = X0_init[-1]
-            print(np.shape(X0))
+            
             min_PV = np.copy(min(PV[i]))
             if min_PV < 0:
                 for j in range(0, len(PV[i])):
                     PV[i][j] = PV[i][j] + abs(min_PV)
+            
+            (_, _, xout) = signal.lsim2(tf, U=PV[i], T=T, X0=None, atol=1e-13)
+
+            X0 = xout[-1]
             
             input_init = input_init[self.m:]
 
