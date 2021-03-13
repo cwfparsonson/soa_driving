@@ -166,7 +166,7 @@ class chaos:
 
                 pbest_value[j] = dummy_value[idx]
 
-                pbest[j, :] = dummy[j, :]
+                pbest[j, :] = dummy[idx, :]
         
         return (x,pbest,pbest_value)
 

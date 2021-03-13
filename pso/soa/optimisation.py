@@ -1317,11 +1317,12 @@ class PSO:
 
                     gbest_cost = pbest_value[min_cost_index]
                     achieved_main = True
-                
+                tmp = x
                 if curr_iter % 5 == 0:
                     # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
                     (x, pbest, pbest_value, gbest, gbest_cost, achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-                                   
+
+                print(x == tmp)                 
 
                 if achieved or achieved_main:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
