@@ -184,12 +184,14 @@ class PSO:
 
         self.curr_iter = 0 
         self.x = self.cascade(np.zeros((self.n, self.m))) # current pop position array
-        self.x_value = np.zeros(self.n) # fitness vals of positions
+        self.x_value = np.zeros((self.n, self.q)) # fitness vals of positions
         self.pbest_value = np.copy(self.x_value) # best local fitness vals
-        self.min_cost_index = np.argmin(self.pbest_value) # index best fitness
+        self.min_cost_index = np.argmin(self.pbest_value, axis = 0) # index best fitness
         # May cause Issues
         self.gbest = self.cascade(np.copy(self.K)) # global best positions
-        self.gbest_cost = self.pbest_value[self.min_cost_index] # global best val
+        self.gbest_cost = np.zeros(self.q)
+        for i in range(self.q):
+            self.gbest_cost = self.pbest_value[i][self.min_cost_index[i]] # global best val
         self.awg_step_size = (self.max_val - self.min_val) / (2**self.awg_res)
         if self.SP is None:
             self.SP = np.zeros((self.q, len(self.t2)))
@@ -357,11 +359,17 @@ class PSO:
             
             # init global cost history for plotting
             self.gbest_cost_history = [] 
-            self.min_cost_index = np.argmin(self.pbest_value)
+            
+            self.min_cost_index = np.argmin(self.pbest_value, axis = 0) # index best fitness
 
-            for g in range(0, self.m_c):
-                self.gbest[g] = self.pbest[self.min_cost_index, g] 
-            self.gbest_cost = self.pbest_value[self.min_cost_index] 
+            for g in range(0, self.m):
+                self.gbest[g] = self.pbest[self.min_cost_index[0], g]
+            for g in range(self.m, 2 * self.m):
+                self.gbest[g] = self.pbest[self.min_cost_index[1], g]
+            for g in range(2 * self.m, 3 * self.m):
+                self.gbest[g] = self.pbest[self.min_cost_index[2], g]
+            for i in range(self.q):
+                self.gbest_cost = self.pbest_value[i][self.min_cost_index[i]] # global best val
             self.gbest_cost_history = np.append([self.gbest_cost_history], 
                                                 [self.gbest_cost])
             
@@ -854,7 +862,7 @@ class PSO:
         if plot == True:
             plt.figure(1)
             plt.figure(2)
-        x_value = np.zeros(self.n) # int current particle fitnesses/costs storage
+        x_value = np.zeros((self.n,self.q)) # int current particle fitnesses/costs storage
         for j in range(0, self.n): 
             particle = particles[j, :] 
             # OP = np.copy(self.init_OP) 
@@ -870,12 +878,10 @@ class PSO:
             else:
                 PV = self.__getSoaOutput(OP)
             
-            cost = 0
-
-            weights = [0.3, 0.3, 0.6]
+            cost = np.zeros(self.q)
             
             for i in range(self.q):
-                cost += weights[i]*signalprocessing.cost(self.t2, 
+                cost[i] = signalprocessing.cost(self.t2, 
                                                PV[i], 
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
@@ -896,7 +902,7 @@ class PSO:
 
         if plot == True:
         # get best fitness for analysis
-            min_cost_index = np.argmin(x_value)       
+            min_cost_index = np.argmin(x_value[2])       
             if self.sim_model != None:
                 best_PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                            particles[min_cost_index,:], 
@@ -1216,11 +1222,11 @@ class PSO:
                 if self.embed_init_signal == True:
                     x[0, g] = gbest[g] # embed signal guess # embed signal guess
 
-            w = np.ones(self.n) * self.w_init
-            c1 = np.ones(self.n) * self.c1
-            c2 = np.ones(self.n) * self.c2
+            w = np.ones((self.n,self.q)) * self.w_init
+            c1 = np.ones((self.n,self.q)) * self.c1
+            c2 = np.ones((self.n,self.q)) * self.c2
 
-            rel_improv = np.zeros(self.n)
+            rel_improv = np.zeros((self.n,self.q))
             c1_max = 2.5 
             c2_max = 2.5 
             c1_min = 0.1
@@ -1244,24 +1250,34 @@ class PSO:
                 achieved_main = False
 
 
-                if self.adapt_accel == True:
-                    for j in range(0, self.n):
-                        # update particle vals
-                        rel_improv[j] = (pbest_value[j] - x_value[j]) \
-                            / (pbest_value[j] + x_value[j]) 
-                        w[j] = self.w_init + ( (self.w_final - self.w_init) * \
-                            ((math.exp(rel_improv[j]) - 1) / (math.exp(rel_improv[j]) + 1)) ) 
-                        c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
-                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
-                        c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
-                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
+                for j in range(0, self.n):
+                    for q in range(0, self.q):
+                    # update particle vals
+                        rel_improv[j][q] = (pbest_value[j][q] - x_value[j][q]) \
+                            / (pbest_value[j][q] + x_value[j][q]) 
+                        w[j][q] = self.w_init + ( (self.w_final - self.w_init) * \
+                            ((math.exp(rel_improv[j][q]) - 1) / (math.exp(rel_improv[j][q]) + 1)) ) 
+                        c1[j][q] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
+                            (math.exp(-rel_improv[j][q]) - 1) / (math.exp(-rel_improv[j][q]) + 1) 
+                        c2[j][q] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
+                            (math.exp(-rel_improv[j][q]) - 1) / (math.exp(-rel_improv[j][q]) + 1) 
                 
                 # update particle velocities
                 for j in range(0, self.n):
-                    for g in range(0,self.m_c):
-                        v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
-                            * (pbest[j, g] - x[j, g]) + (c2[j] * \
+                    for g in range(0,self.m):
+                        v[j, g] = (w[j][0] * v[j, g]) + (c1[j][0] * random.uniform(0, 1) \
+                            * (pbest[j, g] - x[j, g]) + (c2[j][0] * \
                                 random.uniform(0, 1) * (gbest[g] - x[j,g])))
+                    
+                    for g in range(self.m, 2 * self.m):
+                        v[j, g] = (w[j][1] * v[j, g]) + (c1[j][1] * random.uniform(0, 1) \
+                            * (pbest[j, g] - x[j, g]) + (c2[j][1] * \
+                                random.uniform(0, 1) * (gbest[g] - x[j,g])))
+                    
+                    for g in range(2 * self.m, 3 * self.m):
+                        v[j, g] = (w[j][2] * v[j, g]) + (c1[j][2] * random.uniform(0, 1) \
+                            * (pbest[j, g] - x[j, g]) + (c2[j][2] * \
+                                random.uniform(0, 1) * (gbest[g] - x[j,g])))                                                     
 
                 # handle velocity boundary violations
                 for j in range(0, self.n):
@@ -1305,19 +1321,55 @@ class PSO:
                 
                 # update local best particle positions & fitness vals
                 for j in range(0, self.n):
-                    if x_value[j] < pbest_value[j]:
-                        pbest_value[j] = x_value[j] 
-                        for g in range(0, self.m_c):
+                    
+                    if x_value[j][0] < pbest_value[j][0]:
+                        
+                        pbest_value[j][0] = x_value[j][0] 
+                        
+                        for g in range(0, self.m):
                             pbest[j, g] = x[j, g] 
-                
-                # update global best particle positions & history
-                min_cost_index = np.argmin(pbest_value)
-                if pbest_value[min_cost_index] < gbest_cost:
-                    for g in range(0, self.m_c):
-                        gbest[g] = pbest[min_cost_index, g]
+                    
+                    if x_value[j][1] < pbest_value[j][1]:
+                        
+                        pbest_value[j][1] = x_value[j][1] 
+                        
+                        for g in range(self.m, 2 * self.m):
+                            pbest[j, g] = x[j, g]
 
-                    gbest_cost = pbest_value[min_cost_index]
+                    if x_value[j][2] < pbest_value[j][2]:
+                        
+                        pbest_value[j][2] = x_value[j][2] 
+                        
+                        for g in range(2 * self.m, 3 * self.m):
+                            pbest[j, g] = x[j, g]                  
+
+                # update global best particle positions & history
+                
+                min_cost_index = np.argmin(pbest_value, axis = 0) # index best fitness
+                
+                if pbest_value[min_cost_index[0]] < gbest_cost[0]:
+                    for g in range(0, self.m):
+                        gbest[g] = pbest[self.min_cost_index[0], g]
+
+                    gbest_cost[0] = pbest_value[min_cost_index[0]]
                     achieved_main = True
+                
+                if pbest_value[min_cost_index[1]] < gbest_cost[1]:
+                    for g in range(self.m, 2 * self.m):
+                        gbest[g] = pbest[self.min_cost_index[1], g]
+
+                    gbest_cost[1] = pbest_value[min_cost_index[1]]
+                    achieved_main = True                    
+                 
+                if pbest_value[min_cost_index[2]] < gbest_cost[2]:
+                    for g in range(2*self.m, 3 * self.m):
+                        gbest[g] = pbest[self.min_cost_index[2], g]
+
+                    gbest_cost[2] = pbest_value[min_cost_index[2]]
+                    achieved_main = True                    
+                
+                
+                
                 ''' tmp = np.copy(x)
                 if curr_iter % 5 == 0:
                     #(x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
@@ -1331,8 +1383,8 @@ class PSO:
                                 self.__analyseSignal(gbest, 
                                                     curr_iter)))
 
-                cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
-                    / gbest_cost_history[0])*100 
+                cost_reduction = ((np.sum(gbest_cost_history[0]) - np.sum(gbest_cost)) \
+                    / np.sum(gbest_cost_history[0]))*100 
                 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
                 
