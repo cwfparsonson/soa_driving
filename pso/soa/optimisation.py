@@ -181,7 +181,7 @@ class PSO:
         else:
             self.init_PV = self.__getSoaOutput(self.init_OP) 
 
-        self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp
+        
         self.curr_iter = 0 
         self.x = self.cascade(np.zeros((self.n, self.m))) # current pop position array
         self.x_value = np.zeros(self.n) # fitness vals of positions
@@ -191,10 +191,7 @@ class PSO:
         self.gbest = self.cascade(np.copy(self.K)) # global best positions
         self.gbest_cost = self.pbest_value[self.min_cost_index] # global best val
         self.awg_step_size = (self.max_val - self.min_val) / (2**self.awg_res)
-        if self.SP is None:
-            self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp 
-        else:
-            self.SP = SP
+        self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp 
 
         # set particle position and velocity boundaries
         self.LB = np.zeros(self.m) # lower bound on particle positions
