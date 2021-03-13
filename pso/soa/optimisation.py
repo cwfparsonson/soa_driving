@@ -371,8 +371,8 @@ class PSO:
             for i in range(self.q):
                 self.gbest_cost[i] = self.pbest_value[i][self.min_cost_index[i]] # global best val
             
-            self.gbest_cost_history = np.append(self.gbest_cost_history, 
-                                                self.gbest_cost, axis = 0)
+            self.gbest_cost_history = np.vstack((self.gbest_cost_history, 
+                                                self.gbest_cost))
             
 
             print('Costs: ' + str(self.pbest_value))
