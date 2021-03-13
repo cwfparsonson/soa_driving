@@ -1378,6 +1378,8 @@ class PSO:
                 print((tmp == x).all())  '''                   
 
                 if achieved or achieved_main:
+                    print(gbest_cost_history)
+                    print(gbest_cost)
                     gbest_cost_history = np.vstack((gbest_cost_history, gbest_cost))
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
                     rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
@@ -1405,7 +1407,7 @@ class PSO:
                 curr_iter += 1 
 
             # ensure cost and analysis table has final gbest val
-            print(gbest_cost_history)
+            
             gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
             self.rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
                                                 self.__analyseSignal(gbest, 
