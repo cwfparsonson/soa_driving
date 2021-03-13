@@ -857,12 +857,6 @@ class PSO:
             # OP = np.copy(self.init_OP) 
             particleIndex = 0
 
-            '''
-            for signalIndex in range(self.K_index[0], self.K_index[-1]):
-                OP[signalIndex] = particle[particleIndex]
-                particleIndex += 1
-            '''
-
             OP = np.copy(particle)
 
             if self.sim_model != None:
