@@ -1253,7 +1253,7 @@ class PSO:
                 
                 # update particle velocities
                 for j in range(0, self.n):
-                    for g in range((self.q - 1) * self.m,self.m_c):
+                    for g in range(0,self.m_c):
                         v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
                             * (pbest[j, g] - x[j, g]) + (c2[j] * \
                                 random.uniform(0, 1) * (gbest[g] - x[j,g])))
@@ -1272,7 +1272,7 @@ class PSO:
                 
                 # handle position boundary violations
                 for j in range(0, self.n):
-                    for g in range((self.q - 1) * self.m, self.m_c):
+                    for g in range(0, self.m_c):
                         if x[j, g] < self.LB[g]:
                             x[j, g] = self.LB[g]
                         elif x[j, g] > self.UB[g]:
@@ -1312,11 +1312,11 @@ class PSO:
 
                     gbest_cost = pbest_value[min_cost_index]
                     achieved_main = True
-
+                tmp = np.copy(x)
                 if curr_iter % 5 == 0:
                     # (x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history, curr_iter = curr_iter)
                     (x, pbest, pbest_value, gbest, gbest_cost, achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-                                      
+                print((tmp == x).all())                    
 
                 if achieved or achieved_main:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
