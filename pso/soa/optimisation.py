@@ -154,7 +154,7 @@ class PSO:
         self.awg_res = awg_res
         self.min_val = min_val
         self.max_val = max_val
-        # self.SP = SP
+        self.SP = SP
         self.record_extra_info = record_extra_info
         self.num_points = len(self.init_OP)
         if sim_model == None and awg == None or \
@@ -182,7 +182,6 @@ class PSO:
         else:
             self.init_PV = self.__getSoaOutput(self.init_OP) 
 
-        self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp
         self.curr_iter = 0 
         self.x = self.cascade(np.zeros((self.n, self.m))) # current pop position array
         self.x_value = np.zeros(self.n) # fitness vals of positions
