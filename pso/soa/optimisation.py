@@ -59,8 +59,8 @@ class PSO:
                  awg=None, 
                  osc=None, 
                  awg_res=8, 
-                 min_val=-1.0, 
-                 max_val=1.0, 
+                 min_val=-2.5, 
+                 max_val=2.5, 
                  record_extra_info=False, 
                  linux=True,
                  SP=None):
@@ -665,7 +665,7 @@ class PSO:
             
             (_, _, xout) = signal.lsim2(tf, U=PV[i], T=T, X0=None, atol=1e-13)
 
-            X0 = PV[i][-9:]
+            X0 = X0_init[-1]
             
             input_init = input_init[self.m:]
 
