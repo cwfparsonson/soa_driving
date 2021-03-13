@@ -51,7 +51,7 @@ class chaos:
         self.map_type = map_type
         self.rep = rep
 
-        self.a = 1.0
+        self.a = 0.6
 
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
@@ -110,7 +110,7 @@ class chaos:
                     x[-1, g] = p[g]
                 
                 if self.change_range:
-                    self.a = self.a / ((gbest_cost_history[-1] - fitness[i]) / gbest_cost_history[-1] + 1) 
+                    self.a = self.a * (1- (gbest_cost_history[-1] - fitness[i]) / gbest_cost_history[-1])
                     for g in range(0, self.m_c):
                         self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
                         self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
