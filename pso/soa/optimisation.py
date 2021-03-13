@@ -658,6 +658,7 @@ class PSO:
             
             (_, PV[i], X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
             X0 = X0_init[-1]
+            print(np.shape(X0))
             min_PV = np.copy(min(PV[i]))
             if min_PV < 0:
                 for j in range(0, len(PV[i])):
@@ -1323,14 +1324,14 @@ class PSO:
                 # update local best particle positions & fitness vals
                 for j in range(0, self.n):
                     
-                    if x_value[j][0] < pbest_value[j, 0]:
+                    if x_value[j, 0] < pbest_value[j, 0]:
                         
                         pbest_value[j, 0] = x_value[j, 0] 
                         
                         for g in range(0, self.m):
                             pbest[j, g] = x[j, g] 
                     
-                    if x_value[j][1] < pbest_value[j][1]:
+                    if x_value[j, 1] < pbest_value[j, 1]:
                         
                         pbest_value[j][1] = x_value[j][1] 
                         
@@ -1378,8 +1379,6 @@ class PSO:
                 print((tmp == x).all())  '''                   
 
                 if achieved or achieved_main:
-                    print(gbest_cost_history)
-                    print(gbest_cost)
                     gbest_cost_history = np.vstack((gbest_cost_history, gbest_cost))
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
                     rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
