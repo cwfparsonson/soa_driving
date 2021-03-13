@@ -1351,21 +1351,21 @@ class PSO:
                     for g in range(0, self.m):
                         gbest[g] = pbest[self.min_cost_index[0], g]
 
-                    gbest_cost[0] = pbest_value[min_cost_index[0]]
+                    gbest_cost[0] = pbest_value[0][min_cost_index[0]]
                     achieved_main = True
                 
                 if pbest_value[1][min_cost_index[1]] < gbest_cost[1]:
                     for g in range(self.m, 2 * self.m):
                         gbest[g] = pbest[self.min_cost_index[1], g]
 
-                    gbest_cost[1] = pbest_value[min_cost_index[1]]
+                    gbest_cost[1] = pbest_value[1][min_cost_index[1]]
                     achieved_main = True                    
                  
                 if pbest_value[2][min_cost_index[2]] < gbest_cost[2]:
                     for g in range(2*self.m, 3 * self.m):
                         gbest[g] = pbest[self.min_cost_index[2], g]
 
-                    gbest_cost[2] = pbest_value[min_cost_index[2]]
+                    gbest_cost[2] = pbest_value[2][min_cost_index[2]]
                     achieved_main = True                    
                 
                 
