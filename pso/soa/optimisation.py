@@ -358,7 +358,7 @@ class PSO:
                 str(((time_all_generations*self.rep_max/60))/60) + " hrs")
             
             # init global cost history for plotting
-            self.gbest_cost_history = np.array() 
+            
             
             self.min_cost_index = np.argmin(self.pbest_value, axis = 0) # index best fitness
 
@@ -371,8 +371,7 @@ class PSO:
             for i in range(self.q):
                 self.gbest_cost[i] = self.pbest_value[i][self.min_cost_index[i]] # global best val
             
-            self.gbest_cost_history = np.append([self.gbest_cost_history], 
-                                                [self.gbest_cost])
+            self.gbest_cost_history = np.array([self.gbest_cost])
             
 
             print('Costs: ' + str(self.pbest_value))
