@@ -23,7 +23,7 @@ class chaos:
                 change_range = False,
                 min_val = -2.5,
                 max_val = 2.5, 
-                rep = 40):
+                rep = 100):
         
         self.n = n
         self.m = m
@@ -74,13 +74,13 @@ class chaos:
             p = np.copy(dummy[np.argsort(dummy_value)[0]])
             
             # Random Cascaded SOAs
-            c = np.random.randint(self.q - 2)
+            c = np.random.randint(low = 1, high = 4)
             
             # Logistic Mapping/Tent Mapping
             z = self.mapping(z)
 
             # Randomize part of particle using chaotic mapping
-            for g in range(2 * self.m, self.m_c):
+            for g in range((c - 1) * self.m, c * self.m_c):
                 
                 p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
