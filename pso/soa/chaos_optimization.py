@@ -42,7 +42,7 @@ class chaos:
         self.LB = np.zeros(self.m_c)
         self.UB = np.zeros(self.m_c)
         
-        for g in range(0, self.m_c):
+        for g in range(0, self.m):
             self.LB[g] = self.min_val
             self.UB[g] = self.max_val
 
@@ -80,7 +80,7 @@ class chaos:
             z = self.mapping(z)
 
             # Randomize part of particle using chaotic mapping
-            for g in range(0, self.m_c):
+            for g in range(0, self.m):
 
                 if random.uniform(0 , 1) > 0.25:
                 
