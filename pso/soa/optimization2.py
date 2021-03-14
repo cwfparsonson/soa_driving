@@ -1,6 +1,6 @@
 import sys, os, shutil
 import pyvisa as visa
-
+from pso.soa import chaos_optimization
 # make modules importable from anywhere
 # sys.path.append(r'C:\Users\Christopher\OneDrive - University College London\ipes_cdt\phd_project\projects\soa_driving\code\soa_driving\optimisation\python\\')
 from soa import devices, signalprocessing, analyse, distort_tf, subsampling
@@ -973,9 +973,15 @@ class PSO:
 
             pc_marker = int(0.05*self.iter_max) # for plotting/saving
             if pc_marker == 0:
-                pc_marker = 1 
+                pc_marker = 1
+
+            cpso = chaos_optimization.chaos(self.n, self.m, 1, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP)
+
+            (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
 
             while curr_iter <= self.iter_max:
+            
+                achieved, achieved2 = False, False
 
                 if self.adapt_accel == True:
                     for j in range(0, self.n):
@@ -1047,15 +1053,21 @@ class PSO:
                 if pbest_value[min_cost_index] < gbest_cost_history[-1]:
                     for g in range(0, self.m):
                         gbest[g] = pbest[min_cost_index, g]
+                    
+                if curr_iter % 5 == 0:
+                    (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)                    
+
+                if achieved or achieved2:
                     rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
                                                    self.__analyseSignal(gbest, 
                                                                         curr_iter)))
                     gbest_cost = pbest_value[min_cost_index]
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
+                
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
-                    / gbest_cost_history[0])*100
-
+                    / gbest_cost_history[0])*100                
+                
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
 
                 self.__savePsoData(x, 

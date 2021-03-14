@@ -82,7 +82,7 @@ class chaos:
             # Randomize part of particle using chaotic mapping
             for g in range(0, self.m_c):
 
-                if random.uniform(0 , 1) > 0.3:
+                if random.uniform(0 , 1) > 0.25:
                 
                     p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
