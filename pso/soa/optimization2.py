@@ -124,7 +124,6 @@ class PSO:
         self.t2 = t 
         #np.linspace(t[0], t[-1], 240)
         self.init_OP = init_OP
-        self.p2p = p2p
 
         """init_OP = np.array(init_OP)
         p2p = 240/len(init_OP)
