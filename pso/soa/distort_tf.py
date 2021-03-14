@@ -49,6 +49,7 @@ def getTransferFunctionOutput(tf, U, T, q, atol=1e-12):
     U = np.array(U)
     p = upsampling.ups(240)
     U = p.create(U)
+    input_init = np.copy(U)
 
 
     for _ in range(q):
