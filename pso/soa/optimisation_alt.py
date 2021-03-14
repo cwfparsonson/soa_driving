@@ -1,4 +1,4 @@
-from pso.soa import chaos_optimization
+from pso.soa import chaos_optimization_alt
 import sys, os
 import pyvisa as visa
 
@@ -1235,18 +1235,18 @@ class PSO:
             c1_min = 0.1
             c2_min = 0.1
 
-            cpso = chaos_optimization.chaos(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, change_range = True)
+            cpso = chaos_optimization_alt.chaos(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, change_range = False)
 
             pc_marker = int(0.05*self.iter_max) # for plotting/saving
             if pc_marker == 0:
                 pc_marker = 1 
-            ''' 
+    
             start_time = time.time()
             (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             end_time = time.time()
             #(x, pbest, pbest_value, gbest, gbest_cost,achieved)  = self.chaotic_search(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             t = end_time - start_time
-            print(f'Time Required for 1 CLS = {t} s') '''
+            print(f'Time Required for 1 CLS = {t} s')
             while curr_iter <= self.iter_max:
 
                 achieved = False
