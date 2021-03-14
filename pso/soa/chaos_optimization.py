@@ -74,13 +74,13 @@ class chaos:
             p = np.copy(dummy[np.argsort(dummy_value)[0]])
             
             # Random Cascaded SOAs
-            c = np.random.randint(low = 1, high = 4)
+            #c = np.random.randint(low = 1, high = 4)
             
             # Logistic Mapping/Tent Mapping
             z = self.mapping(z)
 
             # Randomize part of particle using chaotic mapping
-            for g in range((c - 1) * self.m, c * self.m):
+            for g in range(0, self.m_c):
 
                 if random.uniform(0 , 1) > 0.3:
                 
