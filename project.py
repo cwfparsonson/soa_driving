@@ -24,7 +24,7 @@ if __name__ == '__main__':
     num_points_list = np.array(factorize(240))
     num_points_list = num_points_list[num_points_list >= 10]
     '''
-    num_points_list = [80]
+    num_points_list = [40]
 
     time_start = 0
     time_stop = 20e-9
@@ -76,9 +76,8 @@ if __name__ == '__main__':
 
         # get initial output of initial signal and use to generate a target set point
         t2 = np.linspace(time_start, time_stop, 240)
-        init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t2)
-        # sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
-        sp = None
+        init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t2, q)
+        sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
 
         p = multiprocessing.Process(target=run_test, 
                                     args=(direc, 

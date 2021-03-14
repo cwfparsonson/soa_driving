@@ -29,7 +29,7 @@ def find_x_init(tf):
     return X0
 
 
-def getTransferFunctionOutput(tf, U, T, atol=1e-12):
+def getTransferFunctionOutput(tf, U, T, q, atol=1e-12):
     """
     This method sends a drive signal to a transfer function model and gets the 
     output
@@ -51,12 +51,21 @@ def getTransferFunctionOutput(tf, U, T, atol=1e-12):
     U = p.create(U)
 
 
-    (_, PV, _) = signal.lsim2(tf, U, T, X0=X0, atol=atol)
+    for _ in range(q):
+        PV = np.array([])
+        input = input_init[:40]
+        input = p.create(input)
+
+        (_, PV, X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
+        X0 = X0_init[-1] 
+        input_init = input_init[40:]
 
     min_PV = np.copy(min(PV))
+    
     if min_PV < 0:
         for i in range(0, len(PV)):
             PV[i] = PV[i] + abs(min_PV) # translate signal up
+    
     return PV
 
 
