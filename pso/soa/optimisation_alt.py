@@ -59,8 +59,8 @@ class PSO:
                  awg=None, 
                  osc=None, 
                  awg_res=8, 
-                 min_val=-2.5, 
-                 max_val=2.5, 
+                 min_val=-1.0, 
+                 max_val=1.0, 
                  record_extra_info=False, 
                  linux=True,
                  SP=None):
