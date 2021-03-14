@@ -81,8 +81,7 @@ class chaos:
 
             # Randomize part of particle using chaotic mapping
             for g in range(0, self.m):
-                if random.uniform(0,1.0) > 0.25:
-                    p[g] = np.interp(z[g], [0, 1], [self.min_val, self.max_val])
+                p[g] = np.interp(z[g], [0, 1], [self.min_val, self.max_val])
             
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
