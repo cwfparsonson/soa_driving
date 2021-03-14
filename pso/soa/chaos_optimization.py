@@ -22,7 +22,7 @@ class chaos:
                 map_type  = 'logistic',
                 change_range = False,
                 min_val = -1.0,
-                max_val = -1.0, 
+                max_val = 1.0, 
                 rep = 100):
         
         self.n = n
