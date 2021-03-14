@@ -51,7 +51,6 @@ def getTransferFunctionOutput(tf, U, T, q, atol=1e-12):
     PV = np.zeros((q, 240))
     
     for i in range(q):
-        PV = np.array([])
         input = input_init[:40]
         input = p.create(input)
 
