@@ -880,7 +880,7 @@ class PSO:
                      color="red", 
                      label='Settling Point')
             plt.legend(loc='lower right')
-            plt.title('Number of points: ' + str(num_points) + '\n PSO-Optimised Output Signals After ' + str(curr_iter) + \
+            plt.title('Number of points: ' + str(self.num_points) + '\n PSO-Optimised Output Signals After ' + str(curr_iter) + \
                 ' Generations')
             plt.xlabel('Time')
             plt.ylabel('Amplitude')
