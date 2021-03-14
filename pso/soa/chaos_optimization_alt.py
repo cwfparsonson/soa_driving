@@ -89,15 +89,30 @@ class chaos:
 
             idx = np.argsort(dummy_value)[-1]
 
-            if dummy_value[idx] > fitness[i]:
+            if dummy_value[idx, 0] > fitness[i, 0]:
 
-                dummy_value[idx] = fitness[i]
+                dummy_value[idx, 0] = fitness[i, 0]
 
-                for g in range(0, self.m_c):
+                for g in range(0, self.m):
 
                     dummy[idx, g] = p[g]
 
 
+            if dummy_value[idx, 1] > fitness[i, 1]:
+
+                dummy_value[idx, 1] = fitness[i, 1]
+
+                for g in range(self.m, 2 * self.m):
+
+                    dummy[idx, g] = p[g]
+            
+            if dummy_value[idx, 2] > fitness[i, 2]:
+    
+                dummy_value[idx, 2] = fitness[i, 2]
+
+                for g in range(2 * self.m, 3 * self.m):
+
+                    dummy[idx, g] = p[g]
 
             # Condition for better gbest/Break if found
             if fitness[i, 0] < gbest_cost[0]:
