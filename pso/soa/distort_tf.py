@@ -29,18 +29,16 @@ def find_x_init(tf):
     return X0
 
 
-def getTransferFunctionOutput(tf, U, T, q, atol=1e-12):
+def getTransferFunctionOutput(tf, U, T, atol=1e-12):
     """
     This method sends a drive signal to a transfer function model and gets the 
     output
-
     Args:
     - tf = transfer function
     - U = signal to drive transfer function with
     - T = array of time values
     - X0 = initial value
     - atol = scipy ode func parameter
-
     Returns:
     - PV = resultant output signal of transfer function
     """
@@ -49,22 +47,14 @@ def getTransferFunctionOutput(tf, U, T, q, atol=1e-12):
     U = np.array(U)
     p = upsampling.ups(240)
     U = p.create(U)
-    input_init = np.copy(U)
 
 
-    for _ in range(q):
-        PV = np.array([])
-        input = input_init[:]
-
-        (_, PV, X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
-        X0 = X0_init[-1] 
+    (_, PV, _) = signal.lsim2(tf, U, T, X0=X0, atol=atol)
 
     min_PV = np.copy(min(PV))
-    
     if min_PV < 0:
         for i in range(0, len(PV)):
             PV[i] = PV[i] + abs(min_PV) # translate signal up
-    
     return PV
 
 

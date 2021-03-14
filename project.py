@@ -3,7 +3,7 @@ from pso.soa import distort_tf_alt
 
 if __name__ == '__main__':
     from soa import devices, signalprocessing, analyse, distort_tf
-    from soa.optimisation import PSO, run_test
+    from soa.optimisation2 import PSO, run_test
 
 
     import numpy as np
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 50
-    run = 125
+    run = 126
     iter_max = 120
     rep_max = 1 
     max_v_f = 0.05 
@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
         # get initial output of initial signal and use to generate a target set point
         t2 = np.linspace(time_start, time_stop, 240)
-        init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t2, q)
+        init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t2)
         sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
         '''
         sp = np.zeros((q, 240))
@@ -98,7 +98,6 @@ if __name__ == '__main__':
                                         rep_max, 
                                         init_v_f, 
                                         max_v_f,
-                                        q, 
                                         w_init, 
                                         w_final, 
                                         True, 
