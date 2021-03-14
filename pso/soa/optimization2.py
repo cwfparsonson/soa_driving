@@ -121,8 +121,7 @@ class PSO:
         t = np.repeat(t, p2p)"""
 
 
-        self.t2 = t 
-        #np.linspace(t[0], t[-1], 240)
+        self.t2 = np.linspace(t[0], t[-1], 240)
         self.init_OP = init_OP
         self.p2p = 240/40  
 
