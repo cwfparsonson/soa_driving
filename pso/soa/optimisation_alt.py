@@ -185,12 +185,14 @@ class PSO:
 
         self.curr_iter = 0 
         self.x = self.cascade(np.zeros((self.n, self.m))) # current pop position array
-        self.x_value = np.zeros(self.n) # fitness vals of positions
+        self.x_value = np.zeros((self.n, self.q)) # fitness vals of positions
         self.pbest_value = np.copy(self.x_value) # best local fitness vals
-        self.min_cost_index = np.argmin(self.pbest_value) # index best fitness
+        self.min_cost_index = np.argmin(self.pbest_value, axis = 0) # index best fitness
         # May cause Issues
         self.gbest = self.cascade(np.copy(self.K)) # global best positions
-        self.gbest_cost = self.pbest_value[self.min_cost_index] # global best val
+        self.gbest_cost = np.zeros(self.q)
+        for i in range(self.q):
+            self.gbest_cost[i] = self.pbest_value[i][self.min_cost_index[i]] # global best val
         self.awg_step_size = (self.max_val - self.min_val) / (2**self.awg_res)
         if self.SP is None:
             self.SP = analyse.ResponseMeasurements(self.init_PV, self.t2).sp.sp 
