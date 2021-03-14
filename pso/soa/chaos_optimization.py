@@ -81,9 +81,7 @@ class chaos:
 
             # Randomize part of particle using chaotic mapping
             for g in range(0, self.m):
-                
                 p[g] = np.interp(z[g], [0, 1], [self.min_val, self.max_val])
-                print(p[g])
             
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
@@ -99,7 +97,7 @@ class chaos:
                     dummy[idx, g] = p[g]
 
 
-
+            print(fitness[i])
             # Condition for better gbest/Break if found
             if fitness[i] < gbest_cost:
                 
