@@ -87,7 +87,7 @@ class chaos:
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
 
-            idx = np.argsort(dummy_value)[-1]
+            idx = np.argsort(np.sum(dummy_value, axis = 1))[-1]
 
             if dummy_value[idx, 0] > fitness[i, 0]:
 
