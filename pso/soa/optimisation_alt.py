@@ -1492,7 +1492,7 @@ class PSO:
 
         # plot learning curve
         plt.figure()
-        plt.plot(iter_gbest_reached, gbest_cost_history[:, -1])
+        plt.plot(iter_gbest_reached, gbest_cost_history[1:, -1])
         plt.title('PSO Algorithm MSE Learning Curve')
         plt.xlabel('No. Iterations')
         plt.ylabel('Cost ' + str(self.cost_f))
