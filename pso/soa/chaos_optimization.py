@@ -56,7 +56,9 @@ class chaos:
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
         
-        dummy = np.tile(gbest, (self.n, 1))
+        #dummy = np.tile(gbest, (self.n, 1))
+
+        dummy = np.copy(pbest)
 
         dummy_value = np.copy(pbest_value)
 
@@ -81,7 +83,7 @@ class chaos:
 
             # Randomize part of particle using chaotic mapping
             for g in range(0, self.m):
-                p[g] = (np.interp(z[g], [0, 1], [self.min_val, self.max_val]) + p[g]) / 2.0
+                p[g] = 0.7 * np.interp(z[g], [0, 1], [self.min_val, self.max_val]) + 0.3 * p[g]
             
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
@@ -97,7 +99,6 @@ class chaos:
                     dummy[idx, g] = p[g]
 
 
-            print(fitness[i])
             # Condition for better gbest/Break if found
             if fitness[i] < gbest_cost:
                 
