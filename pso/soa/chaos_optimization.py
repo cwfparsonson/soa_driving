@@ -82,7 +82,7 @@ class chaos:
             # Randomize part of particle using chaotic mapping
             for g in range(0, self.m):
 
-                if random.uniform(0 , 1) > 0.25:
+                if random.uniform(0 , 1) > 0.4:
                 
                     p[g] = np.interp(z[g], [0, 1], [self.min_val, self.max_val])
             
@@ -95,7 +95,7 @@ class chaos:
 
                 dummy_value[idx] = fitness[i]
 
-                for g in range(0, self.m_c):
+                for g in range(0, self.m):
 
                     dummy[idx, g] = p[g]
 
@@ -106,7 +106,7 @@ class chaos:
                 
                 achieved = True
 
-                for g in range(self.m_c):
+                for g in range(self.m):
                     gbest[g] = p[g]
                     pbest[-1, g] = p[g]
                     x[-1, g] = p[g]
@@ -164,14 +164,14 @@ class chaos:
 
         for j,idx in enumerate(elite_idxs):
 
-            for g in range(self.m_c):
+            for g in range(self.m):
                 x[j, g] = dummy[idx, g]
 
             if dummy_value[idx] < pbest_value[j]:
 
                 pbest_value[j] = dummy_value[idx]
                 
-                for g in range(0, self.m_c):
+                for g in range(0, self.m):
                     pbest[j, g] = dummy[idx, g]
         
         return (x,pbest,pbest_value)
