@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 10
-    run = 106
+    run = 107
     iter_max = 120
     rep_max = 1 
     max_v_f = 0.05 
@@ -84,7 +84,7 @@ if __name__ == '__main__':
         
         sp = np.zeros((q, 240))
         for i in range(q):
-            sp = analyse.ResponseMeasurements(init_PV[i], t2).sp.sp
+            sp[i] = analyse.ResponseMeasurements(init_PV[i], t2).sp.sp
 
         p = multiprocessing.Process(target=run_test, 
                                     args=(direc, 
