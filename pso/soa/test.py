@@ -29,6 +29,7 @@ init_OP[:int(0.25*40)],init_OP[int(0.25*40):] = -1, 0.5
 
 init_OP = np.tile(init_OP, 3)
 
+
 t2 = np.linspace(0, 20e-9, 240)
 
 def __find_x_init(tf):
@@ -78,15 +79,19 @@ def __getTransferFunctionOutput(tf, U, T, X0, q, atol=1e-12):
         input = input_init[:40]
         input = p.create(input)
 
-        
+ 
         (_, PV, X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
         X0 = X0_init[0] 
         input_init = input_init[40:]
-    
-    min_PV = np.copy(min(PV))
-    if min_PV < 0:
-        for i in range(0, len(PV)):
-            PV[i] = PV[i] + abs(min_PV)
+        
+        min_PV = np.copy(min(PV))
+        if min_PV < 0:
+            for i in range(0, len(PV)):
+                PV[i] = PV[i] + abs(min_PV)
+        
+        plt.figure(1) 
+        plt.plot(t2, PV, c='b')
+        plt.show()  
 
     return PV
 

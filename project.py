@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 10
-    run = 121
+    run = 122
     iter_max = 120
     rep_max = 1 
     max_v_f = 0.05 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     w_init = 0.9
     w_final = 0.5
     on_suppress_f = 2.0
-    q = 3
+    q = 1
     # initial transfer function numerator and denominator coefficients
     num = [2.01199757841099e85]
     den = [
