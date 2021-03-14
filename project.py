@@ -1,6 +1,6 @@
 if __name__ == '__main__':
     from soa import devices, signalprocessing, analyse, distort_tf
-    from soa.optimisation import PSO, run_test
+    from soa.optimisation_alt import PSO, run_test
 
 
     import numpy as np
@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 10
-    run = 101
+    run = 102
     iter_max = 120
     rep_max = 1 
     max_v_f = 0.05 
