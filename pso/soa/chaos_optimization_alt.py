@@ -135,6 +135,13 @@ class chaos:
                 pbest_value[-1, 0] = fitness[i, 0]  
                 gbest_cost[0] = fitness[i,0]
                 
+                cost_reduction = ((np.sum(gbest_cost_history[1]) - np.sum(gbest_cost)) \
+                    / np.sum(gbest_cost_history[1]))*100 
+                
+                print('----------------------------------------------------------')               
+                print(f'Chaos Search Reduced by {cost_reduction} %')
+                print('----------------------------------------------------------')                
+            
             if fitness[i, 1] < gbest_cost[1]:
                 
                 achieved = True
@@ -154,7 +161,12 @@ class chaos:
 
                 pbest_value[-1, 1] = fitness[i, 1]  
                 gbest_cost[1] = fitness[i,1]
-            
+                cost_reduction = ((np.sum(gbest_cost_history[1]) - np.sum(gbest_cost)) \
+                    / np.sum(gbest_cost_history[1]))*100 
+                
+                print('----------------------------------------------------------')               
+                print(f'Chaos Search Reduced by {cost_reduction} %')
+                print('----------------------------------------------------------')            
             if fitness[i, 2] < gbest_cost[2]:
                 
                 achieved = True
@@ -170,18 +182,16 @@ class chaos:
                         self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
                         self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
                     
-                    
-
                 pbest_value[-1, 2] = fitness[i, 2]  
                 gbest_cost[2] = fitness[i, 2]
-                                
-            if achieved:
                 cost_reduction = ((np.sum(gbest_cost_history[1]) - np.sum(gbest_cost)) \
                     / np.sum(gbest_cost_history[1]))*100 
                 
                 print('----------------------------------------------------------')               
                 print(f'Chaos Search Reduced by {cost_reduction} %')
-                print('----------------------------------------------------------')
+                print('----------------------------------------------------------')                
+                                
+
             
         (x,pbest,pbest_value) = self.update(x, pbest, pbest_value, dummy, dummy_value)
      
