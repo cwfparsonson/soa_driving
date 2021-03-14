@@ -74,13 +74,13 @@ class chaos:
             p = np.copy(dummy[np.argsort(dummy_value)[0]])
             
             # Random Cascaded SOAs
-            #c = np.random.randint(low = 1, high = 4)
+            c = np.random.randint(low = 1, high = 3)
             
             # Logistic Mapping/Tent Mapping
             z = self.mapping(z)
 
             # Randomize part of particle using chaotic mapping
-            for g in range(0, self.m):
+            for g in range(((c - 1) / 2)*self.m, (c / 2) * self.m):
                 p[g] = np.interp(z[g], [0, 1], [self.min_val, self.max_val])
             
             # Get and Evaluate Output
