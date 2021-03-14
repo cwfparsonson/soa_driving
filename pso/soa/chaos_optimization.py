@@ -84,7 +84,7 @@ class chaos:
 
                 if random.uniform(0 , 1) > 0.25:
                 
-                    p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
+                    p[g] = np.interp(z[g], [0, 1], [self.min_val, self.max_val])
             
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
