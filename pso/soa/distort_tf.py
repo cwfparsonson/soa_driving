@@ -54,12 +54,10 @@ def getTransferFunctionOutput(tf, U, T, q, atol=1e-12):
 
     for _ in range(q):
         PV = np.array([])
-        input = input_init[:40]
-        input = p.create(input)
+        input = input_init[:]
 
         (_, PV, X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
         X0 = X0_init[-1] 
-        input_init = input_init[40:]
 
     min_PV = np.copy(min(PV))
     
