@@ -21,8 +21,8 @@ class chaos:
                 SP,
                 map_type  = 'logistic',
                 change_range = False,
-                min_val = -2.5,
-                max_val = 2.5, 
+                min_val = -1.0,
+                max_val = -1.0, 
                 rep = 100):
         
         self.n = n
@@ -81,8 +81,10 @@ class chaos:
 
             # Randomize part of particle using chaotic mapping
             for g in range((c - 1) * self.m, c * self.m):
+
+                if random.uniform(0 , 1) > 0.3:
                 
-                p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
+                    p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
