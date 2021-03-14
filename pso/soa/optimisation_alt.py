@@ -1371,7 +1371,8 @@ class PSO:
                     gbest_cost[2] = pbest_value[min_cost_index[2], 2]
                     achieved_main = True                    
                 
-                
+                if curr_iter % 5 == 0:
+                    (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
 
                 if achieved or achieved_main:
                     gbest_cost_history = np.vstack((gbest_cost_history, gbest_cost))
@@ -1491,7 +1492,7 @@ class PSO:
 
         # plot learning curve
         plt.figure()
-        plt.plot(iter_gbest_reached, gbest_cost_history)
+        plt.plot(iter_gbest_reached, gbest_cost_history[:, -1])
         plt.title('PSO Algorithm MSE Learning Curve')
         plt.xlabel('No. Iterations')
         plt.ylabel('Cost ' + str(self.cost_f))
