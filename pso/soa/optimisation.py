@@ -895,12 +895,12 @@ class PSO:
         
             # finalise and save plot
             plt.figure(1)
-            plt.plot(self.t2, self.SP[self.q], c='g', label='Target SP')
-            plt.plot(self.t2, self.init_PV[self.q], c='r', label='Initial Output')
-            plt.plot(self.t2, best_PV[self.q], c='c', label='Best fitness')
-            st_index = analyse.ResponseMeasurements(best_PV[self.q], self.t2).settlingTimeIndex
+            plt.plot(self.t2, self.SP[-1], c='g', label='Target SP')
+            plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
+            plt.plot(self.t2, best_PV[-1], c='c', label='Best fitness')
+            st_index = analyse.ResponseMeasurements(best_PV[-1], self.t2).settlingTimeIndex
             plt.plot(self.t2[st_index], 
-                     best_PV[self.q][st_index], 
+                     best_PV[-1][st_index], 
                      marker='x', 
                      markersize=6, 
                      color="red", 
