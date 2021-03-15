@@ -1383,14 +1383,14 @@ class PSO:
                 '''
 
                 if achieved or achieved_main:
-                    gbest_cost_history = np.append((gbest_cost_history, gbest_cost[-1]))
+                    gbest_cost_history = np.append([gbest_cost_history], [gbest_cost[-1]])
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
                     rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
                                 self.__analyseSignal(gbest, 
                                                     curr_iter)))
 
-                cost_reduction = ((np.sum(gbest_cost_history[1]) - np.sum(gbest_cost)) \
-                    / np.sum(gbest_cost_history[1]))*100 
+                cost_reduction = ((gbest_cost_history[-1] - gbest_cost[-1]) \
+                    / gbest_cost_history[1])*100 
                 
                 print('Reduced cost by ' + str(cost_reduction) + '% so far')
                 
