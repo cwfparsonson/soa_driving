@@ -27,15 +27,15 @@ if __name__ == '__main__':
     num_points_list = np.array(factorize(240))
     num_points_list = num_points_list[num_points_list >= 10]
     '''
-    num_points_list = [40]
+    num_points_list = [60]
 
     time_start = 0
     time_stop = 20e-9
 
     # set PSO params
-    n = 50
-    run = 'TEST RUN 2 - WEIGHTED'
-    iter_max = 120
+    n = 20
+    run = 'BASE RUN'
+    iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 
     init_v_f = max_v_f 
