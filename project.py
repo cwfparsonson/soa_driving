@@ -27,14 +27,14 @@ if __name__ == '__main__':
     num_points_list = np.array(factorize(240))
     num_points_list = num_points_list[num_points_list >= 10]
     '''
-    num_points_list = [60]
+    num_points_list = [120]
 
     time_start = 0
     time_stop = 20e-9
 
     # set PSO params
     n = 20
-    run = 'SPLIT_NO_CHANGE_40_REPS_GBEST'
+    run = 'SPLIT_NO_CHANGE_40_REPS_GBEST_TENT'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 
