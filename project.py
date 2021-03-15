@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 20
-    run = 'SPLIT_NO_CHANGE_40_REPS_GBEST_TENT'
+    run = 'REAL_SPLIT_NO_CHANGE_40_REPS_GBEST_TENT'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 

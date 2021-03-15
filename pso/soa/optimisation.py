@@ -227,9 +227,6 @@ class PSO:
 
         self.m_c = self.m * self.q
 
-        self.misic_sig = signalprocessing.generateSignal(num_points = self.num_points, directory= self.directory).misic()
-
-        self.misic_sig = self.cascade(self.misic_sig)
 
         # initialise particle positions
         for g in range(0, self.m_c):
