@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 20
-    run = 'CASCADE_BASE'
+    run = 'CASCADE_BASE2'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     w_init = 0.9
     w_final = 0.5
     on_suppress_f = 2.0
-    q = 1
+    q = 3
     # initial transfer function numerator and denominator coefficients
     num = [2.01199757841099e85]
     den = [
