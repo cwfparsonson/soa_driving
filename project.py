@@ -33,9 +33,9 @@ if __name__ == '__main__':
     time_stop = 20e-9
 
     # set PSO params
-    n = 50
-    run = 'CASCADE_CHAOS_CHANGERANGE2'
-    iter_max = 100
+    n = 10
+    run = 'CASCADE_CHAOS_TEST'
+    iter_max = 30
     rep_max = 1 
     max_v_f = 0.05 
     init_v_f = max_v_f 
