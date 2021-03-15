@@ -1372,10 +1372,13 @@ class PSO:
                         gbest[g] = pbest[self.min_cost_index[2], g]
 
                     gbest_cost[2] = pbest_value[min_cost_index[2], 2]
-                    achieved_main = True                    
-                
+                    achieved_main = True
+
+
+                tmp = np.copy(x)                    
                 if curr_iter % 5 == 0:
                     (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+                print((x == tmp).all())
 
                 if achieved or achieved_main:
                     gbest_cost_history = np.vstack((gbest_cost_history, gbest_cost))
