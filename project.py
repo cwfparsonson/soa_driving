@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 10
-    run = 'CASCADE_BASE2'
+    run = 'CASCADE_BASE_TEST'
     iter_max = 20
     rep_max = 1 
     max_v_f = 0.05 
