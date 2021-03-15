@@ -895,7 +895,7 @@ class PSO:
         
             # finalise and save plot
             plt.figure(1)
-            plt.plot(self.t2, self.SP, c='g', label='Target SP')
+            plt.plot(self.t2, self.SP[-1], c='g', label='Target SP')
             plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
             plt.plot(self.t2, best_PV[-1], c='c', label='Best fitness')
             st_index = analyse.ResponseMeasurements(best_PV[-1], self.t2).settlingTimeIndex
@@ -1395,7 +1395,7 @@ class PSO:
     
         # plot final output signal
         plt.figure()
-        plt.plot(self.t2, self.SP, c='g', label='Target SP')
+        plt.plot(self.t2, self.SP[-1], c='g', label='Target SP')
         plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
         plt.plot(self.t2, self.gbest_PV[-1], c='c', label='PSO-Optimised Output')
         st_index = int(rt_st_os_analysis[len(rt_st_os_analysis)-1, 3]) 
