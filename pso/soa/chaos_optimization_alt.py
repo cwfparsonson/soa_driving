@@ -134,7 +134,7 @@ class chaos:
             
 
         tmp = np.copy(x)
-        (x, x_value, pbest,pbest_value) = self.update(x, x_value, pbest, pbest_value, dummy, dummy_value)
+        (x, x_value, pbest, pbest_value) = self.update(x, x_value, pbest, pbest_value, dummy, dummy_value)
         print((x==tmp).all())
      
         return (x, x_value, pbest, pbest_value, gbest, gbest_cost, achieved)    
@@ -189,7 +189,7 @@ class chaos:
                     pbest[j, g] = dummy[idx, g]
                
         
-        return (x,pbest,pbest_value)
+        return (x, x_value, pbest, pbest_value)
 
 
     def update2(self, x, pbest, pbest_value, dummy, dummy_value, fitness, tmp, achieved):   
