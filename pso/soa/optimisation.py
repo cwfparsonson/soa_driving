@@ -873,7 +873,7 @@ class PSO:
 
             if self.record_extra_info == True:
                 # store particle output
-                curr_outputs[j, :] = PV
+                curr_outputs[j, :] = PV[-1]
             
             if plot == True:
                 plt.figure(1) 
