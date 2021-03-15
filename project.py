@@ -33,9 +33,9 @@ if __name__ == '__main__':
     time_stop = 20e-9
 
     # set PSO params
-    n = 10
-    run = 'CASCADE_BASE_TEST_PLS'
-    iter_max = 20
+    n = 50
+    run = 'CASCADE_BASE_ACTUAL'
+    iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 
     init_v_f = max_v_f 
