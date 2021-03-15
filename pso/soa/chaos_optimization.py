@@ -84,7 +84,7 @@ class chaos:
             # Randomize part of particle using chaotic mapping
 
             for g in range(0, self.m):
-                p[g] = 0.3 * np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]) + 0.7 * p[g]
+                p[g] = 0.3 * np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]]) + 0.7 * p[g]
             
 
             
