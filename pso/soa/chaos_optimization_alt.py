@@ -125,7 +125,7 @@ class chaos:
                     x[-1, g] = p[g]
                 
                 if self.change_range:
-                    self.a = self.a * (1- (gbest_cost_history[-1] - fitness[i]) / gbest_cost_history[-1])
+                    self.a = self.a * (1- 0.05)
                     for g in range(0, self.m):
                         self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
                         self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
