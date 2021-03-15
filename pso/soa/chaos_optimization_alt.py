@@ -131,8 +131,9 @@ class chaos:
                 print('----------------------------------------------------------')                
             
 
-            
+        tmp = np.copy(x)
         (x,pbest,pbest_value) = self.update(x, pbest, pbest_value, dummy, dummy_value)
+        print((x==tmp).all())
      
         return (x, pbest, pbest_value, gbest, gbest_cost, achieved)    
 
@@ -168,6 +169,8 @@ class chaos:
     def update(self, x, pbest, pbest_value, dummy, dummy_value):
 
         elite_idxs = np.argsort(dummy_value)[:4 * self.n // 5]
+
+        print(elite_idxs)
 
         for j,idx in enumerate(elite_idxs):
 
