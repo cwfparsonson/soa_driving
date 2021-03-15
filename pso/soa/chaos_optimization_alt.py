@@ -62,7 +62,7 @@ class chaos:
 
         z = np.interp(np.copy(random.choice(pbest)), [self.min_val, self.max_val], [0, 1])
 
-        fitness = np.zeros((self.rep, self.q))
+        fitness = np.zeros(self.rep)
 
         # Criterion that new gbest was found
         achieved = False
