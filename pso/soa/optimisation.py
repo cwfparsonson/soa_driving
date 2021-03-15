@@ -895,7 +895,7 @@ class PSO:
         
             # finalise and save plot
             plt.figure(1)
-            plt.plot(self.t2, self.SP[-1], c='g', label='Target SP')
+            plt.plot(self.t2, self.SP[2], c='g', label='Target SP')
             plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
             plt.plot(self.t2, best_PV[-1], c='c', label='Best fitness')
             st_index = analyse.ResponseMeasurements(best_PV[-1], self.t2).settlingTimeIndex
@@ -1231,7 +1231,6 @@ class PSO:
 
                 achieved_main = False
 
-                print(x_value)
                 for j in range(0, self.n):
                     # update particle vals
                     rel_improv[j] = (pbest_value[j] - x_value[j]) \
@@ -1311,6 +1310,7 @@ class PSO:
                 
                 print((tmp == x).all())
                 '''
+
 
                 if achieved or achieved_main:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])

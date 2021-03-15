@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 50
-    run = 'CASCADE_BASE_3'
+    run = 'CASCADE_base_again'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 
@@ -77,12 +77,16 @@ if __name__ == '__main__':
         
         init_OP[:int(0.25*num_points)],init_OP[int(0.25*num_points):] = -1, 0.5
 
+        init_OP = np.tile(init_OP, q)
+
         # get initial output of initial signal and use to generate a target set point
         t2 = np.linspace(time_start, time_stop, 240)
-        init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t2, q)
-        sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
+        init_PV = distort_tf_alt.getTransferFunctionOutput(tf,init_OP,t2, q)
+        # sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
  
-        sp = np.tile(sp, (q, 1))
+        sp = np.zeros((q, 240))
+        for i in range(q):
+            sp[i] = analyse.ResponseMeasurements(init_PV[i], t2).sp.sp
 
         p = multiprocessing.Process(target=run_test, 
                                     args=(direc, 

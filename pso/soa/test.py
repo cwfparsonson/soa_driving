@@ -23,12 +23,14 @@ den = [
 ]
 tf = signal.TransferFunction(num, den)
 
+q = 5
+
 init_OP = np.zeros(40) # initial drive signal (e.g. a step)
 
 init_OP[:int(0.25*40)],init_OP[int(0.25*40):] = -1, 0.5
 
 
-init_OP = np.tile(init_OP, 3)
+init_OP = np.tile(init_OP, q)
 
 
 t2 = np.linspace(0, 20e-9, 240)
@@ -92,13 +94,15 @@ def __getTransferFunctionOutput(tf, U, T, X0, q, atol=1e-12):
 
 X0 = __find_x_init(tf)
 
-init_PV = __getTransferFunctionOutput(tf,init_OP,t2, X0, 3)
+init_PV = __getTransferFunctionOutput(tf,init_OP,t2, X0, q)
 sp = np.zeros_like(init_PV)
-for i in range(3):
+for i in range(q):
     sp[i] = analyse.ResponseMeasurements(init_PV[i], t2).sp.sp
 
 
 t3 = np.linspace(0, 20e-9, 120)
-plt.figure(1) 
-plt.plot(t2, sp[1], c='b')
+plt.figure(1)
+plt.title('1')
+plt.plot(t2, sp[0])
+
 plt.show()
