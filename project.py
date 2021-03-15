@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
         # get initial output of initial signal and use to generate a target set point
         t2 = np.linspace(time_start, time_stop, 240)
-        init_PV = distort_tf_alt.getTransferFunctionOutput(tf,init_OP,t2)
+        init_PV = distort_tf_alt.getTransferFunctionOutput(tf,init_OP,t2, q)
         # sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
  
         sp = np.zeros((q, 240))
