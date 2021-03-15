@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 20
-    run = 'AVERAGE_NO_CHANGE_40_REPS_PBEST'
+    run = 'REAL_AVERAGE_NO_CHANGE_40_REPS_PBEST'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 

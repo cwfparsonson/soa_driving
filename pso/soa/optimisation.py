@@ -1228,7 +1228,7 @@ class PSO:
                 pc_marker = 1 
             
             start_time = time.time()
-            # (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+            (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             end_time = time.time()
             t = end_time - start_time
             print(f'Time Taken for 1 CLS = {t} s')
@@ -1315,10 +1315,9 @@ class PSO:
                     achieved_main = True
                 
                 tmp = np.copy(x)
-                '''
                 if curr_iter % 5 == 0:
                     (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-                '''
+
                 print((tmp == x).all())
                 
                 if achieved or achieved_main:
