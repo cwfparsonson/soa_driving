@@ -1,11 +1,12 @@
 
-from soa import upsampling
+from soa import upsampling, analyse
 import numpy as np
 import multiprocessing
 import pickle
 from scipy import signal
 import os
 import matplotlib.pyplot as plt
+
 
 num = [2.01199757841099e85]
 den = [
@@ -66,39 +67,38 @@ def __getTransferFunctionOutput(tf, U, T, X0, q, atol=1e-12):
 
     
 
-    T = np.linspace(T[0], T[-1], 240)
-
+    T = np.linspace(0, 20e-9, 240)
+   
     U = np.array(U)
-    sample = 240
-    p = upsampling.ups(sample)
+    p = upsampling.ups(240)
+    U = p.create(U)
     input_init = np.copy(U)
-    
 
-    for _ in range(3):
-        PV = np.array([])
+    PV = np.zeros((q, 240))
+    
+    for i in range(q):
         input = input_init[:40]
         input = p.create(input)
 
- 
-        (_, PV, X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
-        X0 = X0_init[0] 
+        (_, PV[i], X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
         input_init = input_init[40:]
-        
-        min_PV = np.copy(min(PV))
+        X0 = X0_init[0]
+        min_PV = np.copy(min(PV[i]))
         if min_PV < 0:
-            for i in range(0, len(PV)):
-                PV[i] = PV[i] + abs(min_PV)
-        
-        plt.figure(1) 
-        plt.plot(t2, PV, c='b')
-        plt.show()  
-
+            for j in range(0, len(PV[i])):
+                PV[i][j] = PV[i][j] + abs(min_PV)
+    
     return PV
 
 X0 = __find_x_init(tf)
 
-PV = __getTransferFunctionOutput(tf, init_OP, t2, X0, 3)
+init_PV = __getTransferFunctionOutput(tf,init_OP,t2, X0, 3)
+sp = np.zeros_like(init_PV)
+for i in range(3):
+    sp[i] = analyse.ResponseMeasurements(init_PV[i], t2).sp.sp
+
+
 t3 = np.linspace(0, 20e-9, 120)
 plt.figure(1) 
-plt.plot(t2, PV, c='b')
+plt.plot(t2, sp[1], c='b')
 plt.show()

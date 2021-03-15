@@ -895,12 +895,12 @@ class PSO:
         
             # finalise and save plot
             plt.figure(1)
-            plt.plot(self.t2, self.SP[-1], c='g', label='Target SP')
-            plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
-            plt.plot(self.t2, best_PV[-1], c='c', label='Best fitness')
-            st_index = analyse.ResponseMeasurements(best_PV[-1], self.t2).settlingTimeIndex
+            plt.plot(self.t2, self.SP[self.q], c='g', label='Target SP')
+            plt.plot(self.t2, self.init_PV[self.q], c='r', label='Initial Output')
+            plt.plot(self.t2, best_PV[self.q], c='c', label='Best fitness')
+            st_index = analyse.ResponseMeasurements(best_PV[self.q], self.t2).settlingTimeIndex
             plt.plot(self.t2[st_index], 
-                     best_PV[-1][st_index], 
+                     best_PV[self.q][st_index], 
                      marker='x', 
                      markersize=6, 
                      color="red", 
@@ -1220,7 +1220,7 @@ class PSO:
                 pc_marker = 1 
             
             start_time = time.time()
-            (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+            #(x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             end_time = time.time()
             t = end_time - start_time
             print(f'Time Taken for 1 CLS = {t} s')
@@ -1232,17 +1232,16 @@ class PSO:
                 achieved_main = False
 
                 print(x_value)
-                if self.adapt_accel == True:
-                    for j in range(0, self.n):
-                        # update particle vals
-                        rel_improv[j] = (pbest_value[j] - x_value[j]) \
-                            / (pbest_value[j] + x_value[j]) 
-                        w[j] = self.w_init + ( (self.w_final - self.w_init) * \
-                            ((math.exp(rel_improv[j]) - 1) / (math.exp(rel_improv[j]) + 1)) ) 
-                        c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
-                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
-                        c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
-                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
+                for j in range(0, self.n):
+                    # update particle vals
+                    rel_improv[j] = (pbest_value[j] - x_value[j]) \
+                        / (pbest_value[j] + x_value[j]) 
+                    w[j] = self.w_init + ( (self.w_final - self.w_init) * \
+                        ((math.exp(rel_improv[j]) - 1) / (math.exp(rel_improv[j]) + 1)) ) 
+                    c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
+                        (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
+                    c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
+                        (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
                 
                 # update particle velocities
                 for j in range(0, self.n):
@@ -1305,12 +1304,13 @@ class PSO:
 
                     gbest_cost = pbest_value[min_cost_index]
                     achieved_main = True
-
+                '''
                 tmp = np.copy(x)
                 if curr_iter % 5 == 0:
                     (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-
+                
                 print((tmp == x).all())
+                '''
 
                 if achieved or achieved_main:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
