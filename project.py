@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 20
-    run = 'WEIGHTED_TO_OR_NO_CHANGE_40_REPS_GBEST'
+    run = 'WEIGHTED_TO_OR_NO_CHANGE_100_REPS_GBEST'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 
