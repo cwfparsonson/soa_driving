@@ -1227,8 +1227,11 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-
+            start_time = time.time()
             # (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+            end_time = time.time()
+            t = end_time - start_time
+            print(f'Time Taken for 1 CLS = {t} s')
 
             while curr_iter <= self.iter_max:
 
