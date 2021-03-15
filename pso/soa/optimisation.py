@@ -412,7 +412,7 @@ class PSO:
                      index=None, 
                      header=False)
 
-        responseMeasurementsObject = analyse.ResponseMeasurements(PV, self.t2) 
+        responseMeasurementsObject = analyse.ResponseMeasurements(PV[-1], self.t2) 
 
         rt = responseMeasurementsObject.riseTime
         st = responseMeasurementsObject.settlingTime
@@ -877,7 +877,7 @@ class PSO:
             
             if plot == True:
                 plt.figure(1) 
-                plt.plot(self.t2, PV, c='b') 
+                plt.plot(self.t2, PV[-1], c='b') 
                 plt.figure(2)
                 plt.plot(np.linspace(self.t[0],self.t[-1], len(self.t)*self.q), OP, c='r')
 
@@ -896,11 +896,11 @@ class PSO:
             # finalise and save plot
             plt.figure(1)
             plt.plot(self.t2, self.SP, c='g', label='Target SP')
-            plt.plot(self.t2, self.init_PV, c='r', label='Initial Output')
-            plt.plot(self.t2, best_PV, c='c', label='Best fitness')
-            st_index = analyse.ResponseMeasurements(best_PV, self.t2).settlingTimeIndex
+            plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
+            plt.plot(self.t2, best_PV[-1], c='c', label='Best fitness')
+            st_index = analyse.ResponseMeasurements(best_PV[-1], self.t2).settlingTimeIndex
             plt.plot(self.t2[st_index], 
-                     best_PV[st_index], 
+                     best_PV[-1][st_index], 
                      marker='x', 
                      markersize=6, 
                      color="red", 
@@ -1396,11 +1396,11 @@ class PSO:
         # plot final output signal
         plt.figure()
         plt.plot(self.t2, self.SP, c='g', label='Target SP')
-        plt.plot(self.t2, self.init_PV, c='r', label='Initial Output')
-        plt.plot(self.t2, self.gbest_PV, c='c', label='PSO-Optimised Output')
+        plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
+        plt.plot(self.t2, self.gbest_PV[-1], c='c', label='PSO-Optimised Output')
         st_index = int(rt_st_os_analysis[len(rt_st_os_analysis)-1, 3]) 
         plt.plot(self.t2[st_index], 
-                 self.gbest_PV[st_index], 
+                 self.gbest_PV[-1][st_index], 
                  marker='x', 
                  markersize=6, 
                  color="red", 
