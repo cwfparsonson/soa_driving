@@ -180,14 +180,14 @@ class chaos:
                 x[j + 1, g] = dummy[idx, g]
                 
                 x_value[j + 1] = dummy_value[j]
-            '''
+
             if dummy_value[idx] < pbest_value[j]:
 
                 pbest_value[j + 1] = dummy_value[idx]
                 
                 for g in range(0, self.m_c):
                     pbest[j + 1, g] = dummy[idx, g]
-            '''
+
                
         
         return (x, x_value, pbest, pbest_value)
