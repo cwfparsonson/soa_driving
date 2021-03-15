@@ -54,7 +54,7 @@ class chaos:
         self.a = 0.7
 
 
-    def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
+    def cls(self, x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
         
         dummy = np.tile(gbest, (self.n, 1))
 
@@ -120,7 +120,7 @@ class chaos:
                 
                 print((tmp == self.LB).all())
                     
-
+                x_value[-1] = fitness[i]
                 pbest_value[-1] = fitness[i]  
                 gbest_cost = fitness[i]
                 
@@ -134,10 +134,10 @@ class chaos:
             
 
         tmp = np.copy(x)
-        (x,pbest,pbest_value) = self.update(x, pbest, pbest_value, dummy, dummy_value)
+        (x, x_value, pbest,pbest_value) = self.update(x, x_value, pbest, pbest_value, dummy, dummy_value)
         print((x==tmp).all())
      
-        return (x, pbest, pbest_value, gbest, gbest_cost, achieved)    
+        return (x, x_value, pbest, pbest_value, gbest, gbest_cost, achieved)    
 
 
     def mapping(self, z):
@@ -168,7 +168,7 @@ class chaos:
         return np.sum(fitness)
 
     
-    def update(self, x, pbest, pbest_value, dummy, dummy_value):
+    def update(self, x, x_value, pbest, pbest_value, dummy, dummy_value):
 
         elite_idxs = np.argsort(dummy_value)[:4 * self.n // 5]
 
@@ -178,6 +178,8 @@ class chaos:
 
             for g in range(self.m_c):
                 x[j, g] = dummy[idx, g]
+                
+                x_value[j] = dummy_value[j]
 
             if dummy_value[idx] < pbest_value[j]:
 
