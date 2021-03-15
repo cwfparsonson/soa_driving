@@ -107,8 +107,8 @@ class chaos:
 
                 for g in range(0, self.m):
                     gbest[g] = p[g]
-                    pbest[-1, g] = p[g]
-                    x[-1, g] = p[g]
+                    pbest[0, g] = p[g]
+                    x[0, g] = p[g]
                 
                 tmp = np.copy(self.LB)
                 
@@ -120,8 +120,8 @@ class chaos:
                 
                 print((tmp == self.LB).all())
                     
-                x_value[-1] = fitness[i]
-                pbest_value[-1] = fitness[i]  
+                x_value[0] = fitness[i]
+                pbest_value[0] = fitness[i]  
                 gbest_cost = fitness[i]
                 
                 cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
@@ -177,16 +177,17 @@ class chaos:
         for j,idx in enumerate(elite_idxs):
 
             for g in range(self.m_c):
-                x[j, g] = dummy[idx, g]
+                x[j + 1, g] = dummy[idx, g]
                 
-                x_value[j] = dummy_value[j]
-
+                x_value[j + 1] = dummy_value[j]
+            '''
             if dummy_value[idx] < pbest_value[j]:
 
-                pbest_value[j] = dummy_value[idx]
+                pbest_value[j + 1] = dummy_value[idx]
                 
                 for g in range(0, self.m_c):
-                    pbest[j, g] = dummy[idx, g]
+                    pbest[j + 1, g] = dummy[idx, g]
+            '''
                
         
         return (x, x_value, pbest, pbest_value)

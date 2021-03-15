@@ -1231,7 +1231,7 @@ class PSO:
 
                 achieved_main = False
 
-
+                print(x_value)
                 if self.adapt_accel == True:
                     for j in range(0, self.n):
                         # update particle vals
