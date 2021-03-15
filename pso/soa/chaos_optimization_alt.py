@@ -100,7 +100,6 @@ class chaos:
                     dummy[idx, g] = p[g]
 
 
-            print(f'fitness: {fitness[i]}, gbest : {gbest_cost}')
             # Condition for better gbest/Break if found
             if fitness[i] < gbest_cost:
                 
@@ -111,12 +110,15 @@ class chaos:
                     pbest[-1, g] = p[g]
                     x[-1, g] = p[g]
                 
+                tmp = np.copy(self.LB)
+                
                 if self.change_range:
                     self.a = self.a * (1- (gbest_cost_history[-1] - gbest_cost) / gbest_cost_history[-1])
                     for g in range(0, self.m):
                         self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
                         self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
-                    
+                
+                print((tmp == self.LB).all())
                     
 
                 pbest_value[-1] = fitness[i]  
