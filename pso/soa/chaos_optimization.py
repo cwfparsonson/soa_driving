@@ -51,7 +51,7 @@ class chaos:
         self.map_type = map_type
         self.rep = rep
 
-        self.a = 0.6
+        self.a = 0.4
 
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
