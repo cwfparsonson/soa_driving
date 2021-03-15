@@ -23,7 +23,7 @@ class chaos:
                 change_range = False,
                 min_val = - 1.0,
                 max_val = 1.0, 
-                rep = 20):
+                rep = 50):
         
         self.n = n
         self.m = m
@@ -51,7 +51,7 @@ class chaos:
         self.map_type = map_type
         self.rep = rep
 
-        self.a = 0.6
+        self.a = 0.7
 
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
@@ -71,7 +71,7 @@ class chaos:
         for i in range(0, self.rep):
             
             # Get the best particle
-            p = np.copy(dummy[np.argsort(np.sum(dummy_value, axis = 1))[0]])
+            p = np.copy(dummy[np.argsort(dummy_value)[0]])
             
             # Random Cascaded SOAs
             c = np.random.randint(low = 1, high = 4)
@@ -87,35 +87,20 @@ class chaos:
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
 
-            idx = np.argsort(np.sum(dummy_value, axis = 1))[-1]
+            idx = np.argsort(dummy_value)[-1]
 
-            if dummy_value[idx, 0] > fitness[i, 0]:
+            if dummy_value[idx] > fitness[i]:
 
-                dummy_value[idx, 0] = fitness[i, 0]
+                dummy_value[idx] = fitness[i]
 
-                for g in range(0, self.m):
-
-                    dummy[idx, g] = p[g]
-
-
-            if dummy_value[idx, 1] > fitness[i, 1]:
-
-                dummy_value[idx, 1] = fitness[i, 1]
-
-                for g in range(self.m, 2 * self.m):
+                for g in range(0, self.m_c):
 
                     dummy[idx, g] = p[g]
-            
-            if dummy_value[idx, 2] > fitness[i, 2]:
-    
-                dummy_value[idx, 2] = fitness[i, 2]
 
-                for g in range(2 * self.m, 3 * self.m):
 
-                    dummy[idx, g] = p[g]
 
             # Condition for better gbest/Break if found
-            if fitness[i, 0] < gbest_cost[0]:
+            if fitness[i] < gbest_cost:
                 
                 achieved = True
 
@@ -125,72 +110,24 @@ class chaos:
                     x[-1, g] = p[g]
                 
                 if self.change_range:
-                    self.a = self.a * (1- 0.05)
+                    self.a = self.a * (1- (gbest_cost_history[-1] - gbest_cost) / gbest_cost_history[-1])
                     for g in range(0, self.m):
                         self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
                         self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
                     
                     
 
-                pbest_value[-1, 0] = fitness[i, 0]  
-                gbest_cost[0] = fitness[i,0]
+                pbest_value[-1] = fitness[i]  
+                gbest_cost = fitness[i]
                 
-                cost_reduction = ((np.sum(gbest_cost_history[1]) - np.sum(gbest_cost)) \
-                    / np.sum(gbest_cost_history[1]))*100 
+                cost_reduction = ((gbest_cost_history[0] - gbest_cost) \
+                    / gbest_cost_history[0])*100 
+                
                 
                 print('----------------------------------------------------------')               
                 print(f'Chaos Search Reduced by {cost_reduction} %')
                 print('----------------------------------------------------------')                
             
-            if fitness[i, 1] < gbest_cost[1]:
-                
-                achieved = True
-
-                for g in range(self.m, 2 * self.m):
-                    gbest[g] = p[g]
-                    pbest[-1, g] = p[g]
-                    x[-1, g] = p[g]
-                
-                if self.change_range:
-                    # self.a = self.a * (1- (gbest_cost_history[-1] - fitness[i]) / gbest_cost_history[-1])
-                    for g in range(0, self.m):
-                        self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
-                        self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
-                    
-                    
-
-                pbest_value[-1, 1] = fitness[i, 1]  
-                gbest_cost[1] = fitness[i,1]
-                cost_reduction = ((np.sum(gbest_cost_history[1]) - np.sum(gbest_cost)) \
-                    / np.sum(gbest_cost_history[1]))*100 
-                
-                print('----------------------------------------------------------')               
-                print(f'Chaos Search Reduced by {cost_reduction} %')
-                print('----------------------------------------------------------')            
-            if fitness[i, 2] < gbest_cost[2]:
-                
-                achieved = True
-
-                for g in range(2 * self.m, 3 * self.m):
-                    gbest[g] = p[g]
-                    pbest[-1, g] = p[g]
-                    x[-1, g] = p[g]
-                
-                if self.change_range:
-                    # self.a = self.a * (1- (gbest_cost_history[-1] - fitness[i]) / gbest_cost_history[-1])
-                    for g in range(0, self.m):
-                        self.LB[g] = max(self.LB[g], gbest[g] - self.a * (self.UB[g] - self.LB[g]))
-                        self.UB[g] = min(self.UB[g], gbest[g] + self.a * (self.UB[g] - self.LB[g]))
-                    
-                pbest_value[-1, 2] = fitness[i, 2]  
-                gbest_cost[2] = fitness[i, 2]
-                cost_reduction = ((np.sum(gbest_cost_history[1]) - np.sum(gbest_cost)) \
-                    / np.sum(gbest_cost_history[1]))*100 
-                
-                print('----------------------------------------------------------')               
-                print(f'Chaos Search Reduced by {cost_reduction} %')
-                print('----------------------------------------------------------')                
-                                
 
             
         (x,pbest,pbest_value) = self.update(x, pbest, pbest_value, dummy, dummy_value)
@@ -223,38 +160,25 @@ class chaos:
                                             st_importance_factor=self.st_importance_factor, 
                                             SP=self.SP[i]).costEval
 
-        return fitness
+        return np.sum(fitness)
 
     
     def update(self, x, pbest, pbest_value, dummy, dummy_value):
 
-        elite_idxs = np.argsort(np.sum(dummy_value, axis = 1))[:4 * self.n // 5]
+        elite_idxs = np.argsort(dummy_value)[:4 * self.n // 5]
 
         for j,idx in enumerate(elite_idxs):
 
             for g in range(self.m_c):
                 x[j, g] = dummy[idx, g]
 
-            if dummy_value[idx, 0] < pbest_value[j, 0]:
+            if dummy_value[idx] < pbest_value[j]:
 
-                pbest_value[j, 0] = dummy_value[idx, 0]
+                pbest_value[j] = dummy_value[idx]
                 
-                for g in range(0, self.m):
+                for g in range(0, self.m_c):
                     pbest[j, g] = dummy[idx, g]
-            
-            if dummy_value[idx, 1] < pbest_value[j, 1]:
-    
-                pbest_value[j, 1] = dummy_value[idx, 1]
-                
-                for g in range(self.m, 2 * self.m):
-                    pbest[j, g] = dummy[idx, g]            
-
-            if dummy_value[idx, 2] < pbest_value[j, 2]:
-    
-                pbest_value[j, 2] = dummy_value[idx, 2]
-                
-                for g in range(2 * self.m, 3 * self.m):
-                    pbest[j, g] = dummy[idx, g]        
+               
         
         return (x,pbest,pbest_value)
 

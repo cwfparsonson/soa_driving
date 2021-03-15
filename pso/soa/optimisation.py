@@ -1,4 +1,4 @@
-from pso.soa import chaos_optimization
+from pso.soa import chaos_optimization_alt
 import sys, os
 import pyvisa as visa
 
@@ -1213,14 +1213,14 @@ class PSO:
             c1_min = 0.1
             c2_min = 0.1
 
-            cpso = chaos_optimization.chaos(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, change_range = True)
+            cpso = chaos_optimization_alt.chaos(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, change_range = True)
 
             pc_marker = int(0.05*self.iter_max) # for plotting/saving
             if pc_marker == 0:
                 pc_marker = 1 
             
             start_time = time.time()
-            # (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+            (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             end_time = time.time()
             t = end_time - start_time
             print(f'Time Taken for 1 CLS = {t} s')
@@ -1305,13 +1305,13 @@ class PSO:
 
                     gbest_cost = pbest_value[min_cost_index]
                     achieved_main = True
-                '''
+
                 tmp = np.copy(x)
                 if curr_iter % 5 == 0:
                     (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
 
                 print((tmp == x).all())
-                '''
+
                 if achieved or achieved_main:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
