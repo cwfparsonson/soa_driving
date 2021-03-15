@@ -358,7 +358,7 @@ class PSO:
                 str(((time_all_generations*self.rep_max/60))/60) + " hrs")
             
             # init global cost history for plotting
-            self.gbest_cost_history = np.array([0, 0, 0])
+            self.gbest_cost_history = []
             
             self.min_cost_index = np.argmin(self.pbest_value, axis = 0) # index best fitness
 
@@ -371,8 +371,8 @@ class PSO:
             for i in range(self.q):
                 self.gbest_cost[i] = self.pbest_value[self.min_cost_index[i], i] # global best val
             
-            self.gbest_cost_history = np.vstack((self.gbest_cost_history, 
-                                                self.gbest_cost))
+            self.gbest_cost_history = np.append([self.gbest_cost_history], 
+                                                [self.gbest_cost[-1]])
             
 
             print('Costs: ' + str(self.pbest_value))
@@ -1270,11 +1270,11 @@ class PSO:
                 
                 # update particle velocities
                 for j in range(0, self.n):
-                    for g in range(0,self.m):
-                        v[j, g] = (w[j][0] * v[j, g]) + (c1[j][0] * random.uniform(0, 1) \
-                            * (pbest[j, g] - x[j, g]) + (c2[j][0] * \
+                    for g in range(0,self.m_c):
+                        v[j, g] = (w[j][-1] * v[j, g]) + (c1[j][-1] * random.uniform(0, 1) \
+                            * (pbest[j, g] - x[j, g]) + (c2[j][-1] * \
                                 random.uniform(0, 1) * (gbest[g] - x[j,g])))
-                    
+                    '''
                     for g in range(self.m, 2 * self.m):
                         v[j, g] = (w[j][1] * v[j, g]) + (c1[j][1] * random.uniform(0, 1) \
                             * (pbest[j, g] - x[j, g]) + (c2[j][1] * \
@@ -1284,7 +1284,7 @@ class PSO:
                         v[j, g] = (w[j][2] * v[j, g]) + (c1[j][2] * random.uniform(0, 1) \
                             * (pbest[j, g] - x[j, g]) + (c2[j][2] * \
                                 random.uniform(0, 1) * (gbest[g] - x[j,g])))                                                     
-
+                    '''
                 # handle velocity boundary violations
                 for j in range(0, self.n):
                     for g in range(0, self.m_c):
@@ -1375,13 +1375,15 @@ class PSO:
                     achieved_main = True
 
 
-                tmp = np.copy(x)                    
+                tmp = np.copy(x)
+                '''                    
                 if curr_iter % 5 == 0:
                     (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
                 print((x == tmp).all())
+                '''
 
                 if achieved or achieved_main:
-                    gbest_cost_history = np.vstack((gbest_cost_history, gbest_cost))
+                    gbest_cost_history = np.append((gbest_cost_history, gbest_cost[-1]))
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])
                     rt_st_os_analysis = np.vstack((rt_st_os_analysis, 
                                 self.__analyseSignal(gbest, 
@@ -1499,7 +1501,7 @@ class PSO:
         # plot learning curve
         print(gbest_cost_history)
         plt.figure()
-        plt.plot(iter_gbest_reached, gbest_cost_history[:, -1])
+        plt.plot(iter_gbest_reached, gbest_cost_history)
         plt.title('PSO Algorithm MSE Learning Curve')
         plt.xlabel('No. Iterations')
         plt.ylabel('Cost ' + str(self.cost_f))
