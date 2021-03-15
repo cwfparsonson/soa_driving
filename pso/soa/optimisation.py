@@ -635,21 +635,19 @@ class PSO:
         p = upsampling.ups(sample)
         input_init = np.copy(U)
         
-
-        for _ in range(self.q):
-            PV = np.array([])
+        PV = np.zeros((self.q, sample))
+        for j in range(self.q):
             input = input_init[:self.m]
             input = p.create(input)
 
             
-            (_, PV, X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
-            X0 = X0_init[-1] 
+            (_, PV[j], _) = signal.lsim2(tf, input, T, X0=X0, atol=atol) 
             input_init = input_init[self.m:]
         
-        min_PV = np.copy(min(PV))
-        if min_PV < 0:
-            for i in range(0, len(PV)):
-                PV[i] = PV[i] + abs(min_PV)
+            min_PV = np.copy(min(PV[j]))
+            if min_PV < 0:
+                for i in range(0, len(PV[j])):
+                    PV[j][i] = PV[j][i] + abs(min_PV)
 
         return PV
 
@@ -851,14 +849,6 @@ class PSO:
         x_value = np.zeros(self.n) # int current particle fitnesses/costs storage
         for j in range(0, self.n): 
             particle = particles[j, :] 
-            # OP = np.copy(self.init_OP) 
-            particleIndex = 0
-
-            '''
-            for signalIndex in range(self.K_index[0], self.K_index[-1]):
-                OP[signalIndex] = particle[particleIndex]
-                particleIndex += 1
-            '''
 
             OP = np.copy(particle)
 
@@ -869,12 +859,17 @@ class PSO:
                                                       self.X0) 
             else:
                 PV = self.__getSoaOutput(OP) 
+            
+            cost = np.zeros(self.q)
 
-            x_value[j] = signalprocessing.cost(self.t2, 
-                                               PV, 
+            for i in range(self.q):
+                cost[i] = signalprocessing.cost(self.t2, 
+                                               PV[i], 
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
-                                               SP=self.SP).costEval 
+                                               SP=self.SP[i]).costEval
+            
+            x_value[j] = np.sum(cost)
 
             if self.record_extra_info == True:
                 # store particle output
@@ -1225,7 +1220,7 @@ class PSO:
                 pc_marker = 1 
             
             start_time = time.time()
-            (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+            # (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             end_time = time.time()
             t = end_time - start_time
             print(f'Time Taken for 1 CLS = {t} s')
@@ -1310,13 +1305,13 @@ class PSO:
 
                     gbest_cost = pbest_value[min_cost_index]
                     achieved_main = True
-                
+                '''
                 tmp = np.copy(x)
                 if curr_iter % 5 == 0:
                     (x, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
 
                 print((tmp == x).all())
-                
+                '''
                 if achieved or achieved_main:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
                     iter_gbest_reached = np.append([iter_gbest_reached], [curr_iter])

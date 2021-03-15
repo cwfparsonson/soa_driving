@@ -3,7 +3,7 @@ from pso.soa import distort_tf_alt
 
 if __name__ == '__main__':
     from soa import devices, signalprocessing, analyse, distort_tf_alt
-    from soa.optimisation_alt import PSO, run_test
+    from soa.optimisation import PSO, run_test
 
 
     import numpy as np
