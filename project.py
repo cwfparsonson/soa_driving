@@ -2,8 +2,8 @@ from pso.soa import distort_tf_alt
 
 
 if __name__ == '__main__':
-    from soa import devices, signalprocessing, analyse, distort_tf
-    from soa.optimisation import PSO, run_test
+    from soa import devices, signalprocessing, analyse, distort_tf_alt
+    from soa.optimisation_alt import PSO, run_test
 
 
     import numpy as np
@@ -27,14 +27,14 @@ if __name__ == '__main__':
     num_points_list = np.array(factorize(240))
     num_points_list = num_points_list[num_points_list >= 10]
     '''
-    num_points_list = [120]
+    num_points_list = [80]
 
     time_start = 0
     time_stop = 20e-9
 
     # set PSO params
     n = 20
-    run = 'a_0.6_SPLIT_TO_OR_CHANGE_100_REPS_GBEST'
+    run = 'CASCADE_BASE'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 
@@ -79,13 +79,12 @@ if __name__ == '__main__':
 
         # get initial output of initial signal and use to generate a target set point
         t2 = np.linspace(time_start, time_stop, 240)
-        init_PV = distort_tf.getTransferFunctionOutput(tf,init_OP,t2)
-        sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
-        '''
+        init_PV = distort_tf_alt.getTransferFunctionOutput(tf,init_OP,t2)
+        # sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
+ 
         sp = np.zeros((q, 240))
         for i in range(q):
             sp[i] = analyse.ResponseMeasurements(init_PV[i], t2).sp.sp
-            '''
 
         p = multiprocessing.Process(target=run_test, 
                                     args=(direc, 

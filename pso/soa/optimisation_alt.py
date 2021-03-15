@@ -656,9 +656,8 @@ class PSO:
             input = p.create(input)
 
             
-            (_, PV[i], X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
+            (_, PV[i], _) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
 
-            X0 = X0_init[-1]
             
             input_init = input_init[self.m:]
         
@@ -888,7 +887,11 @@ class PSO:
                                                PV[i], 
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
-                                               SP=self.SP[i]).costEval 
+                                               SP=self.SP[i]).costEval
+
+                if i > 0:
+
+                    cost[i] += cost[i-1] 
 
 
             x_value[j] = cost
@@ -1491,8 +1494,9 @@ class PSO:
         plt.close()
 
         # plot learning curve
+        print(gbest_cost_history)
         plt.figure()
-        plt.plot(iter_gbest_reached, gbest_cost_history[1:, -1])
+        plt.plot(iter_gbest_reached, gbest_cost_history[:, -1])
         plt.title('PSO Algorithm MSE Learning Curve')
         plt.xlabel('No. Iterations')
         plt.ylabel('Cost ' + str(self.cost_f))
