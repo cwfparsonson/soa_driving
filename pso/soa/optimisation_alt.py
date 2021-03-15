@@ -1238,7 +1238,7 @@ class PSO:
             c1_min = 0.1
             c2_min = 0.1
 
-            cpso = chaos_optimization_alt.chaos(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, change_range = False)
+            cpso = chaos_optimization_alt.chaos(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, change_range = True)
 
             pc_marker = int(0.05*self.iter_max) # for plotting/saving
             if pc_marker == 0:
