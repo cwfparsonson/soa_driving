@@ -70,7 +70,7 @@ class chaos:
         achieved = False
 
         # Chaotic Search Using Tent Mapping
-        for i in range(0, self.rep):
+        for i in range(1, self.rep):
             
             # Get the best particle
             p = np.copy(dummy[np.argsort(dummy_value)[0]])
