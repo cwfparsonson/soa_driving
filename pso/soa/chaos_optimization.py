@@ -51,7 +51,7 @@ class chaos:
         self.map_type = map_type
         self.rep = rep
 
-        self.a = 0.4
+        self.a = 0.6
 
 
     def cls(self, x, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history):
@@ -82,9 +82,13 @@ class chaos:
             z = self.mapping(z)
 
             # Randomize part of particle using chaotic mapping
-
-            for g in range(0, self.m):
-                p[g] = 0.3 * np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]]) + 0.7 * p[g]
+            if self.rep % i == 0:
+                for g in range(0, self.m // 2):
+                    p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
+            
+            else:
+                for g in range(self.m // 2, self.m):
+                    p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])                
             
 
             
@@ -139,7 +143,7 @@ class chaos:
     def mapping(self, z):
         
         if self.map_type == 'logistic':
-            z = 4 * z * (1 - z)
+            z = 3.7 * z * (1 - z)
         
         elif self.map_type == 'tent':
             conds = [z < 0.5, z >= 0.5, z == 0]
