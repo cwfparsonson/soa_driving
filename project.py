@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 10
-    run = 'chaosv1.9'
+    run = 'chaosv1.10'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 
