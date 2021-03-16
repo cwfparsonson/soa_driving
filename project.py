@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 50
-    run = 'CASCADE_WITH_CHAOS_AND_SUBPLOTS22'
+    run = 'CASCADE_WITH_CHAOS_AND_SUBPLOTS222'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 
@@ -84,9 +84,8 @@ if __name__ == '__main__':
         init_PV = distort_tf_alt.getTransferFunctionOutput(tf,init_OP,t2, q)
         # sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
  
-        sp = np.zeros((q, 240))
-        for i in range(q):
-            sp[i] = analyse.ResponseMeasurements(init_PV[i], t2).sp.sp
+
+        sp = analyse.ResponseMeasurements(init_PV[0], t2).sp.sp
 
         p = multiprocessing.Process(target=run_test, 
                                     args=(direc, 

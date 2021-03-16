@@ -163,7 +163,7 @@ class chaos:
                                             PV_chaos[i], 
                                             cost_function_label=self.cost_f, 
                                             st_importance_factor=self.st_importance_factor, 
-                                            SP=self.SP[i]).costEval
+                                            SP=self.SP).costEval
 
         return np.sum(fitness)
 

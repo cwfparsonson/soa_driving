@@ -867,7 +867,7 @@ class PSO:
                                                PV[i], 
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
-                                               SP=self.SP[i]).costEval
+                                               SP=self.SP).costEval
             
             x_value[j] = np.sum(cost)
 
@@ -918,7 +918,7 @@ class PSO:
             fig.suptitle('PSO-Optimised Output Signals After ' + str(curr_iter) + \
                 ' Generations')
             for q in range(0, self.q):
-                axs[q].plot(self.t2, self.SP[q], c='g', label='Target SP')
+                axs[q].plot(self.t2, self.SP, c='g', label='Target SP')
                 axs[q].plot(self.t2, self.init_PV[q], c='r', label='Initial Output')
                 axs[q].plot(self.t2, best_PV[q], c='c', label='Best fitness')
                 st_index = analyse.ResponseMeasurements(best_PV[q], self.t2).settlingTimeIndex
@@ -1432,7 +1432,7 @@ class PSO:
         fig, axs = plt.subplots(self.q)
         fig.suptitle('Final PSO-Optimised Output Signal')
         for q in range(0, self.q):
-            axs[q].plot(self.t2, self.SP[q], c='g', label='Target SP')
+            axs[q].plot(self.t2, self.SP, c='g', label='Target SP')
             axs[q].plot(self.t2, self.init_PV[q], c='r', label='Initial Output')
             axs[q].plot(self.t2, self.gbest_PV[q], c='c', label='PSO-Optimised Output')
             st_index = analyse.ResponseMeasurements(self.gbest_PV[q], self.t2).settlingTimeIndex
