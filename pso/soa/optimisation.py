@@ -129,7 +129,7 @@ class PSO:
         self.n = n
         self.q = q
         self.epsilon = epsilon
-        self.init_OP = self.cascade(init_OP)
+        self.init_OP = init_OP
         self.iter_max = iter_max
         self.rep_max = rep_max
         self.init_v_f = init_v_f
