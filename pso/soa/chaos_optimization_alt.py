@@ -23,7 +23,7 @@ class chaos:
                 change_range = False,
                 min_val = - 1.0,
                 max_val = 1.0, 
-                rep = 10):
+                rep = 40):
         
         self.n = n
         self.m = m
@@ -92,6 +92,7 @@ class chaos:
             idx = np.argsort(dummy_value)[-1]
 
             if dummy_value[idx] > fitness[i]:
+                print('changed')
 
                 dummy_value[idx] = fitness[i]
 
