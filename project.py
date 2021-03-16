@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 10
-    run = 'newidea2'
+    run = 'newidea3'
     iter_max = 20
     rep_max = 1 
     max_v_f = 0.05 
@@ -87,7 +87,7 @@ if __name__ == '__main__':
         t2 = np.linspace(time_start, time_stop, 240)
         sp = np.zeros((q, 240))
         for i in range(q):
-            sp = analyse.ResponseMeasurements(distort_tf.getTransferFunctionOutput(tfs[i],init_OP,t2), t2).sp.sp
+            sp[i] = analyse.ResponseMeasurements(distort_tf.getTransferFunctionOutput(tfs[i],init_OP,t2), t2).sp.sp
         
         
         init_OP = np.tile(init_OP, q)
