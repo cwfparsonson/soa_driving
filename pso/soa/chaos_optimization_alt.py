@@ -87,7 +87,7 @@ class chaos:
                     p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
             # Get and Evaluate Output
-            fitness[i] = self.get_cost(p)
+            fitness[i] = self.get_cost(gbest)
             print(fitness[i])
 
             idx = np.argsort(dummy_value)[-1]
