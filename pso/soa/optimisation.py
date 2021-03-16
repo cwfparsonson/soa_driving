@@ -894,6 +894,7 @@ class PSO:
 
         
             # finalise and save plot
+            '''
             plt.figure(1)
             plt.plot(self.t2, self.SP[2], c='g', label='Target SP')
             plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
@@ -912,7 +913,28 @@ class PSO:
             plt.ylabel('Amplitude')
             plt.savefig(self.path_to_pso_data + str(curr_iter) + '_gen_outputs.png')  
             plt.close()
+            '''
+            fig, axs = plt.subplots(self.q)
+            fig.suptitle('PSO-Optimised Output Signals After ' + str(curr_iter) + \
+                ' Generations')
+            for q in range(0, self.q):
+                axs[q].plot(self.t2, self.SP[q], c='g', label='Target SP')
+                axs[q].plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
+                axs[q].plot(self.t2, best_PV[-1], c='c', label='Best fitness')
+                st_index = analyse.ResponseMeasurements(best_PV[q], self.t2).settlingTimeIndex
+                axs[q].plot(self.t2[st_index], 
+                     best_PV[-1][st_index], 
+                     marker='x', 
+                     markersize=6, 
+                     color="red", 
+                     label='Settling Point')
+                
+            fig.legend(loc = 'lower right')
+            fig.xlabel('Time')
+            fig.ylabel('Amplitude')
+            fig.savefig(self.path_to_pso_data + str(curr_iter) + '_gen_outputs.png')
 
+            
             plt.figure(2)
             plt.plot(np.linspace(self.t[0],self.t[-1], len(self.t)*self.q), 
                      particles[min_cost_index, :], 
