@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 10
-    run = 'newidea'
+    run = 'newidea2'
     iter_max = 20
     rep_max = 1 
     max_v_f = 0.05 

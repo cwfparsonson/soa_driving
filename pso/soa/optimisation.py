@@ -637,13 +637,13 @@ class PSO:
         PV = np.zeros((self.q, sample))
         for j in range(self.q):
             if j > 0:
-                X0 =  self.__find_x_init(tf[-1])
+                X0 =  self.__find_x_init(tf[j-1])
 
             input = input_init[:self.m]
             input = p.create(input)
 
             
-            (_, PV[j], _) = signal.lsim2(tf[i], input, T, X0=X0, atol=atol) 
+            (_, PV[j], _) = signal.lsim2(tf[j], input, T, X0=X0, atol=atol) 
             input_init = input_init[self.m:]
         
             min_PV = np.copy(min(PV[j]))
