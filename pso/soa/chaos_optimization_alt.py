@@ -74,21 +74,18 @@ class chaos:
             p = np.copy(dummy[np.argsort(dummy_value)[0]])
             
             # Random Cascaded SOAs
-            c = np.random.randint(low = 1, high = 4)
+            c = np.random.randint(low = 0, high = 3)
             
             # Logistic Mapping/Tent Mapping
             z = self.mapping(z)
 
             # Randomize part of particle using chaotic mapping
-            for g in range((c - 1) * self.m, c * self.m):
-
-                if random.uniform(0, 1) > 0.3:
+            for g in range((c) * self.m, (c + 2) * self.m):
                     
-                    p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
+                p[g] = np.interp(z[g], [0, 1], [self.LB[g], self.UB[g]])
             
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
-            print(fitness[i])
 
             idx = np.argsort(dummy_value)[-1]
 
@@ -135,10 +132,10 @@ class chaos:
                 print('----------------------------------------------------------')                
             
 
-        tmp = np.copy(x)
+        
         (x, x_value, pbest, pbest_value) = self.update(x, x_value, pbest, pbest_value, dummy, dummy_value)
-        print((x==tmp).all())
-     
+ 
+        self.rep = self.rep - 5
         return (x, x_value, pbest, pbest_value, gbest, gbest_cost, achieved)    
 
 
