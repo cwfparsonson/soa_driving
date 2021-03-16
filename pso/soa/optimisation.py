@@ -1220,7 +1220,6 @@ class PSO:
                 pc_marker = 1 
             
             start_time = time.time()
-            # (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             end_time = time.time()
             t = end_time - start_time
             print(f'Time Taken for 1 CLS = {t} s')
@@ -1303,12 +1302,10 @@ class PSO:
 
                     gbest_cost = pbest_value[min_cost_index]
                     achieved_main = True
-                '''
-                if curr_iter % 5 == 0:
-                    (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-                
 
-                '''
+                if curr_iter % 10 == 0:
+                    (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+
 
                 if achieved or achieved_main:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
