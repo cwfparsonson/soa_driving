@@ -33,7 +33,7 @@ if __name__ == '__main__':
     time_stop = 20e-9
 
     # set PSO params
-    n = 50
+    n = 10
     run = 'CASCADE_base_ACTUAL'
     iter_max = 100
     rep_max = 1 
