@@ -919,11 +919,11 @@ class PSO:
                 ' Generations')
             for q in range(0, self.q):
                 axs[q].plot(self.t2, self.SP[q], c='g', label='Target SP')
-                axs[q].plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
-                axs[q].plot(self.t2, best_PV[-1], c='c', label='Best fitness')
+                axs[q].plot(self.t2, self.init_PV[q], c='r', label='Initial Output')
+                axs[q].plot(self.t2, best_PV[q], c='c', label='Best fitness')
                 st_index = analyse.ResponseMeasurements(best_PV[q], self.t2).settlingTimeIndex
                 axs[q].plot(self.t2[st_index], 
-                     best_PV[-1][st_index], 
+                     best_PV[q][st_index], 
                      marker='x', 
                      markersize=6, 
                      color="red", 
@@ -1410,6 +1410,7 @@ class PSO:
             self.gbest_PV = self.__getSoaOutput(self.gbest) 
     
         # plot final output signal
+        '''
         plt.figure()
         plt.plot(self.t2, self.SP[-1], c='g', label='Target SP')
         plt.plot(self.t2, self.init_PV[-1], c='r', label='Initial Output')
@@ -1427,6 +1428,24 @@ class PSO:
         plt.ylabel('Amplitude')
         plt.savefig(self.path_to_pso_data + 'final_output.png')  
         plt.close()
+        '''
+        fig, axs = plt.subplots(self.q)
+        fig.suptitle('Final PSO-Optimised Output Signal')
+        for q in range(0, self.q):
+            axs[q].plot(self.t2, self.SP[q], c='g', label='Target SP')
+            axs[q].plot(self.t2, self.init_PV[q], c='r', label='Initial Output')
+            axs[q].plot(self.t2, self.gbest_PV[q], c='c', label='PSO-Optimised Output')
+            st_index = analyse.ResponseMeasurements(self.gbest_PV[q], self.t2).settlingTimeIndex
+            axs[q].plot(self.t2[st_index], 
+                    self.gbest_PV[q][st_index], 
+                    marker='x', 
+                    markersize=6, 
+                    color="red", 
+                    label='Settling Point')
+            
+        fig.legend(loc = 'lower right')
+        plt.savefig(self.path_to_pso_data + 'final_output.png')
+        plt.close()        
 
         # plot final driving signal
         plt.figure()
