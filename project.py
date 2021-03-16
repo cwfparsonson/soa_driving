@@ -34,8 +34,8 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 10
-    run = 'CASCADE_base_ACTUAL'
-    iter_max = 100
+    run = 'CASCADE_WITH_CHAOS'
+    iter_max = 20
     rep_max = 1 
     max_v_f = 0.05 
     init_v_f = max_v_f 
