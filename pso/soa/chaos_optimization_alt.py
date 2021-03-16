@@ -88,6 +88,7 @@ class chaos:
             
             # Get and Evaluate Output
             fitness[i] = self.get_cost(p)
+            print(fitness[i])
 
             idx = np.argsort(dummy_value)[-1]
 
