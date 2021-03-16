@@ -610,8 +610,7 @@ class PSO:
         X0 = xout[-1]
 
         return X0
-        
-
+    
     def __getTransferFunctionOutput(self, tf, U, T, X0, atol=1e-12):
         """
         This method sends a drive signal to a transfer function model and gets 
