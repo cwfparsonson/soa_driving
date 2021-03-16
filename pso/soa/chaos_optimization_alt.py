@@ -255,7 +255,6 @@ class chaos:
         """
 
         
-
         T = np.linspace(T[0], T[-1], 240)
 
         U = np.array(U)
@@ -264,28 +263,23 @@ class chaos:
         input_init = np.copy(U)
         
         PV = np.zeros((self.q, sample))
-        
-        for i in range(self.q):
-            if i > 0:
-                X0 =  self.__find_x_init(tf[-1])
+        for j in range(self.q):
+            if j > 0:
+                X0 =  self.__find_x_init(tf[j-1])
 
             input = input_init[:self.m]
             input = p.create(input)
 
             
-            (_, PV[i], X0_init) = signal.lsim2(tf[i], input, T, X0=X0, atol=atol)
-
-            
+            (_, PV[j], _) = signal.lsim2(tf[j], input, T, X0=X0, atol=atol) 
             input_init = input_init[self.m:]
         
-        min_PV = np.copy(min(PV[-1]))
-        if min_PV < 0:
-            for j in range(0, len(PV[-1])):
-                PV[-1][j] = PV[-1][j] + abs(min_PV)
-
+            min_PV = np.copy(min(PV[j]))
+            if min_PV < 0:
+                for i in range(0, len(PV[j])):
+                    PV[j][i] = PV[j][i] + abs(min_PV)
 
         return PV
-
     def __find_x_init(self, tf):
         """
         This method calculates the state-vector from a long -1 drive signal. 
