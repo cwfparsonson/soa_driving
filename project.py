@@ -33,8 +33,8 @@ if __name__ == '__main__':
     time_stop = 20e-9
 
     # set PSO params
-    n = 50
-    run = '11CASCADE_WITH_CHAOS_AND_SUBPLOTS'
+    n = 10
+    run = 'newidea'
     iter_max = 20
     rep_max = 1 
     max_v_f = 0.05 
@@ -59,6 +59,11 @@ if __name__ == '__main__':
         2.40236028415562e90,
     ]
     tf = signal.TransferFunction(num, den)
+    tfs, labels = distort_tf.gen_tfs(num_facs=[1.0,1.2,1.4], 
+                        a0_facs=[0.8],
+                        a1_facs=[0.7,0.8,1.2],
+                        a2_facs=[1.05,1.1,1.2],
+                        all_combos=False)
 
     # run PSO tests in parallel with multiprocessing
     pso_objs = multiprocessing.Manager().list()
@@ -77,19 +82,20 @@ if __name__ == '__main__':
         
         init_OP[:int(0.25*num_points)],init_OP[int(0.25*num_points):] = -1, 0.5
 
-        init_OP = np.tile(init_OP, q)
 
         # get initial output of initial signal and use to generate a target set point
         t2 = np.linspace(time_start, time_stop, 240)
-        init_PV = distort_tf_alt.getTransferFunctionOutput(tf,init_OP,t2, q)
-        # sp = analyse.ResponseMeasurements(init_PV, t2).sp.sp
+        sp = np.zeros((q, 240))
+        for i in range(q):
+            sp = analyse.ResponseMeasurements(distort_tf.getTransferFunctionOutput(tfs[i],init_OP,t2), t2).sp.sp
+        
+        
+        init_OP = np.tile(init_OP, q)
+        
  
-
-        sp = analyse.ResponseMeasurements(init_PV[0], t2).sp.sp
-
         p = multiprocessing.Process(target=run_test, 
                                     args=(direc, 
-                                        tf, 
+                                        tfs[:q], 
                                         t,
                                         run, 
                                         init_OP, 

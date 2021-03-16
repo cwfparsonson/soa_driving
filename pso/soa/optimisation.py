@@ -174,7 +174,7 @@ class PSO:
 
         # get init output
         if self.sim_model != None:
-            self.X0 = self.__find_x_init(self.sim_model) 
+            self.X0 = self.__find_x_init(self.sim_model[0]) 
             self.init_PV = self.__getTransferFunctionOutput(self.sim_model, 
                                                             self.init_OP, 
                                                             self.t2, 
@@ -636,11 +636,14 @@ class PSO:
         
         PV = np.zeros((self.q, sample))
         for j in range(self.q):
+            if j > 0:
+                X0 =  self.__find_x_init(tf[-1])
+
             input = input_init[:self.m]
             input = p.create(input)
 
             
-            (_, PV[j], _) = signal.lsim2(tf, input, T, X0=X0, atol=atol) 
+            (_, PV[j], _) = signal.lsim2(tf[i], input, T, X0=X0, atol=atol) 
             input_init = input_init[self.m:]
         
             min_PV = np.copy(min(PV[j]))
@@ -866,7 +869,7 @@ class PSO:
                                                PV[i], 
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
-                                               SP=self.SP).costEval
+                                               SP=self.SP[i]).costEval
             
             x_value[j] = np.sum(cost)
 
@@ -917,7 +920,7 @@ class PSO:
             fig.suptitle('PSO-Optimised Output Signals After ' + str(curr_iter) + \
                 ' Generations')
             for q in range(0, self.q):
-                axs[q].plot(self.t2, self.SP, c='g', label='Target SP')
+                axs[q].plot(self.t2, self.SP[q], c='g', label='Target SP')
                 axs[q].plot(self.t2, self.init_PV[q], c='r', label='Initial Output')
                 axs[q].plot(self.t2, best_PV[q], c='c', label='Best fitness')
                 st_index = analyse.ResponseMeasurements(best_PV[q], self.t2).settlingTimeIndex
@@ -1431,7 +1434,7 @@ class PSO:
         fig, axs = plt.subplots(self.q)
         fig.suptitle('Final PSO-Optimised Output Signal')
         for q in range(0, self.q):
-            axs[q].plot(self.t2, self.SP, c='g', label='Target SP')
+            axs[q].plot(self.t2, self.SP[q], c='g', label='Target SP')
             axs[q].plot(self.t2, self.init_PV[q], c='r', label='Initial Output')
             axs[q].plot(self.t2, self.gbest_PV[q], c='c', label='PSO-Optimised Output')
             st_index = analyse.ResponseMeasurements(self.gbest_PV[q], self.t2).settlingTimeIndex

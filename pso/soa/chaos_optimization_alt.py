@@ -163,7 +163,7 @@ class chaos:
                                             PV_chaos[i], 
                                             cost_function_label=self.cost_f, 
                                             st_importance_factor=self.st_importance_factor, 
-                                            SP=self.SP).costEval
+                                            SP=self.SP[i]).costEval
 
         return np.sum(fitness)
 
@@ -264,14 +264,15 @@ class chaos:
         PV = np.zeros((self.q, sample))
         
         for i in range(self.q):
-            
+            if i > 0:
+                X0 =  self.__find_x_init(tf[-1])
+
             input = input_init[:self.m]
             input = p.create(input)
 
             
             (_, PV[i], X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
 
-            X0 = X0_init[-1]
             
             input_init = input_init[self.m:]
         
@@ -282,3 +283,20 @@ class chaos:
 
 
         return PV
+
+    def __find_x_init(self, tf):
+        """
+        This method calculates the state-vector from a long -1 drive signal. 
+        Must call before sending / receiving signals to / from transfer function 
+        model
+        Args:
+        - tf = transfer function
+        Returns:
+        - X0 = system's state-vector result for steady state
+        """
+        U = np.array([-1.0] * 480)
+        T = np.linspace(0, 40e-9, 480)
+        (_, _, xout) = signal.lsim2(tf, U=U, T=T, X0=None, atol=1e-13)
+        X0 = xout[-1]
+
+        return X0

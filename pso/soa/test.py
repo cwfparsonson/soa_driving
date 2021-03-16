@@ -1,5 +1,5 @@
 
-from soa import upsampling, analyse
+from soa import upsampling, analyse, distort_tf
 import numpy as np
 import multiprocessing
 import pickle
@@ -22,7 +22,11 @@ den = [
     2.40236028415562e90,
 ]
 tf = signal.TransferFunction(num, den)
-
+tfs, labels = distort_tf.gen_tfs(num_facs=[1.0,1.2,1.4], 
+                    a0_facs=[0.8],
+                    a1_facs=[0.7,0.8,1.2],
+                    a2_facs=[1.05,1.1,1.2],
+                    all_combos=False)
 q = 5
 
 init_OP = np.zeros(40) # initial drive signal (e.g. a step)
@@ -30,7 +34,7 @@ init_OP = np.zeros(40) # initial drive signal (e.g. a step)
 init_OP[:int(0.25*40)],init_OP[int(0.25*40):] = -1, 0.5
 
 
-init_OP = np.tile(init_OP, q)
+# init_OP = np.tile(init_OP, q)
 
 
 t2 = np.linspace(0, 20e-9, 240)
@@ -94,15 +98,18 @@ def __getTransferFunctionOutput(tf, U, T, X0, q, atol=1e-12):
 
 X0 = __find_x_init(tf)
 
-init_PV = __getTransferFunctionOutput(tf,init_OP,t2, X0, q)
-sp = np.zeros_like(init_PV)
-for i in range(q):
-    sp[i] = analyse.ResponseMeasurements(init_PV[i], t2).sp.sp
+PV = distort_tf.getTransferFunctionOutput(tfs[5],init_OP,t2)
+
+
+sp = np.zeros((5, 240))
+for i in range(5):
+    sp[i] = analyse.ResponseMeasurements(distort_tf.getTransferFunctionOutput(tfs[i],init_OP,t2), t2).sp.sp
 
 
 t3 = np.linspace(0, 20e-9, 120)
 plt.figure(1)
 plt.title('1')
-plt.plot(t2, sp[0])
+for i in range(5):
+    plt.plot(t2, sp[i])
 
-plt.show()
+plt.show()        
