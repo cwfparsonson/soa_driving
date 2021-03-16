@@ -930,9 +930,8 @@ class PSO:
                      label='Settling Point')
                 
             fig.legend(loc = 'lower right')
-            fig.xlabel('Time')
-            fig.ylabel('Amplitude')
-            fig.savefig(self.path_to_pso_data + str(curr_iter) + '_gen_outputs.png')
+            plt.savefig(self.path_to_pso_data + str(curr_iter) + '_gen_outputs.png')
+            plt.close()
 
             
             plt.figure(2)
