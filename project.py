@@ -33,8 +33,8 @@ if __name__ == '__main__':
     time_stop = 20e-9
 
     # set PSO params
-    n = 10
-    run = 'CASCADE_WITH_CHAOS_AND_SUBPLOTS222'
+    n = 50
+    run = '11CASCADE_WITH_CHAOS_AND_SUBPLOTS'
     iter_max = 20
     rep_max = 1 
     max_v_f = 0.05 
