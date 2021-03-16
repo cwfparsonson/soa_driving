@@ -271,7 +271,7 @@ class chaos:
             input = p.create(input)
 
             
-            (_, PV[i], X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
+            (_, PV[i], X0_init) = signal.lsim2(tf[i], input, T, X0=X0, atol=atol)
 
             
             input_init = input_init[self.m:]
