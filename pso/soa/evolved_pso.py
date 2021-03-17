@@ -409,9 +409,13 @@ class ol:
 
         L = self.OA()
 
-        f = np.zeros(len(L[0]))
+        print('OA done')
 
-        for i in range(len(L[0])):
+        f = np.zeros(len(L))
+
+        for i in range(len(L)):
+
+            print(f'{i}/{len(L)}')
 
             signal_b = np.zeros(self.D)
 
@@ -428,6 +432,8 @@ class ol:
         idx = np.argsort(f)[0]
 
         signal_b_fit = f[idx]
+
+        print('First Part Done')
 
         signal_p, signal_p_fit = self.factor_analysis(L, f, pbest, gbest)
 
