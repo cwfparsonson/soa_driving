@@ -374,7 +374,7 @@ class ol:
             factor_sum = {'p':0, 'g':0}
             count = {'p':0, 'g': 0}
 
-            print(f'{g}/ {len(L[0])}')
+            print(f'{g}/ {self.D}')
 
             for i in range(len(L)):
 
@@ -415,8 +415,6 @@ class ol:
 
         L = self.OA()
 
-        print('OA done')
-
         f = np.zeros(len(L))
 
         for i in range(len(L)):
@@ -448,8 +446,6 @@ class ol:
             else:
 
                 signal_b[g] = gbest[g] 
-
-        print('First Part Done')
 
         signal_p, signal_p_fit = self.factor_analysis(L, f, pbest, gbest)
 

@@ -1329,7 +1329,7 @@ class PSO:
                     else:
                         stagnation[j] += 1  
 
-                        if stagnation[j] >= 1:
+                        if stagnation[j] >= 4:
                             
                             print('OL initiated...')
                             
@@ -1338,7 +1338,7 @@ class PSO:
                             pguide = olpso.evaluate(pbest[j, :], gbest)
                             
                             for g in range(self.m_c):
-                                v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) * (pguide[j, g] - x[j, g]))
+                                v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) * (pguide[g] - x[j, g]))
 
                             x[j, :] = x[j, :] + v[j, :]
 
