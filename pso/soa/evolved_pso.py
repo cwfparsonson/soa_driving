@@ -374,8 +374,6 @@ class ol:
             factor_sum = {'p':0, 'g':0}
             count = {'p':0, 'g': 0}
 
-            print(f'{g}/ {self.D}')
-
             for i in range(len(L)):
 
                 if L[i, g] == 1:
@@ -415,11 +413,9 @@ class ol:
 
         L = self.OA()
 
-        f = np.zeros(len(L))
+        f = np.ones(len(L))
 
         for i in range(len(L)):
-
-            print(f'{i}/{len(L)}')
 
             signal_b = np.zeros(self.D)
 
@@ -431,7 +427,9 @@ class ol:
                 else:
                     signal_b[g] = gbest[g]
 
-            f[i] = self.get_cost(signal_b)
+            if random.uniform(0, 1) < 0.20:
+                
+                f[i] = self.get_cost(signal_b)
 
         idx = np.argsort(f)[0]
 

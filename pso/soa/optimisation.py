@@ -1254,6 +1254,8 @@ class PSO:
 
             stagnation = np.zeros(self.n)
 
+            orth = np.zeros(self.n, dtype=bool)
+
             while curr_iter <= self.iter_max:
 
                 print(stagnation)
@@ -1275,10 +1277,16 @@ class PSO:
                 
                 # update particle velocities
                 for j in range(0, self.n):
-                    for g in range(0, self.m_c):
-                        v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
-                            * (pbest[j, g] - x[j, g]) + (c2[j] * \
-                                random.uniform(0, 1) * (gbest[g] - x[j,g])))
+                    if orth[j]:
+                        for g in range(self.m_c):
+                            v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) * (pguide[g] - x[j, g]))
+                        
+                        orth[j] = False
+                    else:
+                        for g in range(0, self.m_c):
+                            v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
+                                * (pbest[j, g] - x[j, g]) + (c2[j] * \
+                                    random.uniform(0, 1) * (gbest[g] - x[j,g])))
 
                 # handle velocity boundary violations
                 for j in range(0, self.n):
@@ -1329,18 +1337,13 @@ class PSO:
                     else:
                         stagnation[j] += 1  
 
-                        if stagnation[j] >= 4:
+                        if stagnation[j] >= 5:
                             
                             print('OL initiated...')
                             
                             start_time = time.time()
                             
                             pguide = olpso.evaluate(pbest[j, :], gbest)
-                            
-                            for g in range(self.m_c):
-                                v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) * (pguide[g] - x[j, g]))
-
-                            x[j, :] = x[j, :] + v[j, :]
 
                             end_time = time.time()
 
@@ -1349,6 +1352,8 @@ class PSO:
                             print(f'Time taken for OL: {t} s')
 
                             stagnation[j] = 0
+
+                            orth[j] = True
                             
 
                 
