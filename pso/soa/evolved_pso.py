@@ -386,15 +386,15 @@ class ol:
                     factor_sum['g'] += f[i]
                     count['g'] += 1
 
-            S[0, g] = factor_sum['p'] / count['p']
+            S[g, 0] = factor_sum['p'] / count['p']
             
-            S[1, g] = factor_sum['g'] / count['g']
+            S[g, 1] = factor_sum['g'] / count['g']
         
         signal_p = np.zeros_like(S[0])
 
         for g in range(self.D):
             
-            if S[0, g] < S[1, g]:
+            if S[g, 0] < S[g, 1]:
 
                 signal_p[g] = pbest[g]
             
