@@ -386,9 +386,17 @@ class ol:
                     factor_sum['g'] += f[i]
                     count['g'] += 1
 
-            S[g, 0] = factor_sum['p'] / count['p']
+            if count['p'] != 0:
+                S[g, 0] = factor_sum['p'] / count['p']
             
-            S[g, 1] = factor_sum['g'] / count['g']
+            else:
+                S[g, 0] = float('inf')
+            
+            if count['g'] != 0:
+                S[g, 1] = factor_sum['g'] / count['g']
+            
+            else:
+                S[g, 1] = float('inf')
         
         signal_p = np.zeros_like(S[0])
 
