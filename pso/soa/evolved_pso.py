@@ -315,9 +315,7 @@ class ol:
 
         self.D = self.m * self.q
 
-        self.M = 2**int(math.log(self.D + 1, 2))
-
-        print(self.D)
+        self.M = int(2**math.log(self.D + 1, 2))
 
         self.u = int(math.log(self.M, 2))
           
