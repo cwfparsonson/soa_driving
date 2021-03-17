@@ -372,6 +372,8 @@ class ol:
             factor_sum = {'p':0, 'g':0}
             count = {'p':0, 'g': 0}
 
+            print(f'{g}/ {len(L[0])}')
+
             for i in range(len(L)):
 
                 if L[i, g] == 1:
@@ -432,6 +434,16 @@ class ol:
         idx = np.argsort(f)[0]
 
         signal_b_fit = f[idx]
+
+        for g in range(self.D):
+            
+            if L[idx, g] == 1:
+                
+                signal_b[g] = pbest[g]
+
+            else:
+
+                signal_b[g] = gbest[g] 
 
         print('First Part Done')
 
