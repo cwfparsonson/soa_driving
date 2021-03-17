@@ -1,4 +1,4 @@
-from pso.soa import chaos_optimization_alt
+from pso.soa import evolved_pso
 import sys, os
 import pyvisa as visa
 
@@ -1236,19 +1236,27 @@ class PSO:
             c1_min = 0.1
             c2_min = 0.1
 
-            cpso = chaos_optimization_alt.chaos(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, change_range = True)
+            cpso = evolved_pso.chaos(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, change_range = True)
+
+            olpso = evolved_pso.ol(self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP)
 
             pc_marker = int(0.05*self.iter_max) # for plotting/saving
             if pc_marker == 0:
                 pc_marker = 1 
             
+            """ 
             start_time = time.time()
             (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-            end_time = time.time()
+            end_time = time.time() 
             t = end_time - start_time
             print(f'Time Taken for 1 CLS = {t} s')
+            """
+
+            stagnation = np.zeros(self.n)
 
             while curr_iter <= self.iter_max:
+
+                print(stagnation)
 
                 achieved = False
 
@@ -1316,7 +1324,33 @@ class PSO:
                     if x_value[j] < pbest_value[j]:
                         pbest_value[j] = x_value[j] 
                         for g in range(0, self.m_c):
-                            pbest[j, g] = x[j, g] 
+                            pbest[j, g] = x[j, g]
+                    
+                    else:
+                        stagnation[j] += 1  
+
+                        if stagnation[j] >= 3:
+                            
+                            print('OL initiated...')
+                            
+                            start_time = time.time()
+                            
+                            pguide = olpso.evaluate(pbest[j, :], gbest)
+                            
+                            for g in range(self.m_c):
+                                v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) * (pguide[j, g] - x[j, g]))
+
+                            x[j, :] = x[j, :] + v[j, :]
+
+                            end_time = time.time()
+
+                            t = end_time - start_time
+
+                            print(f'Time taken for OL: {t} s')
+
+                            stagnation[j] = 0
+                            
+
                 
                 # update global best particle positions & history
                 min_cost_index = np.argmin(pbest_value)
@@ -1326,10 +1360,11 @@ class PSO:
 
                     gbest_cost = pbest_value[min_cost_index]
                     achieved_main = True
-
+                
+                '''
                 if curr_iter % 10 == 0:
                     (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
- 
+                '''
 
                 if achieved or achieved_main:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
