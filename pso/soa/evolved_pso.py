@@ -410,7 +410,7 @@ class ol:
 
         L = self.OA()
 
-        f = np.zeros_like(L[0])
+        f = np.zeros(len(L[0]))
 
         for i in range(len(f)):
 
@@ -418,7 +418,7 @@ class ol:
 
             for g in range(0, self.D):
 
-                if L[i] == 1:
+                if L[i, g] == 1:
                     signal_b[g] = pbest[g]
                 
                 else:
