@@ -317,9 +317,10 @@ class ol:
 
         self.M = 2**int(math.log(self.D + 1, 2))
 
+        print(self.m)
+
         self.u = int(math.log(self.M, 2))
-        
-        
+          
         self.sim_model = sim_model
         
         self.t2 = t2
