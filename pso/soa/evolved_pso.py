@@ -391,7 +391,7 @@ class ol:
         
         signal_p = np.zeros_like(S[0])
 
-        for g in range(len(signal)):
+        for g in range(self.D):
             
             if S[0, g] < S[1, g]:
 
@@ -416,7 +416,7 @@ class ol:
 
             signal_b = np.zeros(self.D)
 
-            for g in range(0, self.m_c):
+            for g in range(0, self.D):
 
                 if L[i] == 1:
                     signal_b[g] = pbest[g]
