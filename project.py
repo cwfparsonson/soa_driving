@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 10
-    run = 'olv14'
+    run = 'olv15'
     iter_max = 40
     rep_max = 1 
     max_v_f = 0.05 

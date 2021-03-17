@@ -369,7 +369,7 @@ class ol:
         S = np.zeros((self.D ,2))
 
     
-        for g in range(len(L[0])):
+        for g in range(0, self.D):
 
             factor_sum = {'p':0, 'g':0}
             count = {'p':0, 'g': 0}
