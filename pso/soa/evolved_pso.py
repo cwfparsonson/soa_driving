@@ -426,10 +426,8 @@ class ol:
                 
                 else:
                     signal_b[g] = gbest[g]
-
-            if random.uniform(0, 1) < 0.20:
                 
-                f[i] = self.get_cost(signal_b)
+            f[i] = self.get_cost(signal_b)
 
         idx = np.argsort(f)[0]
 
