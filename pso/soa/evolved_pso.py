@@ -317,7 +317,7 @@ class ol:
 
         self.M = 2**int(math.log(self.D + 1, 2))
 
-        print(self.m)
+        print(self.M)
 
         self.u = int(math.log(self.M, 2))
           
@@ -413,7 +413,7 @@ class ol:
 
         f = np.zeros(len(L[0]))
 
-        for i in range(len(f)):
+        for i in range(len(L[0])):
 
             signal_b = np.zeros(self.D)
 
