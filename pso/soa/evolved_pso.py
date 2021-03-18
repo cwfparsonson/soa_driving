@@ -342,7 +342,7 @@ class ol:
 
         for i in range(len(L)):
 
-            signal_b = np.zeros(self.D)
+            signal_b = np.zeros(self.m_c)
 
             for g in range(0, self.D):
 
@@ -439,7 +439,7 @@ class ol:
             S[g, 1] = factor_sum['g'] / count['g']
             
         
-        signal_p = np.zeros(self.D)
+        signal_p = np.zeros(self.m_c)
 
         for g in range(self.D):
             
