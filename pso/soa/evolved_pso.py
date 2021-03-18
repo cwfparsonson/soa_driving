@@ -374,6 +374,8 @@ class ol:
 
         signal_p, signal_p_fit = self.factor_analysis(L, f, pbest, gbest)
 
+        print(signal_b_fit, signal_p_fit)
+
         if signal_b_fit < signal_p_fit:
             return signal_p
         

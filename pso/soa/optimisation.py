@@ -1341,7 +1341,7 @@ class PSO:
                     else:
                         stagnation[j] += 1  
 
-                        if stagnation[j] >= 1:
+                        if stagnation[j] >= 5:
                             
                             print('OL initiated...')
                             
