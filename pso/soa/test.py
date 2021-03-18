@@ -88,7 +88,7 @@ def __getTransferFunctionOutput(tf, U, T, X0, q, atol=1e-12):
 
         (_, PV[i], X0_init) = signal.lsim2(tf, input, T, X0=X0, atol=atol)
         input_init = input_init[40:]
-        X0 = X0_init[0]
+        X0 = X0_init[-1]
         min_PV = np.copy(min(PV[i]))
         if min_PV < 0:
             for j in range(0, len(PV[i])):

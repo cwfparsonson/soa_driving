@@ -238,14 +238,12 @@ class chaos:
         """
         This method sends a drive signal to a transfer function model and gets 
         the output
-
         Args:
         - tf = transfer function
         - U = signal to drive transfer function with
         - T = array of time values
         - X0 = initial value
         - atol = scipy ode func parameter
-
         Returns:
         - PV = resultant output signal of transfer function
         """
@@ -313,9 +311,7 @@ class ol:
 
         self.q = q
 
-        self.m_c = self.m * self.q
-
-        self.D = self.q
+        self.D = self.m * self.q
 
         self.M = 2**math.ceil(math.log(self.D + 1, 2))
 
@@ -333,56 +329,7 @@ class ol:
         
         self.SP = SP
         
-    
-    def evaluate(self, pbest, gbest):
         
-        L = self.OA()
-
-        f = np.ones(len(L))
-
-        for i in range(len(L)):
-
-            signal_b = np.zeros(self.m_c)
-
-            for g in range(0, self.D):
-
-                if L[i, g] == 1:
-                    for j in range(g * self.m, (g + 1) * self.m):
-                        signal_b[g] = pbest[g]
-                
-                else:
-                    for j in range(g * self.m, (g + 1) * self.m):
-                        signal_b[g] = gbest[g]
-                
-            f[i] = self.get_cost(signal_b)
-
-        idx = np.argsort(f)[0]
-
-        signal_b_fit = f[idx]
-
-        for g in range(self.D):
-            
-            if L[idx, g] == 1:
-
-                for j in range(g * self.m, (g + 1) * self.m):
-                
-                    signal_b[j] = pbest[j]
-
-            else:
-
-                for j in range(g * self.m, (g + 1) * self.m):
-                
-                    signal_b[j] = gbest[j]
-
-        signal_p, signal_p_fit = self.factor_analysis(L, f, pbest, gbest)
-
-        print(signal_b_fit, signal_p_fit)
-
-        if signal_b_fit < signal_p_fit:
-            return signal_p
-        
-        else:
-            return signal_b        
 
     def OA(self):
 
@@ -443,39 +390,78 @@ class ol:
             S[g, 1] = factor_sum['g'] / count['g']
             
         
-        signal_p = np.zeros(self.m_c)
+        signal_p = np.zeros(self.D)
 
         for g in range(self.D):
             
             if S[g, 0] < S[g, 1]:
-                
-                for j in range(g * self.m, (g + 1) * self.m):
-                
-                    signal_p[j] = pbest[j]
+
+                signal_p[g] = pbest[g]
             
             else:
 
-                for j in range(g * self.m, (g + 1) * self.m):
-                    
-                    signal_p[j] = gbest[j]
+                signal_p[g] = gbest[g]
         
         signal_p_fit = self.get_cost(signal_p)
 
         return signal_p, signal_p_fit
+  
+
+    def evaluate(self, pbest, gbest):
+
+        L = self.OA()
+
+        f = np.ones(len(L))
+
+        for i in range(len(L)):
+
+            signal_b = np.zeros(self.D)
+
+            for g in range(0, self.D):
+
+                if L[i, g] == 1:
+                    signal_b[g] = pbest[g]
+                
+                else:
+                    signal_b[g] = gbest[g]
+                
+            f[i] = self.get_cost(signal_b)
+
+        idx = np.argsort(f)[0]
+
+        signal_b_fit = f[idx]
+
+        for g in range(self.D):
+            
+            if L[idx, g] == 1:
+                
+                signal_b[g] = pbest[g]
+
+            else:
+
+                signal_b[g] = gbest[g] 
+
+        signal_p, signal_p_fit = self.factor_analysis(L, f, pbest, gbest)
+
+        if signal_b_fit < signal_p_fit:
+
+            return signal_p
+        
+        else:
+            
+            return signal_b
         
     
     def __getTransferFunctionOutput(self, tf, U, T, X0, atol=1e-12):
         """
         This method sends a drive signal to a transfer function model and gets 
         the output
-
         Args:
         - tf = transfer function
         - U = signal to drive transfer function with
         - T = array of time values
         - X0 = initial value
         - atol = scipy ode func parameter
-
         Returns:
         - PV = resultant output signal of transfer function
         """
