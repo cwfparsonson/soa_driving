@@ -313,7 +313,9 @@ class ol:
 
         self.q = q
 
-        self.D = self.m * self.q
+        self.m_c = self.m * self.q
+
+        self.D = self.q
 
         self.M = 2**math.ceil(math.log(self.D + 1, 2))
 
@@ -359,21 +361,23 @@ class ol:
         for g in range(self.D):
             
             if L[idx, g] == 1:
+
+                for j in range(g * self.m, (g + 1) * self.m):
                 
-                signal_b[g] = pbest[g]
+                    signal_b[j] = pbest[j]
 
             else:
 
-                signal_b[g] = gbest[g] 
+                for j in range(g * self.m, (g + 1) * self.m):
+                
+                    signal_b[j] = gbest[j]
 
         signal_p, signal_p_fit = self.factor_analysis(L, f, pbest, gbest)
 
         if signal_b_fit < signal_p_fit:
-            print(signal_p_fit)
             return signal_p
         
         else:
-            print(signal_b_fit)
             return signal_b        
 
     def OA(self):
@@ -440,12 +444,16 @@ class ol:
         for g in range(self.D):
             
             if S[g, 0] < S[g, 1]:
-
-                signal_p[g] = pbest[g]
+                
+                for j in range(g * self.m, (g + 1) * self.m):
+                
+                    signal_p[j] = pbest[j]
             
             else:
 
-                signal_p[g] = gbest[g]
+                for j in range(g * self.m, (g + 1) * self.m):
+                    
+                    signal_p[j] = gbest[j]
         
         signal_p_fit = self.get_cost(signal_p)
 
