@@ -1230,6 +1230,8 @@ class PSO:
             c1 = np.ones(self.n) * self.c1
             c2 = np.ones(self.n) * self.c2
 
+            h = np.ones_like(c1)
+
             rel_improv = np.zeros(self.n)
             c1_max = 2.5 
             c2_max = 2.5 
@@ -1273,20 +1275,22 @@ class PSO:
                     c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
                         (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
                     c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
-                        (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
-                
+                        (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1)
+                    # constriction factor
+                    h[j] = 2 / (2 - (c1[j] + c2[j]) - np.sqrt(pow((c1[j] + c2[j]), 2) - 4 * (c1[j] + c2[j])))
+
                 # update particle velocities
                 for j in range(0, self.n):
                     if orth[j]:
                         for g in range(self.m_c):
-                            v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) * (pguide[g] - x[j, g]))
+                            v[j, g] = h[j]  * (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) * (pguide[g] - x[j, g]))
                         
                         orth[j] = False
                     else:
                         for g in range(0, self.m_c):
-                            v[j, g] = (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
+                            v[j, g] = h[j] * ((w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
                                 * (pbest[j, g] - x[j, g]) + (c2[j] * \
-                                    random.uniform(0, 1) * (gbest[g] - x[j,g])))
+                                    random.uniform(0, 1) * (gbest[g] - x[j,g]))))
 
                 # handle velocity boundary violations
                 for j in range(0, self.n):
@@ -1333,11 +1337,11 @@ class PSO:
                         pbest_value[j] = x_value[j] 
                         for g in range(0, self.m_c):
                             pbest[j, g] = x[j, g]
-                    '''
+
                     else:
                         stagnation[j] += 1  
 
-                        if stagnation[j] >= 5:
+                        if stagnation[j] >= 1:
                             
                             print('OL initiated...')
                             
@@ -1354,7 +1358,6 @@ class PSO:
                             stagnation[j] = 0
 
                             orth[j] = True
-                    '''        
 
                 
                 # update global best particle positions & history
@@ -1491,6 +1494,7 @@ class PSO:
         plt.close()        
 
         # plot final driving signal
+        '''
         plt.figure()
         plt.plot(np.linspace(self.t[0],self.t[-1], len(self.t)*self.q), self.init_OP, c='r', label='Initial Input for SOA')
         
@@ -1504,6 +1508,19 @@ class PSO:
         plt.ylabel('Voltage')
         plt.savefig(self.path_to_pso_data + 'final_input.png')  
         plt.close()
+        '''
+
+        fig, axs = plt.subplots(self.q)
+        fig.suptitle('Final PSO-Optimised Input Signal')
+        for q in range(0, self.q):
+            axs[q].plot(self.t2, self.init_OP[q], c='g', label='Target SP')
+            axs[q].plot(self.t2, self.gbest[q], c='r', label='Initial Output')
+
+        fig.legend(loc = 'lower right')
+        plt.xlabel('Time')
+        plt.ylabel('Voltage')
+        plt.savefig(self.path_to_pso_data + 'final_input.png')  
+        plt.close()         
 
         # plot learning curve
         plt.figure()

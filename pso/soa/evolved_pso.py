@@ -331,7 +331,50 @@ class ol:
         
         self.SP = SP
         
+    
+    def evaluate(self, pbest, gbest):
         
+        L = self.OA()
+
+        f = np.ones(len(L))
+
+        for i in range(len(L)):
+
+            signal_b = np.zeros(self.D)
+
+            for g in range(0, self.D):
+
+                if L[i, g] == 1:
+                    signal_b[g] = pbest[g]
+                
+                else:
+                    signal_b[g] = gbest[g]
+                
+            f[i] = self.get_cost(signal_b)
+
+        idx = np.argsort(f)[0]
+
+        signal_b_fit = f[idx]
+
+        for g in range(self.D):
+            
+            if L[idx, g] == 1:
+                
+                signal_b[g] = pbest[g]
+
+            else:
+
+                signal_b[g] = gbest[g] 
+
+        signal_p, signal_p_fit = self.factor_analysis(L, f, pbest, gbest)
+
+        if signal_b_fit < signal_p_fit:
+            print(signal_p_fit)
+            return signal_p
+        
+        else:
+            print(signal_b_fit)
+            return signal_b        
 
     def OA(self):
 
@@ -407,51 +450,6 @@ class ol:
         signal_p_fit = self.get_cost(signal_p)
 
         return signal_p, signal_p_fit
-  
-
-    def evaluate(self, pbest, gbest):
-
-        L = self.OA()
-
-        f = np.ones(len(L))
-
-        for i in range(len(L)):
-
-            signal_b = np.zeros(self.D)
-
-            for g in range(0, self.D):
-
-                if L[i, g] == 1:
-                    signal_b[g] = pbest[g]
-                
-                else:
-                    signal_b[g] = gbest[g]
-                
-            f[i] = self.get_cost(signal_b)
-
-        idx = np.argsort(f)[0]
-
-        signal_b_fit = f[idx]
-
-        for g in range(self.D):
-            
-            if L[idx, g] == 1:
-                
-                signal_b[g] = pbest[g]
-
-            else:
-
-                signal_b[g] = gbest[g] 
-
-        signal_p, signal_p_fit = self.factor_analysis(L, f, pbest, gbest)
-
-        if signal_b_fit < signal_p_fit:
-
-            return signal_p
-        
-        else:
-            
-            return signal_b
         
     
     def __getTransferFunctionOutput(self, tf, U, T, X0, atol=1e-12):
