@@ -347,10 +347,12 @@ class ol:
             for g in range(0, self.D):
 
                 if L[i, g] == 1:
-                    signal_b[g] = pbest[g]
+                    for j in range(g * self.m, (g + 1) * self.m):
+                        signal_b[g] = pbest[g]
                 
                 else:
-                    signal_b[g] = gbest[g]
+                    for j in range(g * self.m, (g + 1) * self.m):
+                        signal_b[g] = gbest[g]
                 
             f[i] = self.get_cost(signal_b)
 
