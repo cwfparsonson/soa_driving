@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 50
-    run = 'OOGA_BOOGA_TESTS'
+    run = 'OOGA_BOOGA_TESTS2'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 

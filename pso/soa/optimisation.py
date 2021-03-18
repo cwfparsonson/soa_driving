@@ -1277,7 +1277,7 @@ class PSO:
                     c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
                         (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1)
                     # constriction factor
-                    h[j] = 2 / (2 - (c1[j] + c2[j]) - np.sqrt(pow((c1[j] + c2[j]), 2) - 4 * (c1[j] + c2[j])))
+                    #h[j] = 2 / (2 - (c1[j] + c2[j]) - np.sqrt(pow((c1[j] + c2[j]), 2) - 4 * (c1[j] + c2[j])))
 
                 # update particle velocities
                 for j in range(0, self.n):
@@ -1288,7 +1288,7 @@ class PSO:
                         orth[j] = False
                     else:
                         for g in range(0, self.m_c):
-                            v[j, g] = h[j] * ((w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
+                            v[j, g] = ((w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
                                 * (pbest[j, g] - x[j, g]) + (c2[j] * \
                                     random.uniform(0, 1) * (gbest[g] - x[j,g]))))
 
