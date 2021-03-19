@@ -342,14 +342,15 @@ class ol:
 
             signal_b = np.zeros(self.m_c)
 
-            for g in range(0, self.D):
+            for j in range(len(L[0])):
 
-                if L[i, g] == 1:
-                    for j in range(g * self.m, (g + 1) * self.m):
+                if L[i, j] == 1:
+                    
+                    for g in range(j * self.m, (j + 1) * self.m):
                         signal_b[g] = pbest[g]
                 
                 else:
-                    for j in range(g * self.m, (g + 1) * self.m):
+                    for g in range(j * self.m, (j + 1) * self.m):
                         signal_b[g] = gbest[g]
                 
             f[i] = self.get_cost(signal_b)
@@ -358,17 +359,17 @@ class ol:
 
         signal_b_fit = f[idx]
 
-        for g in range(self.D):
+        for j in range(self.D):
             
-            if L[idx, g] == 1:
+            if L[idx, j] == 1:
 
-                for j in range(g * self.m, (g + 1) * self.m):
+                for g in range(j * self.m, (j + 1) * self.m):
                 
-                    signal_b[j] = pbest[j]
+                    signal_b[g] = pbest[g]
 
             else:
 
-                for j in range(g * self.m, (g + 1) * self.m):
+                for g in range(j * self.m, (j + 1) * self.m):
                 
                     signal_b[j] = gbest[j]
 
@@ -443,19 +444,19 @@ class ol:
         
         signal_p = np.zeros(self.m_c)
 
-        for g in range(self.D):
+        for j in range(self.D):
             
-            if S[g, 0] < S[g, 1]:
+            if S[j, 0] < S[j, 1]:
                 
-                for j in range(g * self.m, (g + 1) * self.m):
+                for g in range(j * self.m, (j + 1) * self.m):
                 
-                    signal_p[j] = pbest[j]
+                    signal_p[g] = pbest[g]
             
             else:
 
-                for j in range(g * self.m, (g + 1) * self.m):
+                for g in range(j * self.m, (j + 1) * self.m):
                     
-                    signal_p[j] = gbest[j]
+                    signal_p[g] = gbest[g]
         
         signal_p_fit = self.get_cost(signal_p)
 
