@@ -871,6 +871,16 @@ class PSO:
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP[i]).costEval
             
+            s_time = np.zeros(self.q)
+
+            for i in range(self.q):      
+                responseMeasurementsObject = analyse.ResponseMeasurements(PV[i], 
+                                                                      self.t2, 
+                                                                      SP=self.SP[i])
+                s_time[i] = responseMeasurementsObject.settlingTime
+            
+            print(np.average(s_time))
+            
             x_value[j] = np.sum(cost)
 
             if self.record_extra_info == True:
@@ -1515,8 +1525,8 @@ class PSO:
         fig, axs = plt.subplots(self.q)
         fig.suptitle('Final PSO-Optimised Input Signal')
         for q in range(0, self.q):
-            axs[q].plot(self.t, self.init_OP[q * self.m:(q+1) * self.m], c='g', label='Target SP')
-            axs[q].plot(self.t, self.gbest[q * self.m:(q+1) * self.m], c='r', label='Initial Output')
+            axs[q].plot(self.t, self.init_OP[q * self.m:(q+1) * self.m], c='g', label='Initial Input for SOA')
+            axs[q].plot(self.t, self.gbest[q * self.m:(q+1) * self.m], c='r', label='PSO-Optimised Input')
 
         fig.legend(loc = 'lower right')
         plt.xlabel('Time')
