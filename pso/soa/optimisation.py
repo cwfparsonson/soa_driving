@@ -1337,7 +1337,7 @@ class PSO:
                         pbest_value[j] = x_value[j] 
                         for g in range(0, self.m_c):
                             pbest[j, g] = x[j, g]
-                    '''
+
                     else:
                         stagnation[j] += 1  
 
@@ -1358,7 +1358,6 @@ class PSO:
                             stagnation[j] = 0
 
                             orth[j] = True
-                    '''
 
                 
                 # update global best particle positions & history
