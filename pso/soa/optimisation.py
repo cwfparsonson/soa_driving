@@ -1491,6 +1491,8 @@ class PSO:
                     label='Settling Point')
             
         fig.legend(loc = 'lower right')
+        plt.xlabel('Time')
+        plt.ylabel('Amplitude')
         plt.savefig(self.path_to_pso_data + 'final_output.png')
         plt.close()        
 
@@ -1514,8 +1516,8 @@ class PSO:
         fig, axs = plt.subplots(self.q)
         fig.suptitle('Final PSO-Optimised Input Signal')
         for q in range(0, self.q):
-            axs[q].plot(self.t2, self.init_OP[q], c='g', label='Target SP')
-            axs[q].plot(self.t2, self.gbest[q], c='r', label='Initial Output')
+            axs[q].plot(self.t2, self.init_OP[q * self.m:(q+1) * self.m], c='g', label='Target SP')
+            axs[q].plot(self.t2, self.gbest[q * self.m:(q+1) * self.m], c='r', label='Initial Output')
 
         fig.legend(loc = 'lower right')
         plt.xlabel('Time')
