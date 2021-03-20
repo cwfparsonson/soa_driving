@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # set PSO params
     n = 50
-    run = 'OLPSO4'
+    run = 'OLPSO5'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
  
         p = multiprocessing.Process(target=run_test, 
                                     args=(direc, 
-                                        tfs[3:q+3], 
+                                        tfs[:q], 
                                         t,
                                         run, 
                                         init_OP, 
