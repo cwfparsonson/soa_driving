@@ -870,16 +870,7 @@ class PSO:
                                                cost_function_label=self.cost_f, 
                                                st_importance_factor=self.st_importance_factor, 
                                                SP=self.SP[i]).costEval
-            
-            s_time = np.zeros(self.q)
 
-            for i in range(self.q):      
-                responseMeasurementsObject = analyse.ResponseMeasurements(PV[i], 
-                                                                      self.t2, 
-                                                                      SP=self.SP[i])
-                s_time[i] = responseMeasurementsObject.settlingTime
-            
-            print(np.average(s_time))
             
             x_value[j] = np.sum(cost)
 
@@ -1293,7 +1284,7 @@ class PSO:
                 for j in range(0, self.n):
                     if orth[j]:
                         for g in range(self.m_c):
-                            v[j, g] = h[j]  * (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) * (pguide[g] - x[j, g]))
+                            v[j, g] =  (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) * (pguide[g] - x[j, g]))
                         
                         orth[j] = False
                     else:
@@ -1357,7 +1348,7 @@ class PSO:
                             
                             start_time = time.time()
                             
-                            pguide = olpso.evaluate(pbest[j, :], gbest)
+                            pguide = olpso.evaluate(pbest[j], gbest)
 
                             end_time = time.time()
 
