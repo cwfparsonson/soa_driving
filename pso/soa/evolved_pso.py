@@ -625,8 +625,6 @@ class cpso_sk:
     
     def partition(self):
 
-        global context
-
         if self.step == 'soa':
 
 
@@ -659,18 +657,18 @@ class cpso_sk:
                         (math.exp(- self.rel_improv[q, j]) - 1) / (math.exp( - self.rel_improv[q, j]) + 1)
                     
                     
-                    for g in range(q * (self.m) , (q + 1) * self.m):
+                    for g in range(0, self.m_c):
                             self.v[j, g] = ((self.w[q, j] * self.v[j, g]) + (self.c1[q, j] * random.uniform(0, 1) \
                                 * (self.pbest[j, g] - self.x[j, g]) + (self.c2[q, j] * \
                                     random.uniform(0, 1) * (self.context[g] - self.x[j,g]))))
 
                     
-                    for g in range(q * (self.m), (q + 1) * self.m):
+                    for g in range(0, self.m_c):
                         
                         self.x[j, g] = self.x[j, g] + self.v[j, g]
 
                     
-                    self.x_value[q, j] = self.get_cost(self.x[j, :])
+                    self.x_value[q, j] = self.get_cost(self.x[j])
 
                     
                     if self.x_value[q, j] < self.pbest_value[q, j]:
@@ -688,6 +686,9 @@ class cpso_sk:
                         for g in range(q * (self.m),  (q + 1) * self.m):
 
                             self.context[g] = self.x[j, g]
+            
+            print(self.x_value)
+            print(context_cost)
                 
             return self.context, context_cost
 
