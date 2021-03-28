@@ -412,13 +412,13 @@ class PSO:
                      index=None, 
                      header=False)
 
-        responseMeasurementsObject = np.ones(self.q)
+        responseMeasurementsObject = []
 
         rt = 0
 
         for q in range(self.q):
             
-            responseMeasurementsObject[q] = analyse.ResponseMeasurements(PV[-1], self.t2)
+            responseMeasurementsObject.append(analyse.ResponseMeasurements(PV[-1], self.t2))
 
             rt += responseMeasurementsObject[q].riseTime
             
