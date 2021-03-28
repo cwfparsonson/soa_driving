@@ -589,6 +589,8 @@ class cpso_sk:
 
         self.step = step
 
+        self.w_init = w_init
+
         self.w = np.ones(self.n) * w_init
         
         self.c1 = np.ones(self.n) * 0.2
