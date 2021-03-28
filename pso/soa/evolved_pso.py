@@ -594,11 +594,11 @@ class cpso_sk:
 
         self.w_final = w_final
 
-        self.w = np.ones(self.n) * w_init
+        self.w = self.cascade(np.ones(self.n) * w_init)
         
-        self.c1 = np.ones(self.n) * 0.2
+        self.c1 = self.cascade(np.ones(self.n) * 0.2)
         
-        self.c2 = np.ones(self.n) * 0.2
+        self.c2 = self.cascade(np.ones(self.n) * 0.2)
 
         self.c1_min = c1_min
 
@@ -612,13 +612,13 @@ class cpso_sk:
 
         self.pbest = pbest
 
-        self.x_value = x_value
+        self.x_value = self.cascade(x_value)
 
-        self.pbest_value = pbest_value
+        self.pbest_value = self.cascade(pbest_value)
 
         self.v = v
 
-        self.rel_improv = np.zeros(self.n)
+        self.rel_improv = self.cascade(np.zeros(self.n))
 
         self.context = np.copy(gbest)
     
@@ -646,22 +646,22 @@ class cpso_sk:
                         self.x[j, g] = tmp[g]
 
 
-                    self.rel_improv[j] = (self.pbest_value[j] - self.x_value[j]) \
-                        / (self.pbest_value[j] + self.x_value[j]) 
+                    self.rel_improv[q, j] = (self.pbest_value[q, j] - self.x_value[q, j]) \
+                        / (self.pbest_value[q, j] + self.x_value[q, j]) 
                     
-                    self.w[j] = self.w_init + ( (self.w_final - self.w_init) * \
-                        ((math.exp(self.rel_improv[j]) - 1) / (math.exp(self.rel_improv[j]) + 1)) ) 
+                    self.w[q, j] = self.w_init + ( (self.w_final - self.w_init) * \
+                        ((math.exp(self.rel_improv[q, j]) - 1) / (math.exp(self.rel_improv[q, j]) + 1)) ) 
                     
-                    self.c1[j] = ((self.c1_min + self.c1_max)/2) + ((self.c1_max - self.c1_min)/2) + \
-                        (math.exp(- self.rel_improv[j]) - 1) / (math.exp(-self.rel_improv[j]) + 1) 
+                    self.c1[q, j] = ((self.c1_min + self.c1_max)/2) + ((self.c1_max - self.c1_min)/2) + \
+                        (math.exp(- self.rel_improv[q, j]) - 1) / (math.exp(-self.rel_improv[q, j]) + 1) 
                     
-                    self.c2[j] = ((self.c2_min + self.c2_max)/2) + ((self.c2_max - self.c2_min)/2) + \
-                        (math.exp(- self.rel_improv[j]) - 1) / (math.exp( - self.rel_improv[j]) + 1)
+                    self.c2[q, j] = ((self.c2_min + self.c2_max)/2) + ((self.c2_max - self.c2_min)/2) + \
+                        (math.exp(- self.rel_improv[q, j]) - 1) / (math.exp( - self.rel_improv[q, j]) + 1)
                     
                     
                     for g in range(q * (self.m) , (q + 1) * self.m):
-                            self.v[j, g] = ((self.w[j] * self.v[j, g]) + (self.c1[j] * random.uniform(0, 1) \
-                                * (self.pbest[j, g] - self.x[j, g]) + (self.c2[j] * \
+                            self.v[j, g] = ((self.w[q, j] * self.v[j, g]) + (self.c1[q, j] * random.uniform(0, 1) \
+                                * (self.pbest[j, g] - self.x[j, g]) + (self.c2[q, j] * \
                                     random.uniform(0, 1) * (self.context[g] - self.x[j,g]))))
 
                     
@@ -670,20 +670,20 @@ class cpso_sk:
                         self.x[j, g] = self.x[j, g] + self.v[j, g]
 
                     
-                    self.x_value[j] = self.get_cost(self.x[j, :])
+                    self.x_value[q, j] = self.get_cost(self.x[j, :])
 
                     
-                    if self.x_value[j] < self.pbest_value[j]:
+                    if self.x_value[q, j] < self.pbest_value[q, j]:
 
-                        self.pbest_value[j] = self.x_value[j]
+                        self.pbest_value[q, j] = self.x_value[q, j]
 
                         for g in range(q * (self.m),  (q + 1) * self.m):
                                 self.pbest[j, g] = self.x[j, g]
                     
 
-                    if self.x_value[j] < context_cost:
+                    if self.x_value[q, j] < context_cost:
 
-                        context_cost = self.x_value[j]
+                        context_cost = self.x_value[q, j]
 
                         for g in range(q * (self.m),  (q + 1) * self.m):
 
@@ -771,3 +771,18 @@ class cpso_sk:
                                             SP=self.SP[i]).costEval
 
         return np.sum(fitness)
+
+
+    def cascade(self, x):
+        """
+        This methods returns cascaded inputs for SOA
+        Args:
+        Parameters to be cascaded
+        Returns
+        Cascaded Parameter
+        """
+        
+        x = np.tile(x, (self.q, 1))
+
+        return x
+    
