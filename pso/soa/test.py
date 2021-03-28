@@ -1,4 +1,5 @@
 
+from numpy.core.fromnumeric import var
 from soa import upsampling, analyse, distort_tf
 import numpy as np
 import multiprocessing
@@ -7,7 +8,7 @@ from scipy import signal
 import os
 import matplotlib.pyplot as plt
 
-
+'''
 num = [2.01199757841099e85]
 den = [
     1.64898505756825e0,
@@ -113,3 +114,30 @@ for i in range(5):
     plt.plot(t2, sp[i])
 
 plt.show()        
+'''
+
+
+class test:
+
+    def __init__(self, prop):
+
+        global test_var
+
+        test_var = prop
+    
+    def add(self):
+
+        global test_var
+
+        test_var += 5
+
+        return test_var
+
+
+obj1 = test(4)
+
+obj2 = test(4)
+
+print(obj1.add())
+
+print(obj2.add())

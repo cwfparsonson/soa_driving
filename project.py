@@ -33,8 +33,8 @@ if __name__ == '__main__':
     time_stop = 20e-9
 
     # set PSO params
-    n = 50
-    run = 'OLPSO5'
+    n = 10
+    run = 'CPSOSK1'
     iter_max = 100
     rep_max = 1 
     max_v_f = 0.05 

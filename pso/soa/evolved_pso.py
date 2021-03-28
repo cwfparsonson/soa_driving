@@ -1,3 +1,4 @@
+from matplotlib.pyplot import xcorr
 import numpy as np
 import random
 import math
@@ -305,7 +306,7 @@ class ol:
                 X0,
                 cost_f,
                 st_importance_factor,
-                SP,):
+                SP):
         
         self.m = m
 
@@ -462,6 +463,235 @@ class ol:
 
         return signal_p, signal_p_fit
         
+    
+    def __getTransferFunctionOutput(self, tf, U, T, X0, atol=1e-12):
+        """
+        This method sends a drive signal to a transfer function model and gets 
+        the output
+        Args:
+        - tf = transfer function
+        - U = signal to drive transfer function with
+        - T = array of time values
+        - X0 = initial value
+        - atol = scipy ode func parameter
+        Returns:
+        - PV = resultant output signal of transfer function
+        """
+
+        
+        T = np.linspace(T[0], T[-1], 240)
+
+        U = np.array(U)
+        sample = 240
+        p = upsampling.ups(sample)
+        input_init = np.copy(U)
+        
+        PV = np.zeros((self.q, sample))
+        for j in range(self.q):
+            if j > 0:
+                X0 =  self.__find_x_init(tf[j-1])
+
+            input = input_init[:self.m]
+            input = p.create(input)
+
+            
+            (_, PV[j], _) = signal.lsim2(tf[j], input, T, X0=X0, atol=atol) 
+            input_init = input_init[self.m:]
+        
+            min_PV = np.copy(min(PV[j]))
+            if min_PV < 0:
+                for i in range(0, len(PV[j])):
+                    PV[j][i] = PV[j][i] + abs(min_PV)
+
+        return PV
+    
+    
+    def __find_x_init(self, tf):
+
+    
+        """
+        This method calculates the state-vector from a long -1 drive signal. 
+        Must call before sending / receiving signals to / from transfer function 
+        model
+        Args:
+        - tf = transfer function
+        Returns:
+        - X0 = system's state-vector result for steady state
+        """
+        U = np.array([-1.0] * 480)
+        T = np.linspace(0, 40e-9, 480)
+        (_, _, xout) = signal.lsim2(tf, U=U, T=T, X0=None, atol=1e-13)
+        X0 = xout[-1]
+
+        return X0
+
+    
+    def get_cost(self, p):
+    
+        fitness = np.zeros(self.q)
+        
+        PV_OL = self.__getTransferFunctionOutput(self.sim_model, p, self.t2, self.X0)
+        for i in range(self.q):
+            fitness[i] = signalprocessing.cost(self.t2, 
+                                            PV_OL[i], 
+                                            cost_function_label=self.cost_f, 
+                                            st_importance_factor=self.st_importance_factor, 
+                                            SP=self.SP[i]).costEval
+
+        return np.sum(fitness)
+
+
+
+class cpso_sk:
+
+    def __init__(self,
+                n, 
+                m,
+                q,
+                sim_model,
+                t2,
+                X0,
+                cost_f,
+                st_importance_factor,
+                SP,
+                x,
+                x_value,
+                pbest,
+                pbest_value,
+                gbest,
+                v,
+                c1_min,
+                c1_max,
+                c2_min,
+                c2_max,
+                w_init,
+                step = 'soa'):
+        
+        self.n = n
+
+        self.m = m
+
+        self.q = q
+
+        self.m_c = self.m * self.q
+          
+        self.sim_model = sim_model
+        
+        self.t2 = t2
+        
+        self.X0 = X0
+        
+        self.cost_f = cost_f
+        
+        self.st_importance_factor = st_importance_factor
+        
+        self.SP = SP
+
+        self.step = step
+
+        self.w = np.ones(self.n) * w_init
+        
+        self.c1 = np.ones(self.n) * 0.2
+        
+        self.c2 = np.ones(self.n) * 0.2
+
+        self.c1_min = c1_min
+
+        self.c1_max = c1_max
+
+        self.c2_min = c2_min
+
+        self.c2_max = c2_max
+
+        self.x = x
+
+        self.pbest = pbest
+
+        self.x_value = x_value
+
+        self.pbest_value = np.tile(pbest_value, (self.q, 1))
+
+        self.v = v
+
+        self.rel_improv = np.zeros(self.n)
+
+        global context
+
+        context = np.copy(gbest)
+    
+    
+    def partition(self):
+
+        global context
+
+        if self.step == 'soa':
+
+
+            context_cost = self.get_cost(context)
+
+
+            for j in range(self.n):
+
+                tmp = np.copy(self.x[j])
+                
+                self.x[j] = np.copy(context)
+
+                for q in range(self.q):
+
+                    for g in range(q * (self.m) + (q + 1) * self.m):
+
+                        self.x[j, g] = tmp[g]
+
+
+                    self.rel_improv[j] = (self.pbest_value[j] - self.x_value[j]) \
+                        / (self.pbest_value[j] + self.x_value[j]) 
+                    
+                    self.w[j] = self.w_init + ( (self.w_final - self.w_init) * \
+                        ((math.exp(self.rel_improv[j]) - 1) / (math.exp(self.rel_improv[j]) + 1)) ) 
+                    
+                    self.c1[j] = ((self.c1_min + self.c1_max)/2) + ((self.c1_max - self.c1_min)/2) + \
+                        (math.exp(- self.rel_improv[j]) - 1) / (math.exp(-self.rel_improv[j]) + 1) 
+                    
+                    self.c2[j] = ((self.c2_min + self.c2_max)/2) + ((self.c2_max - self.c2_min)/2) + \
+                        (math.exp(- self.rel_improv[j]) - 1) / (math.exp( - self.rel_improv[j]) + 1)
+                    
+                    
+                    for g in range(q * (self.m) + (q + 1) * self.m):
+                            self.v[j, g] = ((self.w[j] * self.v[j, g]) + (self.c1[j] * random.uniform(0, 1) \
+                                * (self.pbest[j, g] - self.x[j, g]) + (self.c2[j] * \
+                                    random.uniform(0, 1) * (context[g] - self.x[j,g]))))
+
+                    
+                    for g in range(q * (self.m) + (q + 1) * self.m):
+                        
+                        self.x[j, q] = self.x[j, q] + self.v[j, q]
+
+                    
+                    self.x_value[j] = self.get_cost(self.x[j, :])
+
+                    
+                    if self.x_value[j] < self.pbest_value[j]:
+
+                        self.pbest_value[j] = self.x_value[j]
+
+                        for g in range(q * (self.m) + (q + 1) * self.m):
+                                self.pbest[j, g] = self.x[j, g]
+                    
+
+                    if self.x_value[j] < context_cost:
+
+                        context_cost = self.x_value[j]
+
+                        for g in range(q * (self.m) + (q + 1) * self.m):
+
+                            context[g] = self.x[j, g]
+                
+            return context, context_cost
+
+        else:
+
+            pass
+
     
     def __getTransferFunctionOutput(self, tf, U, T, X0, atol=1e-12):
         """

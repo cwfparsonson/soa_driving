@@ -412,12 +412,22 @@ class PSO:
                      index=None, 
                      header=False)
 
-        responseMeasurementsObject = analyse.ResponseMeasurements(PV[-1], self.t2) 
+        responseMeasurementsObject = np.ones(self.q)
 
-        rt = responseMeasurementsObject.riseTime
-        st = responseMeasurementsObject.settlingTime
-        os = responseMeasurementsObject.overshoot
-        st_index = responseMeasurementsObject.settlingTimeIndex
+        rt = 0
+
+        for q in range(self.q):
+            
+            responseMeasurementsObject[q] = analyse.ResponseMeasurements(PV[-1], self.t2)
+
+            rt += responseMeasurementsObject[q].riseTime
+            
+            # responseMeasurementsObject = analyse.ResponseMeasurements(PV[-1], self.t2) 
+
+        rt = rt / self.q
+        st = responseMeasurementsObject[-1].settlingTime
+        os = responseMeasurementsObject[-1].overshoot
+        st_index = responseMeasurementsObject[-1].settlingTimeIndex
 
         return [rt, st, os, st_index]
 
@@ -1243,6 +1253,8 @@ class PSO:
 
             olpso = evolved_pso.ol(self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP)
 
+            cpso_s = evolved_pso.cpso_sk(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, self.x, self.x_value , self.pbest, self.pbest_value, self.gbest, self.v, self.c1_min, self.c1_max, self.c2_min, self.c2_max, self.w_init)
+
             pc_marker = int(0.05*self.iter_max) # for plotting/saving
             if pc_marker == 0:
                 pc_marker = 1 
@@ -1259,6 +1271,8 @@ class PSO:
 
             orth = np.zeros(self.n, dtype=bool)
 
+            switch = 1
+
             while curr_iter <= self.iter_max:
 
                 # print(stagnation)
@@ -1266,114 +1280,132 @@ class PSO:
                 achieved = False
 
                 achieved_main = False
+                
+                if switch == 0:
 
-                for j in range(0, self.n):
-                    # update particle vals
-                    rel_improv[j] = (pbest_value[j] - x_value[j]) \
-                        / (pbest_value[j] + x_value[j]) 
-                    w[j] = self.w_init + ( (self.w_final - self.w_init) * \
-                        ((math.exp(rel_improv[j]) - 1) / (math.exp(rel_improv[j]) + 1)) ) 
-                    c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
-                        (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
-                    c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
-                        (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1)
-                    # constriction factor
-                    #h[j] = 2 / (2 - (c1[j] + c2[j]) - np.sqrt(pow((c1[j] + c2[j]), 2) - 4 * (c1[j] + c2[j])))
+                    for j in range(0, self.n):
+                        # update particle vals
+                        rel_improv[j] = (pbest_value[j] - x_value[j]) \
+                            / (pbest_value[j] + x_value[j]) 
+                        w[j] = self.w_init + ( (self.w_final - self.w_init) * \
+                            ((math.exp(rel_improv[j]) - 1) / (math.exp(rel_improv[j]) + 1)) ) 
+                        c1[j] = ((c1_min + c1_max)/2) + ((c1_max - c1_min)/2) + \
+                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1) 
+                        c2[j] = ((c2_min + c2_max)/2) + ((c2_max - c2_min)/2) + \
+                            (math.exp(-rel_improv[j]) - 1) / (math.exp(-rel_improv[j]) + 1)
+                        # constriction factor
+                        # h[j] = 2 / (2 - (c1[j] + c2[j]) - np.sqrt(pow((c1[j] + c2[j]), 2) - 4 * (c1[j] + c2[j])))
 
-                # update particle velocities
-                for j in range(0, self.n):
-                    if orth[j]:
-                        for g in range(self.m_c):
-                            v[j, g] =  (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) * (pguide[g] - x[j, g]))
-                        
-                        orth[j] = False
-                    else:
+                    # update particle velocities
+                    for j in range(0, self.n):
+                        if orth[j]:
+                            for g in range(self.m_c):
+                                v[j, g] =  (w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) * (pguide[g] - x[j, g]))
+                            
+                            orth[j] = False
+                        else:
+                            for g in range(0, self.m_c):
+                                v[j, g] = ((w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
+                                    * (pbest[j, g] - x[j, g]) + (c2[j] * \
+                                        random.uniform(0, 1) * (gbest[g] - x[j,g]))))
+
+                    # handle velocity boundary violations
+                    for j in range(0, self.n):
                         for g in range(0, self.m_c):
-                            v[j, g] = ((w[j] * v[j, g]) + (c1[j] * random.uniform(0, 1) \
-                                * (pbest[j, g] - x[j, g]) + (c2[j] * \
-                                    random.uniform(0, 1) * (gbest[g] - x[j,g]))))
-
-                # handle velocity boundary violations
-                for j in range(0, self.n):
-                    for g in range(0, self.m_c):
-                        if v[j, g] > self.v_UB[g]:
-                            v[j, g] = self.v_UB[g]
-                        if v[j, g] < self.v_LB[g]:
-                            v[j, g] = self.v_LB[g]
-                
-                # update particle positions
-                for j in range(0, self.n):
-                    x[j, :] = x[j, :] + v[j, :]
-                
-                # handle position boundary violations
-                for j in range(0, self.n):
-                    for g in range(0, self.m_c):
-                        if x[j, g] < self.LB[g]:
-                            x[j, g] = self.LB[g]
-                        elif x[j, g] > self.UB[g]:
-                            x[j, g] = self.UB[g]
-
-                # descretise
-                for j in range(0, self.n):
-                    x[j, :] = self.__discretiseParticlePosition(x[j, :])
-
-                # suppress
-                for j in range(0, self.n):
-                    x[j, :] = self.__suppressAreasOfSignal(x[j, :])
-
-                # eval particle positions
-                if curr_iter % pc_marker == 0 or curr_iter == self.iter_max:
-                    # plot/save
-                    x_value = self.__evaluateParticlePositions(x, 
-                                                               curr_iter=curr_iter, 
-                                                               plot=True)
-                else:
-                    x_value = self.__evaluateParticlePositions(x, 
-                                                               curr_iter=curr_iter, 
-                                                               plot=False)
-                
-                # update local best particle positions & fitness vals
-                for j in range(0, self.n):
-                    if x_value[j] < pbest_value[j]:
-                        pbest_value[j] = x_value[j] 
+                            if v[j, g] > self.v_UB[g]:
+                                v[j, g] = self.v_UB[g]
+                            if v[j, g] < self.v_LB[g]:
+                                v[j, g] = self.v_LB[g]
+                    
+                    # update particle positions
+                    for j in range(0, self.n):
+                        x[j, :] = x[j, :] + v[j, :]
+                    
+                    # handle position boundary violations
+                    for j in range(0, self.n):
                         for g in range(0, self.m_c):
-                            pbest[j, g] = x[j, g]
+                            if x[j, g] < self.LB[g]:
+                                x[j, g] = self.LB[g]
+                            elif x[j, g] > self.UB[g]:
+                                x[j, g] = self.UB[g]
 
+                    # descretise
+                    for j in range(0, self.n):
+                        x[j, :] = self.__discretiseParticlePosition(x[j, :])
+
+                    # suppress
+                    for j in range(0, self.n):
+                        x[j, :] = self.__suppressAreasOfSignal(x[j, :])
+
+                    # eval particle positions
+                    if curr_iter % pc_marker == 0 or curr_iter == self.iter_max:
+                        # plot/save
+                        x_value = self.__evaluateParticlePositions(x, 
+                                                                curr_iter=curr_iter, 
+                                                                plot=True)
                     else:
-                        stagnation[j] += 1  
+                        x_value = self.__evaluateParticlePositions(x, 
+                                                                curr_iter=curr_iter, 
+                                                                plot=False)
+                    
+                    # update local best particle positions & fitness vals
+                    for j in range(0, self.n):
+                        if x_value[j] < pbest_value[j]:
+                            pbest_value[j] = x_value[j] 
+                            for g in range(0, self.m_c):
+                                pbest[j, g] = x[j, g]
 
-                        if stagnation[j] >= 5:
-                            
-                            print('OL initiated...')
-                            
-                            start_time = time.time()
-                            
-                            pguide = olpso.evaluate(pbest[j], gbest)
+                        else:
+                            stagnation[j] += 1  
 
-                            end_time = time.time()
+                            if stagnation[j] >= 5:
+                                
+                                print('OL initiated...')
+                                
+                                start_time = time.time()
+                                
+                                pguide = olpso.evaluate(pbest[j], gbest)
 
-                            t = end_time - start_time
+                                end_time = time.time()
 
-                            print(f'Time taken for OL: {t} s')
+                                t = end_time - start_time
 
-                            stagnation[j] = 0
+                                print(f'Time taken for OL: {t} s')
 
-                            orth[j] = True
+                                stagnation[j] = 0
 
+                                orth[j] = True
+
+                    
+                    # update global best particle positions & history
+                    min_cost_index = np.argmin(pbest_value)
+                    if pbest_value[min_cost_index] < gbest_cost:
+                        for g in range(0, self.m_c):
+                            gbest[g] = pbest[min_cost_index, g]
+
+                        gbest_cost = pbest_value[min_cost_index]
+                        achieved_main = True
+                    
+                    '''
+                    if curr_iter % 10 == 0:
+                        (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+                    '''
                 
-                # update global best particle positions & history
-                min_cost_index = np.argmin(pbest_value)
-                if pbest_value[min_cost_index] < gbest_cost:
-                    for g in range(0, self.m_c):
-                        gbest[g] = pbest[min_cost_index, g]
+                elif switch == 1:
 
-                    gbest_cost = pbest_value[min_cost_index]
-                    achieved_main = True
-                
-                '''
-                if curr_iter % 10 == 0:
-                    (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-                '''
+                    context, context_cost = cpso_s.partition()
+                    
+                    _ = self.__evaluateParticlePositions(context, curr_iter=curr_iter, plot=True)
+
+                    if gbest_cost > context_cost:
+
+                        achieved = True
+
+                        gbest_cost = context_cost
+
+                        for g in range(0, self.m_c):
+
+                            gbest[g] = context[g]
 
                 if achieved or achieved_main:
                     gbest_cost_history = np.append([gbest_cost_history], [gbest_cost])
