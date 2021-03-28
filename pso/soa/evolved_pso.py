@@ -618,6 +618,24 @@ class cpso_sk:
 
         self.v = v
 
+        self.LB = np.zeros(self.m) # lower bound on particle positions
+        self.UB = np.zeros(self.m) # upper bound on particle positions
+        for g in range(0, self.m):
+            self.LB[g] = -1.0
+            self.UB[g] = 1.0
+        
+        self.LB = np.tile(self.LB, self.q) # lower bound on particle positions
+        self.UB = np.tile(self.UB, self.q) # upper bound on particle positions        
+        
+        self.v_LB = np.zeros(self.m) # lower bound on particle velocities
+        self.v_UB = np.zeros(self.m) # upper bound on particle velocities
+        for g in range(0, self.m):
+            self.v_UB[g] = self.UB[g] * 0.05
+            self.v_LB[g] = self.v_UB[g] * (-1)
+        
+        self.v_LB = np.tile(self.v_LB, self.q)
+        self.v_UB = np.tile(self.v_UB, self.q)
+
         self.rel_improv = self.cascade(np.zeros(self.n))
 
         self.context = np.copy(gbest)
@@ -664,8 +682,20 @@ class cpso_sk:
 
                     
                     for g in range(0, self.m_c):
-                        
-                        self.x[j, g] = self.x[j, g] + self.v[j, g]
+                        if self.v[j, g] > self.v_UB[g]:
+                            self.v[j, g] = self.v_UB[g]
+                        if self.v[j, g] < self.v_LB[g]:
+                            self.v[j, g] = self.v_LB[g]
+                
+
+                    self.x[j, :] = self.x[j, :] + self.v[j, :]
+                
+
+                    for g in range(0, self.m_c):
+                        if self.x[j, g] < self.LB[g]:
+                            self.x[j, g] = self.LB[g]
+                        elif self.x[j, g] > self.UB[g]:
+                            self.x[j, g] = self.UB[g]
 
                     
                     self.x_value[q, j] = self.get_cost(self.x[j])
