@@ -639,15 +639,13 @@ class cpso_sk:
         self.rel_improv = self.cascade(np.zeros(self.n))
 
         self.context = np.copy(gbest)
+
+        self.context_cost = self.get_cost(self.context)
     
     
     def partition(self):
 
         if self.step == 'soa':
-
-
-            context_cost = self.get_cost(self.context)
-
 
             for j in range(self.n):
 
@@ -675,7 +673,7 @@ class cpso_sk:
                         (math.exp(- self.rel_improv[q, j]) - 1) / (math.exp( - self.rel_improv[q, j]) + 1)
                     
                     
-                    for g in range(0, self.m_c):
+                    for g in range(q * (self.m), (q + 1) * self.m):
                             self.v[j, g] = ((self.w[q, j] * self.v[j, g]) + (self.c1[q, j] * random.uniform(0, 1) \
                                 * (self.pbest[j, g] - self.x[j, g]) + (self.c2[q, j] * \
                                     random.uniform(0, 1) * (self.context[g] - self.x[j,g]))))
@@ -687,8 +685,8 @@ class cpso_sk:
                         if self.v[j, g] < self.v_LB[g]:
                             self.v[j, g] = self.v_LB[g]
                 
-
-                    self.x[j, :] = self.x[j, :] + self.v[j, :]
+                    for g in range(q * (self.m), (q + 1) * self.m):
+                        self.x[j, g] = self.x[j, g] + self.v[j, g]
                 
 
                     for g in range(0, self.m_c):
@@ -709,18 +707,18 @@ class cpso_sk:
                                 self.pbest[j, g] = self.x[j, g]
                     
 
-                    if self.x_value[q, j] < context_cost:
+                    if self.x_value[q, j] < self.context_cost:
 
-                        context_cost = self.x_value[q, j]
+                        self.context_cost = self.x_value[q, j]
 
                         for g in range(q * (self.m),  (q + 1) * self.m):
 
                             self.context[g] = self.x[j, g]
             
             print(self.x_value)
-            print(context_cost)
+            print(self.context_cost)
                 
-            return self.context, context_cost
+            return self.context, self.context_cost
 
         else:
 
