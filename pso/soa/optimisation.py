@@ -1253,7 +1253,7 @@ class PSO:
 
             olpso = evolved_pso.ol(self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP)
 
-            cpso_s = evolved_pso.cpso_sk(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, self.x, self.x_value , self.pbest, self.pbest_value, self.gbest, self.v, c1_min, c1_max, c2_min, c2_max, self.w_init)
+            cpso_s = evolved_pso.cpso_sk(self.n, self.m, self.q, self.sim_model, self.t2, self.X0, self.cost_f, self.st_importance_factor, self.SP, self.x, self.x_value , self.pbest, self.pbest_value, self.gbest, self.v, c1_min, c1_max, c2_min, c2_max, self.w_init, self.w_final)
 
             pc_marker = int(0.05*self.iter_max) # for plotting/saving
             if pc_marker == 0:

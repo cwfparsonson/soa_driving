@@ -565,6 +565,7 @@ class cpso_sk:
                 c2_min,
                 c2_max,
                 w_init,
+                w_final,
                 step = 'soa'):
         
         self.n = n
@@ -590,6 +591,8 @@ class cpso_sk:
         self.step = step
 
         self.w_init = w_init
+
+        self.w_final = w_final
 
         self.w = np.ones(self.n) * w_init
         
