@@ -643,7 +643,7 @@ class cpso_sk:
 
                 for q in range(self.q):
 
-                    for g in range(q * (self.m) + (q + 1) * self.m):
+                    for g in range(q * (self.m), (q + 1) * self.m):
 
                         self.x[j, g] = tmp[g]
 
@@ -661,13 +661,13 @@ class cpso_sk:
                         (math.exp(- self.rel_improv[j]) - 1) / (math.exp( - self.rel_improv[j]) + 1)
                     
                     
-                    for g in range(q * (self.m) + (q + 1) * self.m):
+                    for g in range(q * (self.m) , (q + 1) * self.m):
                             self.v[j, g] = ((self.w[j] * self.v[j, g]) + (self.c1[j] * random.uniform(0, 1) \
                                 * (self.pbest[j, g] - self.x[j, g]) + (self.c2[j] * \
                                     random.uniform(0, 1) * (context[g] - self.x[j,g]))))
 
                     
-                    for g in range(q * (self.m) + (q + 1) * self.m):
+                    for g in range(q * (self.m), (q + 1) * self.m):
                         
                         self.x[j, q] = self.x[j, q] + self.v[j, q]
 
@@ -679,7 +679,7 @@ class cpso_sk:
 
                         self.pbest_value[j] = self.x_value[j]
 
-                        for g in range(q * (self.m) + (q + 1) * self.m):
+                        for g in range(q * (self.m),  (q + 1) * self.m):
                                 self.pbest[j, g] = self.x[j, g]
                     
 
@@ -687,7 +687,7 @@ class cpso_sk:
 
                         context_cost = self.x_value[j]
 
-                        for g in range(q * (self.m) + (q + 1) * self.m):
+                        for g in range(q * (self.m),  (q + 1) * self.m):
 
                             context[g] = self.x[j, g]
                 
