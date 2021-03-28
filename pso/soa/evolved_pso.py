@@ -620,9 +620,7 @@ class cpso_sk:
 
         self.rel_improv = np.zeros(self.n)
 
-        global context
-
-        context = np.copy(gbest)
+        self.context = np.copy(gbest)
     
     
     def partition(self):
@@ -632,14 +630,14 @@ class cpso_sk:
         if self.step == 'soa':
 
 
-            context_cost = self.get_cost(context)
+            context_cost = self.get_cost(self.context)
 
 
             for j in range(self.n):
 
                 tmp = np.copy(self.x[j])
                 
-                self.x[j] = np.copy(context)
+                self.x[j] = np.copy(self.context)
 
                 for q in range(self.q):
 
@@ -664,12 +662,12 @@ class cpso_sk:
                     for g in range(q * (self.m) , (q + 1) * self.m):
                             self.v[j, g] = ((self.w[j] * self.v[j, g]) + (self.c1[j] * random.uniform(0, 1) \
                                 * (self.pbest[j, g] - self.x[j, g]) + (self.c2[j] * \
-                                    random.uniform(0, 1) * (context[g] - self.x[j,g]))))
+                                    random.uniform(0, 1) * (self.context[g] - self.x[j,g]))))
 
                     
                     for g in range(q * (self.m), (q + 1) * self.m):
                         
-                        self.x[j, q] = self.x[j, q] + self.v[j, q]
+                        self.x[j, g] = self.x[j, g] + self.v[j, g]
 
                     
                     self.x_value[j] = self.get_cost(self.x[j, :])
@@ -689,9 +687,9 @@ class cpso_sk:
 
                         for g in range(q * (self.m),  (q + 1) * self.m):
 
-                            context[g] = self.x[j, g]
+                            self.context[g] = self.x[j, g]
                 
-            return context, context_cost
+            return self.context, context_cost
 
         else:
 
