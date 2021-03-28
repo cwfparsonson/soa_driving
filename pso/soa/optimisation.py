@@ -1394,8 +1394,7 @@ class PSO:
                 elif switch == 1:
 
                     context, context_cost = cpso_s.partition()
-                    
-                    _ = self.__evaluateParticlePositions(context, curr_iter=curr_iter, plot=True)
+                
 
                     if gbest_cost > context_cost:
 
