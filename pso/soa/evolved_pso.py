@@ -609,7 +609,7 @@ class cpso_sk:
 
         self.x_value = x_value
 
-        self.pbest_value = np.tile(pbest_value, (self.q, 1))
+        self.pbest_value = pbest_value
 
         self.v = v
 
