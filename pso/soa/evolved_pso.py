@@ -714,9 +714,6 @@ class cpso_sk:
                         for g in range(q * (self.m),  (q + 1) * self.m):
 
                             self.context[g] = self.x[j, g]
-            
-            print(self.x_value)
-            print(self.context_cost)
                 
             return self.context, self.context_cost
 
