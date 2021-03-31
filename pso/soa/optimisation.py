@@ -1259,13 +1259,13 @@ class PSO:
             if pc_marker == 0:
                 pc_marker = 1 
             
-            """ 
+
             start_time = time.time()
             (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
             end_time = time.time() 
             t = end_time - start_time
             print(f'Time Taken for 1 CLS = {t} s')
-            """
+
 
             stagnation = np.zeros(self.n)
 
@@ -1356,7 +1356,7 @@ class PSO:
                                 pbest[j, g] = x[j, g]
 
                         else:
-                            stagnation[j] += 1  
+                            # stagnation[j] += 1  
 
                             if stagnation[j] >= 5:
                                 
@@ -1386,10 +1386,10 @@ class PSO:
                         gbest_cost = pbest_value[min_cost_index]
                         achieved_main = True
                     
-                    '''
+
                     if curr_iter % 10 == 0:
                         (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
-                    '''
+ 
                 
                 elif switch == 1:
 
