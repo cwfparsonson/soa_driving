@@ -1387,8 +1387,9 @@ class PSO:
                         achieved_main = True
                     
 
-                    if curr_iter % 10 == 0:
-                        (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+                if curr_iter % 10 == 0:
+                    print('in')
+                    (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
  
                 
                 elif switch == 1:
