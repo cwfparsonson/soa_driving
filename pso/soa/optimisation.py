@@ -1271,7 +1271,7 @@ class PSO:
 
             orth = np.zeros(self.n, dtype=bool)
 
-            switch = 1
+            switch = 0
 
             while curr_iter <= self.iter_max:
 
@@ -1390,7 +1390,7 @@ class PSO:
                 if curr_iter % 10 == 0:
                     print('in')
                     (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
- 
+
                 
                 elif switch == 1:
 
