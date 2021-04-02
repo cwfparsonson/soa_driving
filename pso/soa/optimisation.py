@@ -1281,7 +1281,7 @@ class PSO:
 
                 achieved_main = False
                 
-                if switch == 0:
+                if switch == 1:
 
                     for j in range(0, self.n):
                         # update particle vals
@@ -1385,11 +1385,11 @@ class PSO:
 
                         gbest_cost = pbest_value[min_cost_index]
                         achieved_main = True
-                    
+                            
 
-                if curr_iter % 10 == 0:
-                    print('in')
-                    (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
+                    if curr_iter % 10 == 0:
+                        print('in')
+                        (x, x_value, pbest, pbest_value, gbest, gbest_cost,achieved) = cpso.cls(x, x_value, pbest, pbest_value, gbest, gbest_cost, gbest_cost_history)
 
                 
                 elif switch == 1:
