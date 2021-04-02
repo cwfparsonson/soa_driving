@@ -1271,7 +1271,7 @@ class PSO:
 
             orth = np.zeros(self.n, dtype=bool)
 
-            switch = 0
+            switch = 1
 
             while curr_iter <= self.iter_max:
 

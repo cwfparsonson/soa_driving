@@ -612,9 +612,9 @@ class cpso_sk:
 
         self.pbest = pbest
 
-        self.x_value = self.cascade(x_value)
+        self.x_value = self.cascade(np.ones(self.n))
 
-        self.pbest_value = self.cascade(pbest_value)
+        self.pbest_value = np.copy(pbest_value)
 
         self.v = v
 
