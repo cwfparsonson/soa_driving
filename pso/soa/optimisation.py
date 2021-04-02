@@ -1281,7 +1281,7 @@ class PSO:
 
                 achieved_main = False
                 
-                if switch == 1:
+                if switch == 0:
 
                     for j in range(0, self.n):
                         # update particle vals
